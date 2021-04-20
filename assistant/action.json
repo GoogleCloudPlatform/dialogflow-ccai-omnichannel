@@ -1,0 +1,42 @@
+{
+  "actions": [
+    {
+      "description": "Default Welcome Intent",
+      "name": "MAIN",
+      "fulfillment": {
+        "conversationName": "welcome"
+      },
+      "intent": {
+        "name": "actions.intent.MAIN",
+        "trigger": {
+          "queryPatterns":["talk to CCAIDemo"]
+        }
+      }
+    },
+    {
+      "description": "Dialogflow Intents",
+      "name": "TEXT",
+      "fulfillment": {
+        "conversationName": "dialogflow_intent"
+      },
+      "intent": {
+        "name": "actions.intent.TEXT",
+        "trigger": {
+          "queryPatterns": []
+        }
+      }
+    }
+  ],
+  "conversations": {
+    "welcome": {
+      "name": "welcome",
+      "url": "https://5d9233546d75.ngrok.io/aog/"
+    },
+    "dialogflow_intent": {
+      "name": "dialogflow_intent",
+      "url": "https://5d9233546d75.ngrok.io/aog/"
+    }
+  },
+  "locale": "en"
+}
+

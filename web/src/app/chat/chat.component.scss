@@ -1,0 +1,138 @@
+:host {
+    width: 100%;
+}
+
+.grid-container {
+    margin: 20px;
+}
+
+mat-card {
+    margin: 12px;
+    padding: 42px;
+}
+
+#chatbox { 
+    margin: 0 auto;
+    position: relative;
+    min-height: 450px;
+    overflow: scroll;
+    width: 100%;
+    position: relative;
+}
+
+.chatarea{
+    height: 420px;
+    overflow-x: hidden;
+    position: relative;
+}
+
+.chatfooter{
+    height: 50px;
+    position: relative;
+    width: 100%;
+}
+
+#chatbox .chatinput {
+    width: 80%;
+    position: absolute;
+    left: 0;
+    height: 50px;
+ 
+    .mat-form-field {
+        width: 100%;
+    }
+}
+#chatbox button { 
+    position: absolute;
+    right: 2px;
+}
+
+.avatar {
+    display: inline-block;
+    //background-image:url('chatavatar.png');
+    background-repeat: no-repeat;
+    background-size: 100px 117px;
+    height: 117px;
+    width: 100px;
+    left: 0;
+    position: absolute;
+}
+
+#messages { 
+    list-style-type: none; 
+    margin: 0;
+    padding: 0; 
+    display: inline-block;
+    left: 120px;
+    width: 80%;
+    position: absolute;
+}
+
+:host ::ng-deep .balloon {
+    border-radius: .4em;
+    padding: 10px;
+    margin: 15px 0;
+    position: relative;
+    width: 80%;
+}
+
+:host ::ng-deep a {
+	color: #fff;
+}
+
+:host ::ng-deep .agent { 
+	background: #4285F4;   
+    color: #fff;
+    font-weight: bold;
+    margin-right: 20px;
+    margin-left: 0px;
+}
+:host ::ng-deep .agent:after { 
+	content: '';
+	position: absolute;
+	left: 0;
+	top: 50%;
+	width: 0;
+    height: 0;
+    border: 10px solid transparent;
+	border-right-color: #4285F4;
+	border-left: 0;
+	border-top: 0;
+	margin-top: -10px;
+	margin-left: -8px;
+}
+
+:host ::ng-deep .user { 
+	background: #0F9D58;    
+    color: #fff;
+    margin-right: 0px;
+    margin-left: 20px;
+}
+:host ::ng-deep .user:after { 
+    content: '';
+	position: absolute;
+	right: 0;
+	top: 50%;
+	width: 0;
+    height: 0;
+	border: 10px solid transparent;
+	border-left-color: #0F9D58;
+	border-right: 0;
+	border-top: 0;
+	margin-top: -10px;
+	margin-right: -8px;
+}
+
+#messages li { padding: 5px 10px; }
+
+.ng-valid[required], .ng-valid.required  {
+    border-bottom: 1px solid #0F9D58; /* green */
+}
+
+.ng-invalid:not(form)  {
+    border-bottom: 1px solid #DB4437; /* red */
+}
+
+.systemerrors {
+    color: #a94442;
+}
