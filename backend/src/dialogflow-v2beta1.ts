@@ -201,8 +201,8 @@ export class DialogflowV2Beta1Stream extends DialogflowV2Beta1 {
       this.isInterrupted = false;
     }
 
-    send(message, createAudioResponseStream, welcomeEvent, outputAudioConfig) {
-      const stream = this.startPipeline(createAudioResponseStream, welcomeEvent, outputAudioConfig);
+    send(message, createAudioResponseStream, queryInputObj, welcomeEvent, outputAudioConfig) {
+      const stream = this.startPipeline(createAudioResponseStream, queryInputObj, welcomeEvent, outputAudioConfig);
       stream.write(message);
     }
 
@@ -223,12 +223,12 @@ export class DialogflowV2Beta1Stream extends DialogflowV2Beta1 {
       }
     }
 
-    startPipeline(createAudioResponseStream: Function, welcomeEvent, outputAudioConfig) {
+    startPipeline(createAudioResponseStream: Function, queryInputObj, welcomeEvent, outputAudioConfig) {
       if (!this.isReady) {
         // Generate the streams
         this._requestStreamPassThrough = new PassThrough({ objectMode: true });
         const audioStream = this.createAudioRequestStream();
-        const detectStream = this.createDetectStream(welcomeEvent, outputAudioConfig);
+        const detectStream = this.createDetectStream(queryInputObj, welcomeEvent, outputAudioConfig);
 
         const responseStreamPassThrough = new PassThrough({ objectMode: true });
         this.audioResponseStream = createAudioResponseStream();
@@ -253,14 +253,14 @@ export class DialogflowV2Beta1Stream extends DialogflowV2Beta1 {
         this._requestStreamPassThrough.on('data', (data) => {
           const msg = JSON.parse(data.toString('utf8'));
           if (msg.event === 'start') {
-            console.log(`Captured call ${msg.start.callSid}`);
+            debug.log(`Captured call ${msg.start.callSid}`);
             this.emit('callStarted', {
               callSid: msg.start.callSid,
               streamSid: msg.start.streamSid
             });
           }
           if (msg.event === 'mark') {
-            console.log(`Mark received ${msg.mark.name}`);
+            debug.log(`Mark received ${msg.mark.name}`);
             if (msg.mark.name === 'endOfInteraction') {
               this.emit('endOfInteraction', this.getFinalQueryResult());
             }
@@ -280,7 +280,7 @@ export class DialogflowV2Beta1Stream extends DialogflowV2Beta1 {
             data.queryResult.intent &&
             data.queryResult.intent.endInteraction
           ) {
-            console.log(
+            debug.log(
               `Ending interaction with: ${data.queryResult.fulfillmentText}`
             );
             this.finalQueryResult = data.queryResult;
@@ -296,20 +296,12 @@ export class DialogflowV2Beta1Stream extends DialogflowV2Beta1 {
       return this._requestStreamPassThrough;
   }
 
-  createDetectStream(welcomeEvent, outputAudioConfig){
-
-    const queryInput = {
-      audioConfig: {
-        audioEncoding: global.twilio['input_encoding'],
-        sampleRateHertz: global.twilio['sample_rate_hertz'],
-        languageCode: global.dialogflow['language_code'],
-        singleUtterance: global.twilio['single_utterance'],
-      },
-      interimResults: global.twilio['interim_results'],
-    };
+  createDetectStream(queryInputObj, welcomeEvent, outputAudioConfig){
+    let queryInput = {};
     if (this.isFirst) {
       queryInput['event'] = welcomeEvent;
     }
+    queryInput = {...queryInput, ...queryInputObj }
 
     const initialStreamRequest = {
       queryInput,
@@ -340,12 +332,12 @@ export class DialogflowV2Beta1Stream extends DialogflowV2Beta1 {
   }
 
   stop() {
-    console.log('Stopping Dialogflow');
+    debug.log('Stopping Dialogflow');
     this.isStopped = true;
   }
 
   finish() {
-    console.log('Disconnecting from Dialogflow');
+    debug.log('Disconnecting from Dialogflow');
     this._requestStreamPassThrough.end();
   }
 }

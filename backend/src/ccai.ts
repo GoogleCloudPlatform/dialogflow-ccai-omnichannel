@@ -52,11 +52,11 @@ export class ContactCenterAi {
             });
         } catch(err) {
           if (global.twilio['account_sid'] === undefined) {
-            console.error('Ensure that you have set your environment variable TWILIO_ACCOUNT_SID. This can be copied from https://twilio.com/console');
-            console.log('Exiting');
+            debug.error('Ensure that you have set your environment variable TWILIO_ACCOUNT_SID. This can be copied from https://twilio.com/console');
+            debug.log('Exiting');
             return;
           }
-          console.error(err);
+          debug.error(err);
         }
         // This will get populated on callStarted
         let callSid;
@@ -74,12 +74,22 @@ export class ContactCenterAi {
           languageCode: global.dialogflow['language_code'],
         };
 
+        const queryInputObj = {
+          audioConfig: {
+            audioEncoding: global.twilio['input_encoding'],
+            sampleRateHertz: global.twilio['sample_rate_hertz'],
+            languageCode: global.dialogflow['language_code'],
+            singleUtterance: global.twilio['single_utterance'],
+          },
+          interimResults: global.twilio['interim_results'],
+        };
+
         mediaStream.on('data', data => {
-          this.dialogflow.send(data, this.createAudioResponseStream, welcomeEvent, outputAudioConfig);
+          this.dialogflow.send(data, this.createAudioResponseStream, queryInputObj, welcomeEvent, outputAudioConfig);
         });
 
         mediaStream.on('finish', () => {
-          console.log('MediaStream has finished');
+          debug.log('MediaStream has finished');
           this.dialogflow.finish();
         });
 
@@ -97,7 +107,7 @@ export class ContactCenterAi {
             }
           };
           const mediaJSON = JSON.stringify(mediaMessage);
-          console.log(`Sending audio (${audio.length} characters)`);
+          debug.log(`Sending audio (${audio.length} characters)`);
           mediaStream.write(mediaJSON);
           // If this is the last message
           if (this.dialogflow.isStopped) {
@@ -109,15 +119,15 @@ export class ContactCenterAi {
               }
             };
             const markJSON = JSON.stringify(markMessage);
-            console.log('Sending end of interaction mark', markJSON);
+            //console.log('Sending end of interaction mark', markJSON);
             mediaStream.write(markJSON);
           }
         });
 
         this.dialogflow.on('interrupted', transcript => {
-            console.log(`Interrupted with "${transcript}"`);
+            debug.log(`Interrupted with "${transcript}"`);
             if (!this.dialogflow.isInterrupted) {
-              console.log('Clearing...');
+              debug.log('Clearing...');
               const clearMessage = {
                 event: 'clear',
                 streamSid
@@ -145,9 +155,9 @@ export class ContactCenterAi {
               .calls(callSid)
               .update({ twiml })
               .then(call =>
-                console.log(`Updated Call(${callSid}) with twiml: ${twiml}`)
+                debug.log(`Updated Call(${callSid}) with twiml: ${twiml}`)
               )
-              .catch(err => console.error(err));
+              .catch(err => debug.error(err));
         });
     }
 
