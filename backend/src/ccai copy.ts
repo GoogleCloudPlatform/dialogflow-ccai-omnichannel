@@ -66,8 +66,19 @@ export class ContactCenterAi {
           binary: false
         });
 
+        const queryInput = this.createQueryInput();
+        const outputAudioConfig = {
+          audioEncoding: global.twilio['output_encoding'],
+        };
+        const welcomeEvent = {
+          name: global.twilio['welcome_event'],
+          languageCode: global.dialogflow['language_code'],
+        }
+
         mediaStream.on('data', data => {
-          this.dialogflow.send(data, this.createAudioResponseStream);
+          // stream all the audio into the Dialogflow pipeline,
+          // and execute the audio response stream callback
+          this.dialogflow.send(data, this.createAudioResponseStream, queryInput, outputAudioConfig, welcomeEvent);
         });
 
         mediaStream.on('finish', () => {
@@ -143,7 +154,20 @@ export class ContactCenterAi {
         });
     }
 
-    // create audio response stream for twilio
+    createQueryInput(){
+      const queryInput = {
+        audioConfig: {
+          audioEncoding: global.twilio['input_encoding'],
+          sampleRateHertz: global.twilio['sample_rate_hertz'],
+          languageCode: global.dialogflow['language_code'],
+          singleUtterance: global.twilio['single_utterance'],
+        },
+        interimResults: global.twilio['interim_results'],
+      };
+
+      return queryInput;
+    }
+
     createAudioResponseStream() {
       return new Transform({
         objectMode: true,

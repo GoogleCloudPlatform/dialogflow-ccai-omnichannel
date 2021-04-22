@@ -16,18 +16,18 @@
  * =============================================================================
  */
 
- import { global } from './config';
- import * as df from '@google-cloud/dialogflow';
- import * as uuid from 'uuid';
- import { debug } from './debug';
- import { BotResponse } from './dialogflow-bot-responses';
- import { EventEmitter } from 'events';
- import { PassThrough, pipeline } from 'stream';
- import { Transform } from 'stream';
+import { global } from './config';
+import * as df from '@google-cloud/dialogflow';
+import * as uuid from 'uuid';
+import { debug } from './debug';
+import { BotResponse } from './dialogflow-bot-responses';
+import { EventEmitter } from 'events';
+import { PassThrough, pipeline } from 'stream';
+import { Transform } from 'stream';
 
- const struct = require('./structjson');
+const struct = require('./structjson');
 
- export interface QueryInputV2Beta1 {
+export interface QueryInputV2Beta1 {
      event?: {
          name: string,
          languageCode: string
@@ -187,8 +187,8 @@ export class DialogflowV2Beta1Stream extends DialogflowV2Beta1 {
     public isReady: boolean;
     public isStopped: boolean;
     public isInterrupted: boolean;
-    public audioResponseStream: Transform;
     public finalQueryResult: any;
+    public audioResponseStream: Transform;
     private _requestStreamPassThrough: PassThrough;
 
     constructor() {
@@ -201,8 +201,8 @@ export class DialogflowV2Beta1Stream extends DialogflowV2Beta1 {
       this.isInterrupted = false;
     }
 
-    send(message, createAudioResponseStream) {
-      const stream = this.startPipeline(createAudioResponseStream);
+    send(message: any, createAudioResponseStreamCallback: Function, queryInput: any, outputAudioConfig: any, welcomeEvent: any) {
+      const stream = this.startPipeline(createAudioResponseStreamCallback, queryInput, outputAudioConfig, welcomeEvent);
       stream.write(message);
     }
 
@@ -223,15 +223,16 @@ export class DialogflowV2Beta1Stream extends DialogflowV2Beta1 {
       }
     }
 
-    startPipeline(createAudioResponseStream: Function) {
+    startPipeline(createAudioResponseStreamCallback: any, queryInput: any, outputAudioConfig: any, welcomeEvent: any) {
       if (!this.isReady) {
         // Generate the streams
         this._requestStreamPassThrough = new PassThrough({ objectMode: true });
         const audioStream = this.createAudioRequestStream();
-        const detectStream = this.createDetectStream();
+        const detectStream = this.createDetectStream(queryInput, outputAudioConfig, welcomeEvent);
 
         const responseStreamPassThrough = new PassThrough({ objectMode: true });
-        this.audioResponseStream = createAudioResponseStream();
+        this.audioResponseStream = createAudioResponseStreamCallback();
+
         if (this.isFirst) this.isFirst = false;
         this.isInterrupted = false;
         // Pipeline is async....
@@ -251,8 +252,12 @@ export class DialogflowV2Beta1Stream extends DialogflowV2Beta1 {
         );
 
         this._requestStreamPassThrough.on('data', (data) => {
-          const msg = JSON.parse(data.toString('utf8'));
-          if (msg.event === 'start') {
+          const msg = JSON.parse(data.toString('utf8')); 
+
+          // Twilio Specific
+          // Is there a message with the event name start or mark received from ccai.ts
+          // then log and fire events
+          if (msg.event === 'start') { 
             console.log(`Captured call ${msg.start.callSid}`);
             this.emit('callStarted', {
               callSid: msg.start.callSid,
@@ -261,7 +266,7 @@ export class DialogflowV2Beta1Stream extends DialogflowV2Beta1 {
           }
           if (msg.event === 'mark') {
             console.log(`Mark received ${msg.mark.name}`);
-            if (msg.mark.name === 'endOfInteraction') {
+            if (msg.mark.name === 'endOfInteraction') { 
               this.emit('endOfInteraction', this.getFinalQueryResult());
             }
           }
@@ -290,27 +295,16 @@ export class DialogflowV2Beta1Stream extends DialogflowV2Beta1 {
         this.audioResponseStream.on('data', (data) => {
           this.emit('audio', data.toString('base64'));
         });
-        // Set ready
+
         this.isReady = true;
       }
       return this._requestStreamPassThrough;
   }
 
-  createDetectStream(){
-    const queryInput = {
-      audioConfig: {
-        audioEncoding: global.twilio['input_encoding'],
-        sampleRateHertz: global.twilio['sample_rate_hertz'],
-        languageCode: global.dialogflow['language_code'],
-        singleUtterance: global.twilio['single_utterance'],
-      },
-      interimResults: global.twilio['interim_results'],
-    };
+  createDetectStream(queryInput: any, outputAudioConfig: any, welcomeEvent: any){
     if (this.isFirst) {
-      queryInput['event'] = {
-          name: global.twilio['welcome_event'],
-          languageCode: global.dialogflow['language_code'],
-      };
+      console.log('is first');
+      queryInput['event'] = welcomeEvent;
     }
 
     const initialStreamRequest = {
@@ -319,9 +313,7 @@ export class DialogflowV2Beta1Stream extends DialogflowV2Beta1 {
       queryParams: {
         session: this.sessionPath
       },
-      outputAudioConfig: {
-        audioEncoding: global.twilio['output_encoding'],
-      },
+      outputAudioConfig
     };
 
     const detectStream = this.sessionClient.streamingDetectIntent();
@@ -329,7 +321,6 @@ export class DialogflowV2Beta1Stream extends DialogflowV2Beta1 {
     return detectStream;
   }
 
-  // create audio dialogflow request stream
   createAudioRequestStream() {
     return new Transform({
       objectMode: true,
@@ -337,7 +328,7 @@ export class DialogflowV2Beta1Stream extends DialogflowV2Beta1 {
         const msg = JSON.parse(chunk.toString('utf8'));
         // Only process media messages
         if (msg.event !== 'media') return callback();
-        // For Twilio, this is mulaw/8000 base64-encoded
+        // For Twilio tis is mulaw/8000 base64-encoded
         return callback(null, { inputAudio: msg.media.payload });
       },
     });
