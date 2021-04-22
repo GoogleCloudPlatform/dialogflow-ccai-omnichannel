@@ -38,12 +38,12 @@ node_port: "8080"
     "phone_number": ".ENV", 
     "account_sid": ".ENV", Your Account SID from www.twilio.com/console
     "auth_token": ".ENV" Your Auth Token from www.twilio.com/console
-},
-"speech_to_text": {
-
-},
-"text_to_speech": {
-
+    "input_encoding": "AUDIO_ENCODING_MULAW",
+    "output_encoding": "OUTPUT_AUDIO_ENCODING_LINEAR_16",
+    "sample_rate_hertz": 8000,
+    "single_utterance": true,
+    "interim_results": false,
+    "welcome_event": "Welcome"
 },
 "angular": {
     "angular_port": "4200"
@@ -68,12 +68,6 @@ const globalConfig = {
             "sample_rate_hertz": 16000,
             "single_utterance": false
         },
-        "ccai": {
-            "encoding": "AUDIO_ENCODING_MULAW",
-            "sample_rate_hertz": 8000,
-            "single_utterance": true,
-            "output_encoding": "OUTPUT_AUDIO_ENCODING_LINEAR_16"
-        },
         "pubsub": {
             "topic_name": "dialogflow" 
         },
@@ -83,13 +77,13 @@ const globalConfig = {
         "twilio": {
             "phone_number": ".ENV",
             "account_sid": ".ENV",
-            "auth_token": ".ENV"
-        },
-        "speech_to_text": {
-
-        },
-        "text_to_speech": {
-
+            "auth_token": ".ENV",
+            "input_encoding": "AUDIO_ENCODING_MULAW",
+            "output_encoding": "OUTPUT_AUDIO_ENCODING_LINEAR_16",
+            "sample_rate_hertz": 8000,
+            "single_utterance": true,
+            "interim_results": false,
+            "welcome_event": "Welcome"
         },
         "angular": {
             "angular_port": "4200"

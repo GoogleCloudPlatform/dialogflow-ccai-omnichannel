@@ -59,7 +59,7 @@
          this.sessionPath = this.sessionClient.projectAgentSessionPath(this.projectId, this.sessionId);
      }
 
-     detectIntentText(query: string, lang = global.dialogflow['lang_code'], contexts?: Array<string>) {
+     detectIntentText(query: string, lang = global.dialogflow['language_code'], contexts?: Array<string>) {
          const qInput:QueryInputV2Beta1 = {
              text: {
                text: query,
@@ -70,7 +70,7 @@
          return this.detectIntent(qInput, query, contexts);
      }
 
-     detectIntentEvent(eventName: string, lang = global.dialogflow['lang_code'], params = null) {
+     detectIntentEvent(eventName: string, lang = global.dialogflow['language_code'], params = null) {
          const qInput:QueryInputV2Beta1 = {
              event: {
                  name: eventName,
@@ -127,7 +127,7 @@
              projectId: this.projectId,
              dateTimeStamp: new Date().getTime()/1000,
              text: input, // in case DF doesn't respond anything, we can still capture these
-             languageCode: global.dialogflow['lang_code'], // in case DF doesn't respond anything, we can still capture these
+             languageCode: global.dialogflow['language_code'], // in case DF doesn't respond anything, we can still capture these
          }
          if(e) {
              debug.error(e);
@@ -191,7 +191,6 @@ export class DialogflowV2Beta1Stream extends DialogflowV2Beta1 {
     public finalQueryResult: any;
     private _requestStream: PassThrough; // TODO rename twilio input audio?
     private audioResponseStream: PassThrough; // TODO rename twilio input audio?
-
 
     constructor() {
       super();
@@ -301,17 +300,17 @@ export class DialogflowV2Beta1Stream extends DialogflowV2Beta1 {
   createDetectStream(){
     const queryInput = {
       audioConfig: {
-        audioEncoding: 'AUDIO_ENCODING_MULAW', // TODO from globals
-        sampleRateHertz: 8000,
-        languageCode: 'en-US',
-        singleUtterance: true,
+        audioEncoding: global.twilio['input_encoding'],
+        sampleRateHertz: global.twilio['sample_rate_hertz'],
+        languageCode: global.dialogflow['language_code'],
+        singleUtterance: global.twilio['single_utterance'],
       },
-      interimResults: false,
+      interimResults: global.twilio['interim_results'],
     };
     if (this.isFirst) {
       queryInput['event'] = {
-          name: 'Welcome', // TODO globals
-          languageCode: 'en-US', // TODO globals
+          name: global.twilio['welcome_event'],
+          languageCode: global.dialogflow['language_code'],
       };
     }
 
@@ -322,7 +321,7 @@ export class DialogflowV2Beta1Stream extends DialogflowV2Beta1 {
         session: this.sessionPath
       },
       outputAudioConfig: {
-        audioEncoding: 'OUTPUT_AUDIO_ENCODING_LINEAR_16', // TODO globals
+        audioEncoding: global.twilio['output_encoding'],
       },
     };
 
