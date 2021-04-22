@@ -201,8 +201,8 @@ export class DialogflowV2Beta1Stream extends DialogflowV2Beta1 {
       this.isInterrupted = false;
     }
 
-    send(message, createAudioResponseStream) {
-      const stream = this.startPipeline(createAudioResponseStream);
+    send(message, createAudioResponseStream, outputAudioConfig) {
+      const stream = this.startPipeline(createAudioResponseStream, outputAudioConfig);
       stream.write(message);
     }
 
@@ -223,12 +223,12 @@ export class DialogflowV2Beta1Stream extends DialogflowV2Beta1 {
       }
     }
 
-    startPipeline(createAudioResponseStream: Function) {
+    startPipeline(createAudioResponseStream: Function, outputAudioConfig) {
       if (!this.isReady) {
         // Generate the streams
         this._requestStreamPassThrough = new PassThrough({ objectMode: true });
         const audioStream = this.createAudioRequestStream();
-        const detectStream = this.createDetectStream();
+        const detectStream = this.createDetectStream(outputAudioConfig);
 
         const responseStreamPassThrough = new PassThrough({ objectMode: true });
         this.audioResponseStream = createAudioResponseStream();
@@ -296,7 +296,8 @@ export class DialogflowV2Beta1Stream extends DialogflowV2Beta1 {
       return this._requestStreamPassThrough;
   }
 
-  createDetectStream(){
+  createDetectStream(outputAudioConfig){
+
     const queryInput = {
       audioConfig: {
         audioEncoding: global.twilio['input_encoding'],
@@ -319,9 +320,7 @@ export class DialogflowV2Beta1Stream extends DialogflowV2Beta1 {
       queryParams: {
         session: this.sessionPath
       },
-      outputAudioConfig: {
-        audioEncoding: global.twilio['output_encoding'],
-      },
+      outputAudioConfig
     };
 
     const detectStream = this.sessionClient.streamingDetectIntent();
