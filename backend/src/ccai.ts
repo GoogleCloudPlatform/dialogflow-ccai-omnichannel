@@ -69,9 +69,13 @@ export class ContactCenterAi {
         const outputAudioConfig = {
           audioEncoding: global.twilio['output_encoding'],
         };
+        const welcomeEvent = {
+          name: global.twilio['welcome_event'],
+          languageCode: global.dialogflow['language_code'],
+        };
 
         mediaStream.on('data', data => {
-          this.dialogflow.send(data, this.createAudioResponseStream, outputAudioConfig);
+          this.dialogflow.send(data, this.createAudioResponseStream, welcomeEvent, outputAudioConfig);
         });
 
         mediaStream.on('finish', () => {
