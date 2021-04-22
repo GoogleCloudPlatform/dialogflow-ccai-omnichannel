@@ -30,60 +30,115 @@ const df = global.dialogflow['version'] || 'v2beta1';
 
 export class ContactCenterAi {
     private pubsub: MyPubSub;
-    private dialogflow: DialogflowCX | DialogflowCXV3Beta1 | DialogflowV2Beta1Stream;
+    private dialogflow: any;
 
     constructor() {
-        if(df === 'cx') {
-            this.dialogflow = new DialogflowCX();
-        } else if(df === 'cxv3beta1') {
-            this.dialogflow = new DialogflowCXV3Beta1();
-        } else {
-            this.dialogflow = new DialogflowV2Beta1Stream();
-        }
-        this.pubsub = new MyPubSub();
+         if(df === 'cx') {
+             this.dialogflow = new DialogflowCX();
+         } else if(df === 'cxv3beta1') {
+             this.dialogflow = new DialogflowCXV3Beta1();
+         } else {
+             this.dialogflow = new DialogflowV2Beta1Stream();
+         }
     }
 
-    stream(ws: any): void{
+    stream(ws){
         let client;
         try {
             client = new Twilio(global.twilio['account_sid'], global.twilio['auth_token'], {
                 logLevel: 'debug'
             });
         } catch(err) {
-            if (global.twilio['account_sid']) {
-                debug.error('Ensure that you have set your environment variable TWILIO_ACCOUNT_SID. This can be copied from https://twilio.com/console');
-                debug.log('Exiting');
+          if (global.twilio['account_sid'] === undefined) {
+            console.error('Ensure that you have set your environment variable TWILIO_ACCOUNT_SID. This can be copied from https://twilio.com/console');
+            console.log('Exiting');
             return;
-            }
-            debug.error(err);
+          }
+          console.error(err);
         }
         // This will get populated on callStarted
         let callSid;
         let streamSid;
         // MediaStream coming from Twilio
-
         const mediaStream = websocketStream(ws, {
-            binary: false
+          binary: false
         });
 
-        // const dialogflowService = new DialogflowService();
-        const dialogflow = new DialogflowV2Beta1Stream();
-
         mediaStream.on('data', data => {
-            // console.log(data);
-            dialogflow.send(data);
+          this.dialogflow.send(data);
         });
 
         mediaStream.on('finish', () => {
-            console.log('MediaStream has finished');
-            dialogflow.finish();
-            // this.pubsub.pushToChannel(aogResponse);
+          console.log('MediaStream has finished');
+          this.dialogflow.finish();
         });
-    }
 
-    createSSML(responses){
-        // TODO
-        return responses;
+        this.dialogflow.on('callStarted', data => {
+          callSid = data.callSid;
+          streamSid = data.streamSid;
+        });
+
+        this.dialogflow.on('audio', audio => {
+          const mediaMessage = {
+            streamSid,
+            event: 'media',
+            media: {
+              payload: audio
+            }
+          };
+          const mediaJSON = JSON.stringify(mediaMessage);
+          console.log(`Sending audio (${audio.length} characters)`);
+          mediaStream.write(mediaJSON);
+          // If this is the last message
+          if (this.dialogflow.isStopped) {
+            const markMessage = {
+              streamSid,
+              event: 'mark',
+              mark: {
+                name: 'endOfInteraction'
+              }
+            };
+            const markJSON = JSON.stringify(markMessage);
+            console.log('Sending end of interaction mark', markJSON);
+            mediaStream.write(markJSON);
+          }
+        });
+
+        this.dialogflow.on('interrupted', transcript => {
+            console.log(`Interrupted with "${transcript}"`);
+            if (!this.dialogflow.isInterrupted) {
+              console.log('Clearing...');
+              const clearMessage = {
+                event: 'clear',
+                streamSid
+              };
+              mediaStream.write(JSON.stringify(clearMessage));
+              this.dialogflow.isInterrupted = true;
+            }
+        });
+
+        this.dialogflow.on('endOfInteraction', (queryResult) => {
+            const response = new Twilio.twiml.VoiceResponse();
+            const url = process.env.END_OF_INTERACTION_URL;
+            if (url) {
+              const qs = JSON.stringify(queryResult);
+              // In case the URL has a ?, use an ampersand
+              const appendage = url.includes('?') ? '&' : '?';
+              response.redirect(
+                `${url}${appendage}dialogflowJSON=${encodeURIComponent(qs)}`
+              );
+            } else {
+              response.hangup();
+            }
+            const twiml = response.toString();
+            return client
+              .calls(callSid)
+              .update({ twiml })
+              .then(call =>
+                console.log(`Updated Call(${callSid}) with twiml: ${twiml}`)
+              )
+              .catch(err => console.error(err));
+        });
     }
 }
 

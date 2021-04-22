@@ -20,16 +20,20 @@ import { global } from './config';
 import { debug } from './debug';
 
 import * as websocketStream from 'websocket-stream/stream';
-import { DialogflowV2Beta1, DialogflowV2Beta1Stream } from './dialogflow-v2beta1';
+import { DialogflowV2Beta1, DialogflowV2Beta1Stream } from './dialogflow-v2beta1-old';
 import { DialogflowCX } from './dialogflow-cx';
 import { DialogflowCXV3Beta1 } from './dialogflow-cxv3beta1';
 import { MyPubSub } from './pubsub';
+
+import { Transform } from 'stream';
 
 const df = global.dialogflow['version'] || 'v2beta1';
 
 export class Web {
     private pubsub: MyPubSub;
-    private dialogflow: DialogflowCX | DialogflowCXV3Beta1 | DialogflowV2Beta1Stream;
+    private dialogflow: any;
+    private streamRequest: any;
+    private streamOutput: any;
 
     constructor() {
         if(df === 'cx') {
@@ -40,6 +44,20 @@ export class Web {
             this.dialogflow = new DialogflowV2Beta1Stream();
         }
         this.pubsub = new MyPubSub();
+
+        this.streamRequest = {
+            audioConfig: {
+                audioEncoding: global.web['encoding'],
+                sampleRateHertz: global.web['sample_rate_hertz'],
+                languageCode: global.dialogflow['language_code'],
+                singleUtterance: global.web['single_utterance'],
+            },
+            interimResults: false
+        };
+
+        this.streamOutput = {
+            audioEncoding: null // TODO?
+        }
     }
 
     createRichMessages(responses){
@@ -70,6 +88,8 @@ export class Web {
         this.pubsub.pushToChannel(webResponse);
         return this.createSSML(webResponse);
     }
+
+    // TODO CREATE 2ND CLASS
 
     stream(ws: any): void{
         var dialogflowResponses;
@@ -110,9 +130,46 @@ Buffer(157568) [Uint8Array] [
         mediaStream.on('data', data => {
             // debug.log(data); // <-- I am not so sure if this is the correct data we pass in.
             if (isArrayBufferView(data)) {
-                dialogflow.send(data);
+                const stream = this.dialogflow.startPipeline(
+                    this.streamRequest, this.streamOutput,
+                    this.createAudioResponseStream, this.createAudioRequestStream);
+                stream.write(data);
             }
         });
+    }
+
+    // this is the await pump part
+    // https://github.com/googleapis/nodejs-dialogflow/blob/master/samples/detect.js
+    createAudioResponseStream() {
+        /*return new Transform({
+            objectMode: true,
+            transform: (chunk, encoding, callback) => {
+            if (!chunk.outputAudio || chunk.outputAudio.length === 0) {
+                return callback();
+            }
+            // Convert the LINEAR 16 Wavefile to 8000/mulaw
+            const wav = new WaveFile();
+            wav.fromBuffer(chunk.outputAudio);
+            wav.toSampleRate(8000);
+            wav.toMuLaw();
+            return callback(null, Buffer.from(wav.getSamples()));
+            },
+        });*/
+    }
+        // this is the await pump part
+    // https://github.com/googleapis/nodejs-dialogflow/blob/master/samples/detect.js
+    createAudioRequestStream() {
+        /*return new Transform({
+            objectMode: true,
+            transform: (chunk, encoding, callback) => {
+            console.log(chunk); // TODO <--- and this is were Web breaks
+            const msg = JSON.parse(chunk.toString('utf8'));
+            // Only process media messages
+            if (msg.event !== 'media') return callback();
+            // This is mulaw/8000 base64-encoded
+            return callback(null, { inputAudio: msg.media.payload });
+            },
+        });*/
     }
 }
 

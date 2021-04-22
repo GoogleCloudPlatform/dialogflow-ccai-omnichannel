@@ -215,3 +215,10 @@ https://www.twilio.com/console/project/
 5. Wire up your Twilio number with your endpoint on incoming calls. This will automatically start an ngrok tunnel to your machine.
 
 `twilio phone-numbers:update +3197010254316 --voice-url=http://localhost:8080/twiml`
+
+or manually (to only do this once)
+
+`ngrok http -subdomain=ccai 8080`
+and modify the URL in the [Twilio console](https://console.twilio.com/develop/phone-numbers/manage/active) to:
+https://ccai.ngrok.io/twiml
+

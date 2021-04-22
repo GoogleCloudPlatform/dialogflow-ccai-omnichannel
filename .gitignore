@@ -307,3 +307,5 @@ app.*.symbols
 !/dev/ci/**/Gemfile.lock
 
 web/dist
+
+/_media-stream-demo/.ev

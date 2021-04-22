@@ -14,8 +14,17 @@ node_port: "8080"
     "cx_agent_id": UUID ID of agent 
     "cx_location": "global" || ... https://cloud.google.com/dialogflow/cx/docs/concept/region
     "language_code": "en-US" || ... https://cloud.google.com/dialogflow/cx/docs/reference/language
+},
+"web": {
     "encoding": "AUDIO_ENCODING_LINEAR_16" || ... https://cloud.google.com/dialogflow/cx/docs/reference/rpc/google.cloud.dialogflow.cx.v3#google.cloud.dialogflow.cx.v3.AudioEncoding
-    "sample_rate_hertz": "16000" || "8000" || "44100" || "48000" ... https://cloud.google.com/speech-to-text/docs/basics 
+    "sample_rate_hertz": 16000 || 8000 || 44100 || 48000 ... https://cloud.google.com/speech-to-text/docs/basics 
+    "single_utterance": boolean
+},
+"ccai": {
+    "encoding": "AUDIO_ENCODING_LINEAR_16" || ... https://cloud.google.com/dialogflow/cx/docs/reference/rpc/google.cloud.dialogflow.cx.v3#google.cloud.dialogflow.cx.v3.AudioEncoding
+    "sample_rate_hertz": 16000 || 8000 || 44100 || 48000 ... https://cloud.google.com/speech-to-text/docs/basics 
+    "single_utterance": boolean,
+    "output_encoding": "OUTPUT_AUDIO_ENCODING_LINEAR_16"
 },
 "pubsub": {
     "topic_name": string 
@@ -49,12 +58,21 @@ const globalConfig = {
         "node_port": "8080",
         "vertical": "fsi",
         "dialogflow": {
-            "version": "cx",
+            "version": "v2beta1",
             "cx_agent_id": ".ENV",
             "cx_location": "global",
-            "language_code": "en-US",
+            "language_code": "en-US"
+        },
+        "web": {
             "encoding": "AUDIO_ENCODING_LINEAR_16",
-            "sample_rate_hertz": "16000"
+            "sample_rate_hertz": 16000,
+            "single_utterance": false
+        },
+        "ccai": {
+            "encoding": "AUDIO_ENCODING_MULAW",
+            "sample_rate_hertz": 8000,
+            "single_utterance": true,
+            "output_encoding": "OUTPUT_AUDIO_ENCODING_LINEAR_16"
         },
         "pubsub": {
             "topic_name": "dialogflow" 
