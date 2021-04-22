@@ -189,7 +189,8 @@ export class DialogflowV2Beta1Stream extends DialogflowV2Beta1 {
     public isStopped: boolean;
     public isInterrupted: boolean;
     public finalQueryResult: any;
-    private _requestStream: any; // TODO rename twilio input audio?
+    private _requestStream: PassThrough; // TODO rename twilio input audio?
+    private audioResponseStream: PassThrough; // TODO rename twilio input audio?
 
 
     constructor() {
@@ -229,13 +230,10 @@ export class DialogflowV2Beta1Stream extends DialogflowV2Beta1 {
         // Generate the streams
         this._requestStream = new PassThrough({ objectMode: true });
         const audioStream = createAudioRequestStream();
-        const detectStream = createDetectStream(
-          this.isFirst,
-          this.sessionPath,
-          this.sessionClient
-        );
+        const detectStream = this.createDetectStream();
+
         const responseStream = new PassThrough({ objectMode: true });
-        const audioResponseStream = createAudioResponseStream();
+        this.audioResponseStream = createAudioResponseStream();
         if (this.isFirst) this.isFirst = false;
         this.isInterrupted = false;
         // Pipeline is async....
@@ -244,7 +242,7 @@ export class DialogflowV2Beta1Stream extends DialogflowV2Beta1 {
           audioStream,
           detectStream,
           responseStream,
-          audioResponseStream,
+          this.audioResponseStream,
           (err) => {
             if (err) {
               this.emit('error', err);
@@ -291,63 +289,74 @@ export class DialogflowV2Beta1Stream extends DialogflowV2Beta1 {
             this.stop();
           }
         });
-        audioResponseStream.on('data', (data) => {
+        this.audioResponseStream.on('data', (data) => {
           this.emit('audio', data.toString('base64'));
         });
         // Set ready
         this.isReady = true;
       }
       return this._requestStream;
-    }
+  }
 
-    stop() {
-      console.log('Stopping Dialogflow');
-      this.isStopped = true;
-    }
-
-    finish() {
-      console.log('Disconnecting from Dialogflow');
-      this._requestStream.end();
-    }
-}
-
-// TODO MOVE THESE FUNCTIONS
-
-const intentQueryAudioInput = {
-    audioConfig: {
-      audioEncoding: 'AUDIO_ENCODING_MULAW', // TODO from globals
-      sampleRateHertz: 8000,
-      languageCode: 'en-US',
-      singleUtterance: true,
-    },
-    interimResults: false,
-};
-
-function createDetectStream(isFirst, sessionPath, sessionClient) {
-    let queryInput = intentQueryAudioInput;
-    if (isFirst) {
+  createDetectStream(){
+    const queryInput = {
+      audioConfig: {
+        audioEncoding: 'AUDIO_ENCODING_MULAW', // TODO from globals
+        sampleRateHertz: 8000,
+        languageCode: 'en-US',
+        singleUtterance: true,
+      },
+      interimResults: false,
+    };
+    if (this.isFirst) {
       queryInput['event'] = {
-          name: 'Welcome',
+          name: 'Welcome', // TODO globals
           languageCode: 'en-US', // TODO globals
       };
     }
 
     const initialStreamRequest = {
       queryInput,
-      session: sessionPath,
+      session: this.sessionPath,
       queryParams: {
-        session: sessionPath
+        session: this.sessionPath
       },
       outputAudioConfig: {
         audioEncoding: 'OUTPUT_AUDIO_ENCODING_LINEAR_16', // TODO globals
       },
     };
 
-    const detectStream = sessionClient.streamingDetectIntent();
+    const detectStream = this.sessionClient.streamingDetectIntent();
     detectStream.write(initialStreamRequest);
     return detectStream;
+  }
+
+  stop() {
+    console.log('Stopping Dialogflow');
+    this.isStopped = true;
+  }
+
+  finish() {
+    console.log('Disconnecting from Dialogflow');
+    this._requestStream.end();
+  }
 }
 
+// create audio dialogflow request stream
+function createAudioRequestStream() {
+  return new Transform({
+    objectMode: true,
+    transform: (chunk, encoding, callback) => {
+      const msg = JSON.parse(chunk.toString('utf8'));
+      // Only process media messages
+      if (msg.event !== 'media') return callback();
+      // This is mulaw/8000 base64-encoded
+      return callback(null, { inputAudio: msg.media.payload });
+    },
+  });
+}
+
+// create audio response stream for twilio
 function createAudioResponseStream() {
     return new Transform({
       objectMode: true,
@@ -360,20 +369,7 @@ function createAudioResponseStream() {
         wav.fromBuffer(chunk.outputAudio);
         wav.toSampleRate(8000);
         wav.toMuLaw();
-        return callback(null, Buffer.from(wav.getSamples()));
-      },
-    });
-}
-
-function createAudioRequestStream() {
-    return new Transform({
-      objectMode: true,
-      transform: (chunk, encoding, callback) => {
-        const msg = JSON.parse(chunk.toString('utf8'));
-        // Only process media messages
-        if (msg.event !== 'media') return callback();
-        // This is mulaw/8000 base64-encoded
-        return callback(null, { inputAudio: msg.media.payload });
+        return callback(null, Buffer.from(wav.data['samples']));
       },
     });
 }

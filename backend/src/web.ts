@@ -20,7 +20,7 @@ import { global } from './config';
 import { debug } from './debug';
 
 import * as websocketStream from 'websocket-stream/stream';
-import { DialogflowV2Beta1, DialogflowV2Beta1Stream } from './dialogflow-v2beta1-old';
+import { DialogflowV2Beta1, DialogflowV2Beta1Stream } from './dialogflow-v2beta1';
 import { DialogflowCX } from './dialogflow-cx';
 import { DialogflowCXV3Beta1 } from './dialogflow-cxv3beta1';
 import { MyPubSub } from './pubsub';

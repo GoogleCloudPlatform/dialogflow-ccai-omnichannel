@@ -53,6 +53,8 @@ app.ws("/media", (ws, req) => {
   });
   const dialogflowService = new DialogflowService();
 
+  console.log(dialogflowService);
+
   mediaStream.on("data", data => {
     dialogflowService.send(data);
   });
@@ -68,6 +70,7 @@ app.ws("/media", (ws, req) => {
   });
 
   dialogflowService.on("audio", audio => {
+    console.log('dialogflow on audio');
     const mediaMessage = {
       streamSid,
       event: "media",

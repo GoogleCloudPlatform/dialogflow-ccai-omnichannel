@@ -20,6 +20,7 @@ const intentQueryAudioInput = {
 function createDetectStream(isFirst, sessionId, sessionPath, sessionClient) {
   let queryInput = intentQueryAudioInput;
   if (isFirst) {
+    console.log('is first');
     queryInput = {
       event: {
         name: process.env.DIALOGFLOW_STARTING_EVENT_NAME,
@@ -37,6 +38,7 @@ function createDetectStream(isFirst, sessionId, sessionPath, sessionClient) {
       audioEncoding: "OUTPUT_AUDIO_ENCODING_LINEAR_16",
     },
   };
+  console.log(initialStreamRequest);
 
   const detectStream = sessionClient.streamingDetectIntent();
   detectStream.write(initialStreamRequest);
@@ -111,7 +113,9 @@ class DialogflowService extends EventEmitter {
   }
 
   startPipeline() {
+
     if (!this.isReady) {
+      console.log('start pipeline');
       // Generate the streams
       this._requestStream = new PassThrough({ objectMode: true });
       const audioStream = createAudioRequestStream();
