@@ -24,6 +24,12 @@ import * as uuid from 'uuid';
 
 import { BotResponse } from './dialogflow-bot-responses';
 
+import { EventEmitter } from 'events';
+import { PassThrough, pipeline } from 'stream';
+import { Transform } from 'stream';
+
+const struct = require('./structjson');
+
 export interface QueryInputCX {
     text?: {
         text: string,
@@ -48,15 +54,16 @@ export interface QueryInputCX {
     languageCode: string
 }
 
-export class DialogflowCX {
-    protected sessionClient: df.SessionsClient | df.v3beta1.SessionsClient;
-    private projectId: string;
-    private agentId: string;
-    private location: string;
-    private sessionId: string;
-    private sessionPath: string;
+export class DialogflowCX extends EventEmitter {
+    public sessionClient: df.SessionsClient | df.v3beta1.SessionsClient;
+    public projectId: string;
+    public agentId: string;
+    public location: string;
+    public sessionId: string;
+    public sessionPath: string;
 
     constructor() {
+        super();
         this.projectId = global['gc_project_id'];
         this.agentId = global.dialogflow['cx_agent_id'];
         this.location = global.dialogflow['cx_location'];
@@ -190,6 +197,167 @@ export class DialogflowCX {
     }
 }
 
-module.exports = {
-    DialogflowCX
+export class DialogflowCXStream extends DialogflowCX {
+    public isFirst: boolean;
+    public isBusy: boolean;
+    public isStopped: boolean;
+    public isInterrupted: boolean;
+    public audioResponseStream: Transform;
+    public finalQueryResult: any;
+    private _requestStreamPassThrough: PassThrough;
+
+    constructor() {
+      super();
+
+      // State management
+      this.isFirst = true;
+      this.isBusy = false;
+      this.isStopped = false;
+      this.isInterrupted = false;
+    }
+
+    send(message, createAudioResponseStream, queryInputObj, welcomeEvent:string, outputAudioConfig) {
+      const stream = this.startPipeline(createAudioResponseStream, queryInputObj, welcomeEvent, outputAudioConfig);
+      stream.write(message);
+    }
+
+    getFinalQueryResult() {
+      if (this.finalQueryResult) {
+        const queryResult = {
+          intent: {
+            name: this.finalQueryResult.intent.name,
+            displayName: this.finalQueryResult.intent.displayName,
+          },
+          parameters: struct.structProtoToJson(
+            this.finalQueryResult.parameters
+          ),
+        };
+        return queryResult;
+      } else {
+        return null;
+      }
+    }
+
+    startPipeline(createAudioResponseStreamCallback: Function, queryInputObj, welcomeEvent:string, outputAudioConfig) {
+        if (!this.isBusy) {
+            // Generate the streams
+            this._requestStreamPassThrough = new PassThrough({ objectMode: true });
+            const audioStream = this.createAudioRequestStream();
+            const detectStream = this.createDetectStream(queryInputObj, welcomeEvent, outputAudioConfig);
+
+            const responseStreamPassThrough = new PassThrough({ objectMode: true });
+            this.audioResponseStream = createAudioResponseStreamCallback();
+            if (this.isFirst) this.isFirst = false;
+            this.isInterrupted = false;
+            // Pipeline is async....
+            pipeline(
+                this._requestStreamPassThrough,
+                audioStream,
+                detectStream,
+                responseStreamPassThrough,
+                this.audioResponseStream,
+                (err) => {
+                    if (err) {
+                        this.emit('error', err);
+                    }
+                    this.isBusy = false;
+                }
+            );
+
+            this._requestStreamPassThrough.on('data', (data) => {
+                const msg = JSON.parse(data.toString('utf8'));
+                if (msg.event === 'start') {
+                    debug.log(`Captured call ${msg.start.callSid}`);
+                    this.emit('callStarted', {
+                        callSid: msg.start.callSid,
+                        streamSid: msg.start.streamSid
+                    });
+                }
+                if (msg.event === 'mark') {
+                    debug.log(`Mark received ${msg.mark.name}`);
+                    if (msg.mark.name === 'endOfInteraction') {
+                        this.emit('endOfInteraction', this.getFinalQueryResult());
+                    }
+                }
+            });
+
+            responseStreamPassThrough.on('data', (data) => {
+                if (
+                    data.recognitionResult &&
+                    data.recognitionResult.transcript &&
+                    data.recognitionResult.transcript.length > 0
+                ) {
+                    this.emit('interrupted', data.recognitionResult.transcript);
+                }
+                if (
+                    data.queryResult &&
+                    data.queryResult.intent &&
+                    data.queryResult.intent.endInteraction // TODO response.queryResult.responseMessages[0].endInteraction
+                ) {
+                    debug.log(
+                    `Ending interaction with: ${data.queryResult.fulfillmentText}`
+                    );
+                    this.finalQueryResult = data.queryResult;
+                    this.stop();
+                }
+            });
+            this.audioResponseStream.on('data', (data) => {
+                this.emit('audio', data.toString('base64'));
+                this.isBusy = false;
+            });
+            // Set ready
+            this.isBusy = true;
+        }
+    return this._requestStreamPassThrough;
+  }
+
+    createDetectStream(queryInputObj, welcomeEvent:string, outputAudioConfig){
+        let queryInput = {};
+        if (this.isFirst) { 
+            queryInput['event'] = {
+                event: welcomeEvent
+            };
+            queryInput['languageCode'] = global.dialogflow['language_code'];
+        }
+
+        queryInput = {...queryInput, ...queryInputObj }
+
+        const initialStreamRequest = {
+            queryInput,
+            session: this.sessionPath,
+            queryParams: {
+            session: this.sessionPath
+            },
+            outputAudioConfig
+        };
+
+        const detectStream = this.sessionClient.streamingDetectIntent();
+        detectStream.write(initialStreamRequest);
+        return detectStream;
+    }
+
+    // create audio dialogflow request stream
+    // STT
+    createAudioRequestStream() {
+        return new Transform({
+            objectMode: true,
+            transform: (chunk, encoding, callback) => {
+                const msg = JSON.parse(chunk.toString('utf8'));
+                // Only process media messages
+                if (msg.event !== 'media') return callback();
+                // For Twilio, this is mulaw/8000 base64-encoded
+                return callback(null, { queryInput: { audio: { audio: msg.media.payload }}});
+            }
+        });
+    }
+
+    stop() {
+        debug.log('Stopping Dialogflow');
+        this.isStopped = true;
+    }
+
+    finish() {
+        debug.log('Disconnecting from Dialogflow');
+        this._requestStreamPassThrough.end();
+    }
 }

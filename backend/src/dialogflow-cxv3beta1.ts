@@ -16,6 +16,7 @@
  * =============================================================================
  */
 
+import { global } from './config';
 import * as df from '@google-cloud/dialogflow-cx';
 import * as cx from './dialogflow-cx';
 
@@ -28,6 +29,10 @@ export class DialogflowCXV3Beta1 extends cx.DialogflowCX {
     // TODO methods that are different for CX V3beta1 if there are any
 }
 
-module.exports = {
-    DialogflowCXV3Beta1
+export class DialogflowCXV3Beta1Stream extends cx.DialogflowCXStream {
+    constructor(){
+        super(); // calling Parent's constructor
+    }
+
+    // TODO methods that are different for CX V3beta1 if there are any
 }

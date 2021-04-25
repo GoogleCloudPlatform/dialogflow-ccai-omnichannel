@@ -21,8 +21,8 @@ import { debug } from './debug';
 
 import * as websocketStream from 'websocket-stream/stream';
 import { DialogflowV2Beta1, DialogflowV2Beta1Stream } from './dialogflow-v2beta1';
-import { DialogflowCX } from './dialogflow-cx';
-import { DialogflowCXV3Beta1 } from './dialogflow-cxv3beta1';
+import { DialogflowCX, DialogflowCXStream } from './dialogflow-cx';
+import { DialogflowCXV3Beta1, DialogflowCXV3Beta1Stream } from './dialogflow-cxv3beta1';
 import { MyPubSub } from './pubsub';
 import { Transform } from 'stream';
 import { WaveFile } from 'wavefile';
@@ -36,9 +36,9 @@ export class ContactCenterAi {
 
     constructor() {
          if(df === 'cx') {
-             this.dialogflow = new DialogflowCX();
+             this.dialogflow = new DialogflowCXStream();
          } else if(df === 'cxv3beta1') {
-             this.dialogflow = new DialogflowCXV3Beta1();
+             this.dialogflow = new DialogflowCXV3Beta1Stream();
          } else {
              this.dialogflow = new DialogflowV2Beta1Stream();
          }
@@ -66,23 +66,42 @@ export class ContactCenterAi {
           binary: false
         });
 
-        const outputAudioConfig = {
-          audioEncoding: global.twilio['output_encoding'],
-        };
-        const welcomeEvent = {
-          name: global.twilio['welcome_event'],
-          languageCode: global.dialogflow['language_code'],
+        let welcomeEvent = global.twilio['welcome_event'];
+
+        const queryInputObj = {};
+        const synthesizeSpeechConfig = {
+          speakingRate: global.twilio['speaking_rate'],
+          pitch: global.twilio['pitch'],
+          volumeGainDb: global.twilio['volume_gain_db'],
+          voice: {
+            name: global.twilio['voice_name'],
+            ssmlGender: global.twilio['ssml_gender'],
+          }
         };
 
-        const queryInputObj = {
-          audioConfig: {
+        const outputAudioConfig = {
+          audioEncoding: global.twilio['output_encoding'],
+          synthesizeSpeechConfig
+        };
+
+        if(df === 'cx'){
+          queryInputObj['audio'] = {
+            config: {
+              audioEncoding: global.twilio['input_encoding'],
+              sampleRateHertz: global.twilio['sample_rate_hertz'],
+              singleUtterance: global.twilio['single_utterance'],
+            }
+          };
+          queryInputObj['languageCode'] = global.dialogflow['language_code']; 
+        } else {
+          queryInputObj['audioConfig'] = {
             audioEncoding: global.twilio['input_encoding'],
             sampleRateHertz: global.twilio['sample_rate_hertz'],
             languageCode: global.dialogflow['language_code'],
             singleUtterance: global.twilio['single_utterance'],
-          },
-          interimResults: global.twilio['interim_results'],
-        };
+          };
+          queryInputObj['interimResults'] = global.twilio['interim_results'];
+        }
 
         mediaStream.on('data', data => {
           this.dialogflow.send(data, this.createAudioResponseStream, queryInputObj, welcomeEvent, outputAudioConfig);
@@ -161,17 +180,26 @@ export class ContactCenterAi {
         });
     }
 
-    // create audio response stream for twilio
+    // Create audio response stream for twilio
+    // Convert the LINEAR 16 Wavefile to 8000/mulaw     
+    // TTS
     createAudioResponseStream() {
       return new Transform({
         objectMode: true,
         transform: (chunk, encoding, callback) => {
-          if (!chunk.outputAudio || chunk.outputAudio.length === 0) {
-            return callback();
-          }
-          // Convert the LINEAR 16 Wavefile to 8000/mulaw
           const wav = new WaveFile();
-          wav.fromBuffer(chunk.outputAudio);
+          if(df === "cx"){
+            if (!chunk.detectIntentResponse || !chunk.detectIntentResponse.outputAudio || chunk.detectIntentResponse.outputAudio.length === 0) {
+              return callback();
+            }
+            wav.fromBuffer(chunk.detectIntentResponse.outputAudio);
+          } else {
+            if (!chunk.outputAudio || chunk.outputAudio.length === 0) {
+              return callback();
+            }
+            wav.fromBuffer(chunk.outputAudio);
+          }
+
           wav.toSampleRate(8000);
           wav.toMuLaw();
           return callback(null, Buffer.from(wav.data['samples']));

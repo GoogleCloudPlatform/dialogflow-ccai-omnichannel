@@ -128,48 +128,8 @@ Buffer(157568) [Uint8Array] [
 
         // const dialogflowService = new DialogflowService();
         mediaStream.on('data', data => {
-            // debug.log(data); // <-- I am not so sure if this is the correct data we pass in.
-            if (isArrayBufferView(data)) {
-                const stream = this.dialogflow.startPipeline(
-                    this.streamRequest, this.streamOutput,
-                    this.createAudioResponseStream, this.createAudioRequestStream);
-                stream.write(data);
-            }
+            
         });
-    }
-
-    // this is the await pump part
-    // https://github.com/googleapis/nodejs-dialogflow/blob/master/samples/detect.js
-    createAudioResponseStream() {
-        /*return new Transform({
-            objectMode: true,
-            transform: (chunk, encoding, callback) => {
-            if (!chunk.outputAudio || chunk.outputAudio.length === 0) {
-                return callback();
-            }
-            // Convert the LINEAR 16 Wavefile to 8000/mulaw
-            const wav = new WaveFile();
-            wav.fromBuffer(chunk.outputAudio);
-            wav.toSampleRate(8000);
-            wav.toMuLaw();
-            return callback(null, Buffer.from(wav.getSamples()));
-            },
-        });*/
-    }
-        // this is the await pump part
-    // https://github.com/googleapis/nodejs-dialogflow/blob/master/samples/detect.js
-    createAudioRequestStream() {
-        /*return new Transform({
-            objectMode: true,
-            transform: (chunk, encoding, callback) => {
-            console.log(chunk); // TODO <--- and this is were Web breaks
-            const msg = JSON.parse(chunk.toString('utf8'));
-            // Only process media messages
-            if (msg.event !== 'media') return callback();
-            // This is mulaw/8000 base64-encoded
-            return callback(null, { inputAudio: msg.media.payload });
-            },
-        });*/
     }
 }
 

@@ -44,6 +44,11 @@ node_port: "8080"
     "single_utterance": true,
     "interim_results": false,
     "welcome_event": "Welcome"
+    "speaking_rate": 1.0, // [0.25, 4.0] - 1 is normal, 2 is twice as fast
+    "pitch": 1.0, /// Speaking pitch, in the range [-20.0, 20.0]. 20 means increase 20 semitones from the original pitch. -20 means decrease 20 semitones from the original pitch.
+    "volume_gain_db": 0.0, // //Volume gain (in dB) of the normal native volume supported by the specific voice, in the range [-96.0, 16.0].
+    "voice_name": "en-US-Standard-H", ////https://cloud.google.com/text-to-speech/docs/voices
+    "ssml_gender": "SSML_VOICE_GENDER_FEMALE"
 },
 "angular": {
     "angular_port": "4200"
@@ -58,7 +63,7 @@ const globalConfig = {
         "node_port": "8080",
         "vertical": "fsi",
         "dialogflow": {
-            "version": "v2beta1",
+            "version": "cx",
             "cx_agent_id": ".ENV",
             "cx_location": "global",
             "language_code": "en-US"
@@ -83,7 +88,12 @@ const globalConfig = {
             "sample_rate_hertz": 8000,
             "single_utterance": true,
             "interim_results": false,
-            "welcome_event": "Welcome"
+            "welcome_event": "WELCOME",
+            "speaking_rate": 1.0,
+            "pitch": 1.0,
+            "volume_gain_db": 0.0,
+            "voice_name": "en-US-Standard-H",
+            "ssml_gender": "SSML_VOICE_GENDER_FEMALE"
         },
         "angular": {
             "angular_port": "4200"

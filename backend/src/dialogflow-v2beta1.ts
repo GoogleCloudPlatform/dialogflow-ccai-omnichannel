@@ -184,7 +184,7 @@
 
 export class DialogflowV2Beta1Stream extends DialogflowV2Beta1 {
     public isFirst: boolean;
-    public isReady: boolean;
+    public isBusy: boolean;
     public isStopped: boolean;
     public isInterrupted: boolean;
     public audioResponseStream: Transform;
@@ -196,12 +196,12 @@ export class DialogflowV2Beta1Stream extends DialogflowV2Beta1 {
 
       // State management
       this.isFirst = true;
-      this.isReady = false;
+      this.isBusy = false;
       this.isStopped = false;
       this.isInterrupted = false;
     }
 
-    send(message, createAudioResponseStream, queryInputObj, welcomeEvent, outputAudioConfig) {
+    send(message, createAudioResponseStream, queryInputObj, welcomeEvent:string, outputAudioConfig) {
       const stream = this.startPipeline(createAudioResponseStream, queryInputObj, welcomeEvent, outputAudioConfig);
       stream.write(message);
     }
@@ -223,8 +223,8 @@ export class DialogflowV2Beta1Stream extends DialogflowV2Beta1 {
       }
     }
 
-    startPipeline(createAudioResponseStream: Function, queryInputObj, welcomeEvent, outputAudioConfig) {
-      if (!this.isReady) {
+    startPipeline(createAudioResponseStream: Function, queryInputObj, welcomeEvent:string, outputAudioConfig) {
+      if (!this.isBusy) {
         // Generate the streams
         this._requestStreamPassThrough = new PassThrough({ objectMode: true });
         const audioStream = this.createAudioRequestStream();
@@ -246,7 +246,7 @@ export class DialogflowV2Beta1Stream extends DialogflowV2Beta1 {
               this.emit('error', err);
             }
             // Update the state so as to create a new pipeline
-            this.isReady = false;
+            this.isBusy = false;
           }
         );
 
@@ -289,18 +289,22 @@ export class DialogflowV2Beta1Stream extends DialogflowV2Beta1 {
         });
         this.audioResponseStream.on('data', (data) => {
           this.emit('audio', data.toString('base64'));
+          this.isBusy = false;
         });
-        // Set ready
-        this.isReady = true;
+        this.isBusy = true;
       }
       return this._requestStreamPassThrough;
   }
 
-  createDetectStream(queryInputObj, welcomeEvent, outputAudioConfig){
+  createDetectStream(queryInputObj, welcomeEvent:string, outputAudioConfig){
     let queryInput = {};
     if (this.isFirst) {
-      queryInput['event'] = welcomeEvent;
+      queryInput['event'] = {
+        name: welcomeEvent,
+        languageCode: global.dialogflow['language_code']
+      }
     }
+
     queryInput = {...queryInput, ...queryInputObj }
 
     const initialStreamRequest = {
