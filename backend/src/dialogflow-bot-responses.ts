@@ -26,6 +26,7 @@ export interface BotResponse {
     dateTimeStamp: number,
     query?: string,
     text?: string,
+    fulfillmentText?: string,
     sentiment?: {
         score: number,
         magnitude: number

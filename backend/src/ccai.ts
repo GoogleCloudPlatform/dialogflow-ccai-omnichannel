@@ -33,6 +33,7 @@ const df = global.dialogflow['version'] || 'v2beta1';
 export class ContactCenterAi {
     private pubsub: MyPubSub;
     private dialogflow: any;
+    private twilio: any;
 
     constructor() {
          if(df === 'cx') {
@@ -42,22 +43,46 @@ export class ContactCenterAi {
          } else {
              this.dialogflow = new DialogflowV2Beta1Stream();
          }
+
+         try {
+            if(debug){
+              this.twilio = new Twilio(global.twilio['account_sid'], global.twilio['auth_token'], {
+                  logLevel: 'debug'
+              });
+            } else {
+              this.twilio = new Twilio(global.twilio['account_sid'], global.twilio['auth_token']);
+            }
+         } catch(err) {
+           if (global.twilio['account_sid'] === undefined) {
+             debug.error('Ensure that you have set your environment variable TWILIO_ACCOUNT_SID. This can be copied from https://twilio.com/console');
+             debug.log('Exiting');
+             return;
+           }
+           debug.error(err);
+         }
+    }
+
+    async sms(query:string, phoneNr:string){
+      const botResponse = await this.dialogflow.detectIntentText(query);
+
+      // https://github.com/Gurenax/node-twilio-sms
+      // https://www.twilio.com/docs/sms/send-messages
+      this.twilio.messages.create(
+        {
+          to: phoneNr, // Recipient's number
+          from: global.twilio['phone_number'],
+          body: botResponse.fulfillmentText // Message to Recipient
+        }).then(function(message){
+          // TODO PUBSUB
+          debug.log(message);
+          return message;
+        }).catch(function(error){
+          debug.error(error);
+          return error;
+        });
     }
 
     stream(ws){
-        let client;
-        try {
-            client = new Twilio(global.twilio['account_sid'], global.twilio['auth_token'], {
-                logLevel: 'debug'
-            });
-        } catch(err) {
-          if (global.twilio['account_sid'] === undefined) {
-            debug.error('Ensure that you have set your environment variable TWILIO_ACCOUNT_SID. This can be copied from https://twilio.com/console');
-            debug.log('Exiting');
-            return;
-          }
-          debug.error(err);
-        }
         // This will get populated on callStarted
         let callSid;
         let streamSid;
@@ -170,7 +195,7 @@ export class ContactCenterAi {
               response.hangup();
             }
             const twiml = response.toString();
-            return client
+            return this.twilio
               .calls(callSid)
               .update({ twiml })
               .then(call =>

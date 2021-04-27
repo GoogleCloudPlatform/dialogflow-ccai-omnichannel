@@ -165,6 +165,7 @@ export class DialogflowCX extends EventEmitter {
                 query: response.queryResult.query,
                 text: response.queryResult.text, // override
                 responseMessages: response.queryResult.responseMessages,
+                fulfillmentText: response.queryResult.responseMessages[0].text.text[0],
                 webhookPayloads: response.queryResult.webhookPayloads,
                 webhookStatuses: response.queryResult.webhookStatuses,
                 outputAudio: response.outputAudio,

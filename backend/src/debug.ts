@@ -22,7 +22,7 @@ export class Debug {
     private debug: boolean;
 
     constructor() {
-        if(global.debug === 'true') {
+        if(global.debug === true) {
             this.debug = true;
         } else {
             this.debug = false;

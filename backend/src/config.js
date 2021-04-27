@@ -4,7 +4,7 @@ dotenv.config();
 /* environment configs 
 config_id: "development" || "production"
 gc_project_id: string
-debug: "true" || "false"
+debug: true
 vertical: "fsi" || "healthcare" || "retail"
 server_url: url or ngrok tunnel
 node_port: "8080"
@@ -57,7 +57,7 @@ node_port: "8080"
 const globalConfig = {
     "development": {
         "config_id": "development",
-        "debug": "true",
+        "debug": true,
         "gc_project_id": ".ENV",
         "server_url": ".ENV",
         "node_port": "8080",

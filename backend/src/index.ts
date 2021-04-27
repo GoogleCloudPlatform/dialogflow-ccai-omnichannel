@@ -80,8 +80,6 @@ export class App {
         // Mobile Channel Route
         this.app.post('/mobile/', async function(req, res) {
             const text = req.body.msg;
-            console.log(req.body);
-            console.log(text);
             const responses = await this.web.detectIntentText(text);
             res.json({success: 'true', responses});
         });
@@ -124,7 +122,16 @@ export class App {
             this.web.stream(ws);
         });
 
-        // Twilio Start Route
+        // Twilio Start Routes
+        this.app.post('/sms', (req, res) => {
+            const body = req.body;
+            const query = body.Body;
+            const phoneNr = body.From;
+            // const phoneNrCountry = body.FromCountry
+            const response = this.ccai.sms(query, phoneNr);
+
+            res.json({response: response });
+        });
         this.app.get('/twiml', (req, res) => {
             res.json({success: 'true'});
         });
@@ -132,12 +139,11 @@ export class App {
             res.setHeader('Content-Type', 'application/xml');
             // ngrok sets x-original-host header
             const host = req.headers['x-original-host'] || req.hostname;
-            console.log(host);
             res.render('twiml', { host, layout: false });
         });
         // Twilio Ws Media Stream Route
         this.app.ws('/media', (ws, req) => {
-            console.log('ws phone connected');
+            debug.log('ws phone connected');
             this.ccai.stream(ws);
         });
     }

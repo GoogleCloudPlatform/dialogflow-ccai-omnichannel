@@ -140,6 +140,7 @@
                  sentiment: response.queryResult.sentimentAnalysisResult,
                  text: response.queryResult.queryText, // override
                  responseMessages: response.queryResult.fulfillmentMessages,
+                 fulfillmentText: response.queryResult.responseMessages[0].text.text[0],
                  webhookPayloads: response.queryResult.webhookPayload,
                  webhookStatuses: response.queryResult.webhookStatus,
                  webhookSource: response.queryResult.webhookSource,
