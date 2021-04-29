@@ -1,0 +1,44 @@
+apiVersion: "extensions/v1beta1"
+kind: "Deployment"
+metadata:
+  name: "chatserver"
+  namespace: "default"
+  labels:
+    app: "chatserver"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "chatserver"
+  template:
+    metadata:
+      labels:
+        app: "chatserver"
+    spec:
+      containers:
+      - name: "chatserver-image"
+        image: "gcr.io/${PROJECT_ID}/chatserver-image:latest"
+        imagePullPolicy: Always
+        env:
+          - name: "GOOGLE_APPLICATION_CREDENTIALS"
+            value: /var/secrets/master.json
+          - name: "GCLOUD_PROJECT"
+            valueFrom:
+              configMapKeyRef:
+                name: chatserver-config
+                key: GCLOUD_PROJECT
+          - name: "DEV_AGENT_PROJECT_ID"
+            valueFrom:
+              configMapKeyRef:
+                name: chatserver-config
+                key: DEV_AGENT_PROJECT_ID
+        volumeMounts:
+          - name: mykeys
+            mountPath: /var/secrets/
+            readOnly: true
+        ports:
+        - containerPort: 8080  
+      volumes:
+      - name: mykeys
+        secret:
+          secretName: credentials
