@@ -16,10 +16,8 @@
  * =============================================================================
  */
 
- import { global } from './config';
  import * as df from '@google-cloud/dialogflow';
  import * as uuid from 'uuid';
- import { debug } from './debug';
  import { BotResponse } from './dialogflow-bot-responses';
  import { EventEmitter } from 'events';
  import { PassThrough, pipeline } from 'stream';
@@ -49,16 +47,20 @@
      public projectId: string;
      public sessionId: string;
      public sessionPath: string;
+     public config: any;
+     public debug: any;
 
-     constructor() {
+     constructor(global) {
          super();
+         this.config = global;
+         this.debug = global.debugger;
          this.projectId = global['gc_project_id'];
          this.sessionId = uuid.v4();
          this.sessionClient = new df.v2beta1.SessionsClient();
          this.sessionPath = this.sessionClient.projectAgentSessionPath(this.projectId, this.sessionId);
      }
 
-     detectIntentText(query: string, lang = global.dialogflow['language_code'], contexts?: Array<string>) {
+     detectIntentText(query: string, lang = this.config.dialogflow['language_code'], contexts?: Array<string>) {
          const qInput:QueryInputV2Beta1 = {
              text: {
                text: query,
@@ -69,7 +71,7 @@
          return this.detectIntent(qInput, query, contexts);
      }
 
-     detectIntentEvent(eventName: string, lang = global.dialogflow['language_code'], params = null) {
+     detectIntentEvent(eventName: string, lang = this.config.dialogflow['language_code'], params = null) {
          const qInput:QueryInputV2Beta1 = {
              event: {
                  name: eventName,
@@ -82,11 +84,11 @@
          return this.detectIntent(qInput, eventName);
      }
 
-     detectIntentAudioStream(stream:any, lang = global.dialogflow['lang_code']){
+     detectIntentAudioStream(stream:any, lang = this.config.dialogflow['lang_code']){
          const qInput:QueryInputV2Beta1 = {
              audioConfig: {
-               audioEncoding: global.dialogflow['encoding'],
-               sampleRateHertz: global.dialogflow['sample_rate_hertz'],
+               audioEncoding: this.config.dialogflow['encoding'],
+               sampleRateHertz: this.config.dialogflow['sample_rate_hertz'],
                languageCode: lang
              },
          };
@@ -108,13 +110,13 @@
          var botResponse;
          try {
              const [response] = await this.sessionClient.detectIntent(request);
-             // debug.log(response);
+             // this.debug.log(response);
              botResponse = this.beautifyResponses(response, input);
          } catch(e) {
-             debug.error(e);
+             this.debug.error(e);
              botResponse = this.beautifyResponses(null, input, e);
          }
-         // debug.log(botResponse);
+         // this.debug.log(botResponse);
          return botResponse;
      }
 
@@ -126,10 +128,10 @@
              projectId: this.projectId,
              dateTimeStamp: new Date().getTime()/1000,
              text: input, // in case DF doesn't respond anything, we can still capture these
-             languageCode: global.dialogflow['language_code'], // in case DF doesn't respond anything, we can still capture these
+             languageCode: this.config.dialogflow['language_code'], // in case DF doesn't respond anything, we can still capture these
          }
          if(e) {
-             debug.error(e);
+             this.debug.error(e);
              dialogflowConfig['error'] = e.message;
          }
 
@@ -192,8 +194,8 @@ export class DialogflowV2Beta1Stream extends DialogflowV2Beta1 {
     public finalQueryResult: any;
     private _requestStreamPassThrough: PassThrough;
 
-    constructor() {
-      super();
+    constructor(global) {
+      super(global);
 
       // State management
       this.isFirst = true;
@@ -224,7 +226,7 @@ export class DialogflowV2Beta1Stream extends DialogflowV2Beta1 {
       }
     }
 
-    startPipeline(createAudioResponseStream: Function, queryInputObj, welcomeEvent:string, outputAudioConfig) {
+    startPipeline(createAudioResponseStream: any, queryInputObj, welcomeEvent:string, outputAudioConfig) {
       if (!this.isBusy) {
         // Generate the streams
         this._requestStreamPassThrough = new PassThrough({ objectMode: true });
@@ -254,14 +256,14 @@ export class DialogflowV2Beta1Stream extends DialogflowV2Beta1 {
         this._requestStreamPassThrough.on('data', (data) => {
           const msg = JSON.parse(data.toString('utf8'));
           if (msg.event === 'start') {
-            debug.log(`Captured call ${msg.start.callSid}`);
+            this.debug.log(`Captured call ${msg.start.callSid}`);
             this.emit('callStarted', {
               callSid: msg.start.callSid,
               streamSid: msg.start.streamSid
             });
           }
           if (msg.event === 'mark') {
-            debug.log(`Mark received ${msg.mark.name}`);
+            this.debug.log(`Mark received ${msg.mark.name}`);
             if (msg.mark.name === 'endOfInteraction') {
               this.emit('endOfInteraction', this.getFinalQueryResult());
             }
@@ -281,7 +283,7 @@ export class DialogflowV2Beta1Stream extends DialogflowV2Beta1 {
             data.queryResult.intent &&
             data.queryResult.intent.endInteraction
           ) {
-            debug.log(
+            this.debug.log(
               `Ending interaction with: ${data.queryResult.fulfillmentText}`
             );
             this.finalQueryResult = data.queryResult;
@@ -302,7 +304,7 @@ export class DialogflowV2Beta1Stream extends DialogflowV2Beta1 {
     if (this.isFirst) {
       queryInput['event'] = {
         name: welcomeEvent,
-        languageCode: global.dialogflow['language_code']
+        languageCode: this.config.dialogflow['language_code']
       }
     }
 
@@ -337,12 +339,12 @@ export class DialogflowV2Beta1Stream extends DialogflowV2Beta1 {
   }
 
   stop() {
-    debug.log('Stopping Dialogflow');
+    this.debug.log('Stopping Dialogflow');
     this.isStopped = true;
   }
 
   finish() {
-    debug.log('Disconnecting from Dialogflow');
+    this.debug.log('Disconnecting from Dialogflow');
     this._requestStreamPassThrough.end();
   }
 }

@@ -16,9 +16,6 @@
  * limitations under the License.
  * =============================================================================
  */
-import { global } from './config';
-import { debug } from './debug';
-
 import * as websocketStream from 'websocket-stream/stream';
 import { DialogflowV2Beta1, DialogflowV2Beta1Stream } from './dialogflow-v2beta1';
 import { DialogflowCX, DialogflowCXStream } from './dialogflow-cx';
@@ -28,38 +25,43 @@ import { Transform } from 'stream';
 import { WaveFile } from 'wavefile';
 
 const Twilio = require('twilio');
-const df = global.dialogflow['version'] || 'v2beta1';
+var df;
 
 export class ContactCenterAi {
     private pubsub: MyPubSub;
     private dialogflow: any;
     private twilio: any;
+    public config: any;
+    public debug: any;
 
-    constructor() {
-         if(df === 'cx') {
-             this.dialogflow = new DialogflowCXStream();
-         } else if(df === 'cxv3beta1') {
-             this.dialogflow = new DialogflowCXV3Beta1Stream();
-         } else {
-             this.dialogflow = new DialogflowV2Beta1Stream();
-         }
+    constructor(global) {
+      this.config = global;
+      this.debug = global.debugger;
+      df = this.config.dialogflow['version'] || 'v2beta1';
+      if(df === 'cx') {
+          this.dialogflow = new DialogflowCXStream(global);
+      } else if(df === 'cxv3beta1') {
+          this.dialogflow = new DialogflowCXV3Beta1Stream(global);
+      } else {
+          this.dialogflow = new DialogflowV2Beta1Stream(global);
+      }
 
-         try {
-            if(debug){
-              this.twilio = new Twilio(global.twilio['account_sid'], global.twilio['auth_token'], {
-                  logLevel: 'debug'
-              });
-            } else {
-              this.twilio = new Twilio(global.twilio['account_sid'], global.twilio['auth_token']);
-            }
-         } catch(err) {
-           if (global.twilio['account_sid'] === undefined) {
-             debug.error('Ensure that you have set your environment variable TWILIO_ACCOUNT_SID. This can be copied from https://twilio.com/console');
-             debug.log('Exiting');
-             return;
-           }
-           debug.error(err);
-         }
+      try {
+          if(this.debug){
+            this.twilio = new Twilio(global.twilio['account_sid'], global.twilio['auth_token'], {
+                logLevel: 'debug'
+            });
+          } else {
+            this.twilio = new Twilio(global.twilio['account_sid'], global.twilio['auth_token']);
+          }
+      } catch(err) {
+        if (global.twilio['account_sid'] === undefined) {
+          this.debug.error('Ensure that you have set your environment variable TWILIO_ACCOUNT_SID. This can be copied from https://twilio.com/console');
+          this.debug.log('Exiting');
+          return;
+        }
+        this.debug.error(err);
+      }
     }
 
     async sms(query:string, phoneNr:string){
@@ -70,14 +72,14 @@ export class ContactCenterAi {
       this.twilio.messages.create(
         {
           to: phoneNr, // Recipient's number
-          from: global.twilio['phone_number'],
+          from: this.config.twilio['phone_number'],
           body: botResponse.fulfillmentText // Message to Recipient
         }).then(function(message){
           // TODO PUBSUB
-          debug.log(message);
+          this.debug.log(message);
           return message;
         }).catch(function(error){
-          debug.error(error);
+          this.debug.error(error);
           return error;
         });
     }
@@ -91,41 +93,41 @@ export class ContactCenterAi {
           binary: false
         });
 
-        let welcomeEvent = global.twilio['welcome_event'];
+        let welcomeEvent = this.config.twilio['welcome_event'];
 
         const queryInputObj = {};
         const synthesizeSpeechConfig = {
-          speakingRate: global.twilio['speaking_rate'],
-          pitch: global.twilio['pitch'],
-          volumeGainDb: global.twilio['volume_gain_db'],
+          speakingRate: this.config.twilio['speaking_rate'],
+          pitch: this.config.twilio['pitch'],
+          volumeGainDb: this.config.twilio['volume_gain_db'],
           voice: {
-            name: global.twilio['voice_name'],
-            ssmlGender: global.twilio['ssml_gender'],
+            name: this.config.twilio['voice_name'],
+            ssmlGender: this.config.twilio['ssml_gender'],
           }
         };
 
         const outputAudioConfig = {
-          audioEncoding: global.twilio['output_encoding'],
+          audioEncoding: this.config.twilio['output_encoding'],
           synthesizeSpeechConfig
         };
 
-        if(df === 'cx'){
+        if(this.config.dialogflow['version'] === 'cx'){
           queryInputObj['audio'] = {
             config: {
-              audioEncoding: global.twilio['input_encoding'],
-              sampleRateHertz: global.twilio['sample_rate_hertz'],
-              singleUtterance: global.twilio['single_utterance'],
+              audioEncoding: this.config.twilio['input_encoding'],
+              sampleRateHertz: this.config.twilio['sample_rate_hertz'],
+              singleUtterance: this.config.twilio['single_utterance'],
             }
           };
-          queryInputObj['languageCode'] = global.dialogflow['language_code']; 
+          queryInputObj['languageCode'] = this.config.dialogflow['language_code'];
         } else {
           queryInputObj['audioConfig'] = {
-            audioEncoding: global.twilio['input_encoding'],
-            sampleRateHertz: global.twilio['sample_rate_hertz'],
-            languageCode: global.dialogflow['language_code'],
-            singleUtterance: global.twilio['single_utterance'],
+            audioEncoding: this.config.twilio['input_encoding'],
+            sampleRateHertz: this.config.twilio['sample_rate_hertz'],
+            languageCode: this.config.dialogflow['language_code'],
+            singleUtterance: this.config.twilio['single_utterance'],
           };
-          queryInputObj['interimResults'] = global.twilio['interim_results'];
+          queryInputObj['interimResults'] = this.config.twilio['interim_results'];
         }
 
         mediaStream.on('data', data => {
@@ -133,7 +135,7 @@ export class ContactCenterAi {
         });
 
         mediaStream.on('finish', () => {
-          debug.log('MediaStream has finished');
+          this.debug.log('MediaStream has finished');
           this.dialogflow.finish();
         });
 
@@ -151,7 +153,7 @@ export class ContactCenterAi {
             }
           };
           const mediaJSON = JSON.stringify(mediaMessage);
-          debug.log(`Sending audio (${audio.length} characters)`);
+          this.debug.log(`Sending audio (${audio.length} characters)`);
           mediaStream.write(mediaJSON);
           // If this is the last message
           if (this.dialogflow.isStopped) {
@@ -163,15 +165,15 @@ export class ContactCenterAi {
               }
             };
             const markJSON = JSON.stringify(markMessage);
-            //console.log('Sending end of interaction mark', markJSON);
+            // console.log('Sending end of interaction mark', markJSON);
             mediaStream.write(markJSON);
           }
         });
 
         this.dialogflow.on('interrupted', transcript => {
-            debug.log(`Interrupted with "${transcript}"`);
+          this.debug.log(`Interrupted with "${transcript}"`);
             if (!this.dialogflow.isInterrupted) {
-              debug.log('Clearing...');
+              this.debug.log('Clearing...');
               const clearMessage = {
                 event: 'clear',
                 streamSid
@@ -199,22 +201,23 @@ export class ContactCenterAi {
               .calls(callSid)
               .update({ twiml })
               .then(call =>
-                debug.log(`Updated Call(${callSid}) with twiml: ${twiml}`)
+                this.debug.log(`Updated Call(${callSid}) with twiml: ${twiml}`)
               )
-              .catch(err => debug.error(err));
+              .catch(err => this.debug.error(err));
         });
     }
 
     // Create audio response stream for twilio
-    // Convert the LINEAR 16 Wavefile to 8000/mulaw     
+    // Convert the LINEAR 16 Wavefile to 8000/mulaw
     // TTS
     createAudioResponseStream() {
       return new Transform({
         objectMode: true,
         transform: (chunk, encoding, callback) => {
           const wav = new WaveFile();
-          if(df === "cx"){
-            if (!chunk.detectIntentResponse || !chunk.detectIntentResponse.outputAudio || chunk.detectIntentResponse.outputAudio.length === 0) {
+          if(df === 'cx'){
+            if (!chunk.detectIntentResponse
+              || !chunk.detectIntentResponse.outputAudio || chunk.detectIntentResponse.outputAudio.length === 0) {
               return callback();
             }
             wav.fromBuffer(chunk.detectIntentResponse.outputAudio);

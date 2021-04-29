@@ -15,14 +15,12 @@
  * limitations under the License.
  * =============================================================================
  */
-
-import { global } from './config';
 import * as df from '@google-cloud/dialogflow-cx';
 import * as cx from './dialogflow-cx';
 
 export class DialogflowCXV3Beta1 extends cx.DialogflowCX {
-    constructor(){
-        super(); // calling Parent's constructor
+    constructor(global){
+        super(global); // calling Parent's constructor
         this.sessionClient = new df.v3beta1.SessionsClient();
     }
 
@@ -30,8 +28,8 @@ export class DialogflowCXV3Beta1 extends cx.DialogflowCX {
 }
 
 export class DialogflowCXV3Beta1Stream extends cx.DialogflowCXStream {
-    constructor(){
-        super(); // calling Parent's constructor
+    constructor(global){
+        super(global); // calling Parent's constructor
     }
 
     // TODO methods that are different for CX V3beta1 if there are any

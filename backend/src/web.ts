@@ -16,34 +16,34 @@
  * limitations under the License.
  * =============================================================================
  */
-import { global } from './config';
-import { debug } from './debug';
 
 import * as websocketStream from 'websocket-stream/stream';
 import { DialogflowV2Beta1, DialogflowV2Beta1Stream } from './dialogflow-v2beta1';
 import { DialogflowCX } from './dialogflow-cx';
 import { DialogflowCXV3Beta1 } from './dialogflow-cxv3beta1';
 import { MyPubSub } from './pubsub';
-
 import { Transform } from 'stream';
-
-const df = global.dialogflow['version'] || 'v2beta1';
 
 export class Web {
     private pubsub: MyPubSub;
     private dialogflow: any;
     private streamRequest: any;
     private streamOutput: any;
+    public config: any;
+    public debug: any;
 
-    constructor() {
+    constructor(global) {
+        this.config = global;
+        this.debug = global.debugger;
+        const df = global.dialogflow['version'] || 'v2beta1';
         if(df === 'cx') {
-            this.dialogflow = new DialogflowCX();
+            this.dialogflow = new DialogflowCX(global);
         } else if(df === 'cxv3beta1') {
-            this.dialogflow = new DialogflowCXV3Beta1();
+            this.dialogflow = new DialogflowCXV3Beta1(global);
         } else {
-            this.dialogflow = new DialogflowV2Beta1Stream();
+            this.dialogflow = new DialogflowV2Beta1Stream(global);
         }
-        this.pubsub = new MyPubSub();
+        this.pubsub = new MyPubSub(global);
 
         this.streamRequest = {
             audioConfig: {
@@ -93,7 +93,7 @@ export class Web {
 
     stream(ws: any): void{
         var dialogflowResponses;
-        const dialogflow = new DialogflowV2Beta1Stream();
+        const dialogflow = new DialogflowV2Beta1Stream(global);
 
         var ArrayBufferView = Object.getPrototypeOf(Object.getPrototypeOf(new Uint8Array())).constructor;
         function isArrayBufferView(value) {
@@ -128,7 +128,7 @@ Buffer(157568) [Uint8Array] [
 
         // const dialogflowService = new DialogflowService();
         mediaStream.on('data', data => {
-            
+
         });
     }
 }

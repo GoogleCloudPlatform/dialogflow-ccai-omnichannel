@@ -23,7 +23,6 @@ import * as hbs from 'express-handlebars';
 import * as cors from 'cors';
 
 import { global } from './config';
-import { debug } from './debug';
 
 import { Aog } from './aog';
 import { Web } from './web';
@@ -31,7 +30,7 @@ import { ContactCenterAi } from './ccai';
 
 
 export class App {
-    public static readonly PORT:number = parseInt(global['node_port'], 10);
+    public static readonly PORT:number = global['node_port'];
     private expressApp: express.Application;
     private wsInstance: any;
     private app: any;
@@ -39,11 +38,13 @@ export class App {
     private web: Web;
     private ccai: ContactCenterAi;
     private aog: Aog;
+    public debug: any;
 
     constructor() {
-        this.web = new Web();
-        this.ccai = new ContactCenterAi();
-        this.aog = new Aog();
+        this.web = new Web(global);
+        this.ccai = new ContactCenterAi(global);
+        this.aog = new Aog(global);
+        this.debug = global.debugger;
 
         this.createApp();
         this.listen();
@@ -91,12 +92,12 @@ export class App {
             res.json({success: 'true', responses});
         });
         this.app.ws('/web-chat', (ws, req) => {
-            debug.log('ws text connected');
+            this.debug.log('ws text connected');
             var dialogflowResponses;
 
             ws.on('message', async (msg) => {
                 const clientObj = JSON.parse(msg);
-                debug.log(msg);
+                this.debug.log(msg);
 
                 switch(Object.keys(clientObj)[0]) {
                     case 'web-text-message':
@@ -113,12 +114,12 @@ export class App {
                         // TODO?
                         break;
                     default:
-                        debug.log('not a web-text-message or web-event');
+                        this.debug.log('not a web-text-message or web-event');
                 }
             });
         });
         this.app.ws('/web-audio', (ws, req) => {
-            debug.log('ws audio connected');
+            this.debug.log('ws audio connected');
             this.web.stream(ws);
         });
 
@@ -130,7 +131,7 @@ export class App {
             // const phoneNrCountry = body.FromCountry
             const response = this.ccai.sms(query, phoneNr);
 
-            res.json({response: response });
+            res.json({ response });
         });
         this.app.get('/twiml', (req, res) => {
             res.json({success: 'true'});
@@ -143,15 +144,16 @@ export class App {
         });
         // Twilio Ws Media Stream Route
         this.app.ws('/media', (ws, req) => {
-            debug.log('ws phone connected');
+            this.debug.log('ws phone connected');
             this.ccai.stream(ws);
         });
+
     }
 
     private listen(): void {
         this.app.listen(App.PORT, () => {
-            debug.log('Running chat server on port ' + App.PORT);
-            debug.log('Project ID: ' + global['gc_project_id']);
+            this.debug.log('Running chat server on port ' + App.PORT);
+            this.debug.log('Project ID: ' + global['gc_project_id']);
         });
     }
 

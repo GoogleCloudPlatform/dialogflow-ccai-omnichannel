@@ -15,43 +15,44 @@
  * limitations under the License.
  * =============================================================================
  */
-
-import { global } from './config';
 import { PubSub } from '@google-cloud/pubsub';
-import { debug } from './debug';
 
 export class MyPubSub {
     private pubsub: PubSub;
+    public config: any;
+    public debug: any;
 
-    constructor(){
+    constructor(global){
+        this.config = global;
+        this.debug = global.debugger;
         this.pubsub = new PubSub({
             projectId: global['gc_project_id']
         });
-        this.setupPubSub(global.pubsub['topic_name']);
+        // this.setupPubSub(global.pubsub['topic_name']);
     }
 
     public setupPubSub(topicName: string) {
         const topic = this.pubsub.topic(`projects/${global['gc_project_id']}/topics/${topicName}`);
         topic.exists((err: any, exists: any) => {
-            if (err) debug.error(err);
+            if (err) this.debug.error(err);
             if (!exists) {
                 this.pubsub.createTopic(topicName).then(results => {
-                    debug.log(results);
-                    debug.log(`Topic ${topicName} created.`);
+                    this.debug.log(results);
+                    this.debug.log(`Topic ${topicName} created.`);
                 })
                 .catch(e => {
-                    debug.error(e);
+                    this.debug.error(e);
                 });
             }
         });
     }
 
 
-    public async pushToChannel(json: object, topicName=global.pubsub['topic_name']):Promise<any> {
+    public async pushToChannel(json: object, topicName = this.config.pubsub['topic_name']):Promise<any> {
         const topic = this.pubsub.topic(`projects/${global['gc_project_id']}/topics/${topicName}`);
         const dataBuffer = Buffer.from(JSON.stringify(json), 'utf-8');
         const messageId = await topic.publish(dataBuffer);
-        debug.log(`Message ${messageId} published to topic: ${topicName}`);
+        this.debug.log(`Message ${messageId} published to topic: ${topicName}`);
     }
 }
 

@@ -17,31 +17,32 @@
  */
 
 import * as actionsSdk from 'actions-on-google';
-import { global } from './config';
-import { debug } from './debug';
-
 import { DialogflowV2Beta1 } from './dialogflow-v2beta1';
 import { DialogflowCX } from './dialogflow-cx';
 import { DialogflowCXV3Beta1 } from './dialogflow-cxv3beta1';
 import { MyPubSub } from './pubsub';
 
-const df = global.dialogflow['version'] || 'v2beta1';
-
 export class Aog {
     private pubsub: MyPubSub;
     private assistant: any;
     private dialogflow: DialogflowCX | DialogflowCXV3Beta1 | DialogflowV2Beta1;
+    public config: any;
+    public debug: any;
 
-    constructor() {
+    constructor(global) {
+        const df = global.dialogflow['version'] || 'v2beta1';
+        this.config = global;
+        this.debug = global.debugger;
+
         this.assistant = actionsSdk.actionssdk();
         if(df === 'cx') {
-            this.dialogflow = new DialogflowCX();
+            this.dialogflow = new DialogflowCX(global);
         } else if(df === 'cxv3beta1') {
-            this.dialogflow = new DialogflowCXV3Beta1();
+            this.dialogflow = new DialogflowCXV3Beta1(global);
         } else {
-            this.dialogflow = new DialogflowV2Beta1();
+            this.dialogflow = new DialogflowV2Beta1(global);
         }
-        this.pubsub = new MyPubSub();
+        this.pubsub = new MyPubSub(global);
     }
 
     /**
@@ -58,7 +59,7 @@ export class Aog {
                 return conv.close('See you later!');
             }
             // Pass everything to Dialogflow
-            debug.log(input);
+            this.debug.log(input);
             return this.detectIntentText(conv, input)
         });
 
