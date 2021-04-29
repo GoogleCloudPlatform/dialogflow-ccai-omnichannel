@@ -43,11 +43,7 @@ Click the blue button, to clone in Cloud Shell:
 . setup.sh
 ```
 
-## Components & Channels Setup
-
-The following steps will guide you to run all the various channels.
-
-### Dialogflow
+## Dialogflow
 
 #### Dialogflow Essentials
 
@@ -73,16 +69,44 @@ https://dialogflow.cloud.google.com/cx/projects
 * Choose a timezone
 * Language: English
 
+## Deploy to GKE
+
+This script will create a GKE cluster with the backend container and the client website.
+This will allow you to run a chatbot on a website as a channel.
+The other channels such as the mobile Flutter app, Twilio phone & SMS and Google Assistant,
+require additional configuration as desribed below.
+
+_(Make sure you have executed `. setup.sh` before, to enable all services)_
+
+1. Execute `. deploy-first-time.sh`
+
+### Optional
+
+In case you already have a cluster and a static IP. You can rebuild and deploy the containers with:
+
+`. deploy.sh`
+
+In case you want to re-deploy individual containers, run the following build scripts:
+
+`gcloud builds submit --config cloudbuilder/chatserver.yaml`
+
+`gcloud builds submit --config cloudbuilder/web.yaml`
+
+To delete deployments use:
+
+`kubectl delete deployment web`
+
+To deploy another deployment:
+
+`kubectl apply -f cloudbuilder/web-deployment.yaml`
+
+`kubectl apply -f cloudbuilder/chatserver-deployment.yaml`
+
+## Components & Channels Setup
+
+The following steps will guide you to run all the various channels. These steps are optionally, in case you want to run it from your own machine.
 
 ### Node JS Backend Server
-
-You can choose to deploy the web channel in your Google Cloud, or run the demo locally.
-
-#### Deploy with Cloud Run
-
-TODO
-
-#### Run locally
 
 1. In order to run this demo on your local machine. You will need to have Node installed.
 
@@ -106,12 +130,6 @@ cd backend && npm run start:dev
 
 ### Angular Website
 
-#### Deploy with Cloud Run
-
-TODO
-
-#### Run locally
-
 In order to run this demo on your local machine. You will need to have Angular CLI installed
 
 ```
@@ -125,8 +143,6 @@ cd web && ng serve
 ```
 
 ### Flutter Mobile App
-
-#### Run locally
 
 1. In order to run this demo on your local machine. You will need to have Flutter installed.
 Follow the install steps from: https://flutter.dev/docs/get-started/install
@@ -206,7 +222,6 @@ It will ask you to visit a URL for authentication, and you will have to copy pas
 https://www.twilio.com/console/project/
 
 3. And a CLI profile:
-
 `twilio profiles:create`
 
 4. Buy a phone number:

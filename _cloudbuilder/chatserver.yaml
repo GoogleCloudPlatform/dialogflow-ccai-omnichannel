@@ -1,0 +1,10 @@
+steps:
+# Build ChatServer Container
+# docker build -t gcr.io/$PROJECT_ID/chatserver-image:latest ./backend
+- name: 'gcr.io/cloud-builders/docker'
+  args: [ 'build', '-t', 'gcr.io/$PROJECT_ID/chatserver-image:latest', './backend' ]
+# Push ChatServer Container to Container Registry
+# docker push gcr.io/$PROJECT_ID/chatserver-image:latest
+- id: 'Push ChatServer image to registry'
+  name: 'gcr.io/cloud-builders/docker'
+  args: [ 'push', 'gcr.io/$PROJECT_ID/chatserver-image:latest' ]

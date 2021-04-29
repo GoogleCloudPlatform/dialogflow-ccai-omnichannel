@@ -309,3 +309,5 @@ app.*.symbols
 web/dist
 
 /_media-stream-demo/.ev
+
+master.json

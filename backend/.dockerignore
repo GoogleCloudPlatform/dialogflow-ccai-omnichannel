@@ -11,8 +11,6 @@ master.json
 node_modules
 npm-debug.log
 dist
-tslint.json
-tsconfig.json
 env.txt
 .env
 Dockerfile

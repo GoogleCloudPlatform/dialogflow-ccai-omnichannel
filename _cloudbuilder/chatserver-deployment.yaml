@@ -1,4 +1,4 @@
-apiVersion: "extensions/v1beta1"
+apiVersion: apps/v1
 kind: "Deployment"
 metadata:
   name: "chatserver"
@@ -22,16 +22,36 @@ spec:
         env:
           - name: "GOOGLE_APPLICATION_CREDENTIALS"
             value: /var/secrets/master.json
-          - name: "GCLOUD_PROJECT"
+          - name: "GC_PROJECT_ID"
             valueFrom:
               configMapKeyRef:
                 name: chatserver-config
-                key: GCLOUD_PROJECT
-          - name: "DEV_AGENT_PROJECT_ID"
+                key: GC_PROJECT_ID
+          - name: "ENV"
             valueFrom:
               configMapKeyRef:
                 name: chatserver-config
-                key: DEV_AGENT_PROJECT_ID
+                key: ENV
+          - name: "AGENT_ID"
+            valueFrom:
+              configMapKeyRef:
+                name: chatserver-config
+                key: AGENT_ID
+          - name: "PHONE_NR"
+            valueFrom:
+              configMapKeyRef:
+                name: chatserver-config
+                key: PHONE_NR
+          - name: "TWILIO_ACCOUNT_SID"
+            valueFrom:
+              configMapKeyRef:
+                name: chatserver-config
+                key: TWILIO_ACCOUNT_SID
+          - name: "TWILIO_ACCOUNT_TOKEN"
+            valueFrom:
+              configMapKeyRef:
+                name: chatserver-config
+                key: TWILIO_ACCOUNT_TOKEN
         volumeMounts:
           - name: mykeys
             mountPath: /var/secrets/

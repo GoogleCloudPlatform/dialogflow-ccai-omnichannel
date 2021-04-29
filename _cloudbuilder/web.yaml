@@ -1,0 +1,8 @@
+steps:
+# Build Web Container
+- name: 'gcr.io/cloud-builders/docker'
+  args: [ 'build', '-t', 'gcr.io/$PROJECT_ID/web-image', './web' ]
+# Push Web Container to Container Registry
+- id: 'Push Front-end image to registry'
+  name: 'gcr.io/cloud-builders/docker'
+  args: [ 'push', 'gcr.io/$PROJECT_ID/web-image:latest' ]

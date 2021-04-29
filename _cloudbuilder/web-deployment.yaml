@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: "Deployment"
+metadata:
+  name: "web"
+  namespace: "default"
+  labels:
+    app: "web"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "web"
+  template:
+    metadata:
+      labels:
+        app: "web"
+    spec:
+      containers:
+      - name: "web-image"
+        image: "gcr.io/${PROJECT_ID}/web-image:latest"
+        ports:
+        - containerPort: 4200

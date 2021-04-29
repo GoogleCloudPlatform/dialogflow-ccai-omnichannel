@@ -71,6 +71,12 @@ gcloud projects add-iam-policy-binding $GCP_PROJECT \
 gcloud projects add-iam-policy-binding $GCP_PROJECT \
   --member serviceAccount:$SA_EMAIL \
   --role roles/firebase.admin
+gcloud projects add-iam-policy-binding $GCP_PROJECT \
+  --member serviceAccount:$SA_EMAIL \
+  --role roles/storage.objectCreator
+gcloud projects add-iam-policy-binding $GCP_PROJECT \
+  --member serviceAccount:$SA_EMAIL \
+  --role roles/storage.objectViewer
 
 ## ENABLE APIS
 bold "Enable APIs..."
@@ -82,7 +88,11 @@ gcloud services enable \
   pubsub.googleapis.com \
   logging.googleapis.com \
   monitoring.googleapis.com \
-  sourcerepo.googleapis.com
+  sourcerepo.googleapis.com \
+  container.googleapis.com \
+  containerregistry.googleapis.com \
+  cloudbuild.googleapis.com \
+  storage.googleapis.com
 
 ## ADD FIREBASE
 bold "Add firebase to your GCP project"
