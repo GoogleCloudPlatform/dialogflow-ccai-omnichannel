@@ -43,7 +43,10 @@ export class Web {
         } else {
             this.dialogflow = new DialogflowV2Beta1Stream(global);
         }
-        this.pubsub = new MyPubSub(global);
+
+        console.log('start web');
+
+        // this.pubsub = new MyPubSub(global);
 
         this.streamRequest = {
             audioConfig: {
@@ -73,19 +76,19 @@ export class Web {
     async detectIntentText(query: string, lang?: string, contexts?: Array<string>) {
         const webResponse = await this.dialogflow.detectIntentText(query, lang, contexts);
         webResponse.platform = 'web';
-        this.pubsub.pushToChannel(webResponse);
+        // this.pubsub.pushToChannel(webResponse);
         return this.createRichMessages(webResponse);
     }
     async detectIntentEvent(eventName: string, lang?: string, params?: Array<string>) {
         const webResponse = await this.dialogflow.detectIntentEvent(eventName, lang, params);
         webResponse.platform = 'web';
-        this.pubsub.pushToChannel(webResponse);
+        // this.pubsub.pushToChannel(webResponse);
         return this.createRichMessages(webResponse);
     }
     async detectIntentAudioStream(stream: any, lang?: string) {
         const webResponse = await this.dialogflow.detectIntentText(stream, lang);
         webResponse.platform = 'web';
-        this.pubsub.pushToChannel(webResponse);
+        // this.pubsub.pushToChannel(webResponse);
         return this.createSSML(webResponse);
     }
 
@@ -132,7 +135,3 @@ Buffer(157568) [Uint8Array] [
         });
     }
 }
-
-module.exports = {
-    Web
-};

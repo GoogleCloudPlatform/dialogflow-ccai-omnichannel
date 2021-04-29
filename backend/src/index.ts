@@ -71,28 +71,28 @@ export class App {
             next();
         });
 
+        var me = this;
         this.app.get('/', function(req, res) {
             res.json({success: 'true'});
         });
 
         // Google Assistant Route & Handlers
-        this.aog.registerHandlers(this.app);
+        this.aog.registerHandlers(me.app);
 
         // Mobile Channel Route
         this.app.post('/mobile/', async function(req, res) {
             const text = req.body.msg;
-            const responses = await this.web.detectIntentText(text);
+            const responses = await me.web.detectIntentText(text);
             res.json({success: 'true', responses});
         });
-
 
         // Web Routes, Get & WebSockets
         this.app.get('/web/', async function(req, res) {
-            const responses = await this.web.detectIntentText('test');
+            const responses = await me.web.detectIntentText('test');
             res.json({success: 'true', responses});
         });
         this.app.ws('/web-chat', (ws, req) => {
-            this.debug.log('ws text connected');
+            me.debug.log('ws text connected');
             var dialogflowResponses;
 
             ws.on('message', async (msg) => {
@@ -119,8 +119,8 @@ export class App {
             });
         });
         this.app.ws('/web-audio', (ws, req) => {
-            this.debug.log('ws audio connected');
-            this.web.stream(ws);
+            me.debug.log('ws audio connected');
+            me.web.stream(ws);
         });
 
         // Twilio Start Routes
@@ -129,7 +129,7 @@ export class App {
             const query = body.Body;
             const phoneNr = body.From;
             // const phoneNrCountry = body.FromCountry
-            const response = this.ccai.sms(query, phoneNr);
+            const response = me.ccai.sms(query, phoneNr);
 
             res.json({ response });
         });
@@ -144,8 +144,8 @@ export class App {
         });
         // Twilio Ws Media Stream Route
         this.app.ws('/media', (ws, req) => {
-            this.debug.log('ws phone connected');
-            this.ccai.stream(ws);
+            me.debug.log('ws phone connected');
+            me.ccai.stream(ws);
         });
 
     }
