@@ -146,7 +146,7 @@ export class App {
             // TODO I have to setup a certificate
             res.send(`<Response>
                 <Connect>
-                    <Stream url="ws://${host}/api/phone"></Stream>
+                    <Stream url="wss://${host}/phone"></Stream>
                 </Connect>
             </Response>`);
         });
