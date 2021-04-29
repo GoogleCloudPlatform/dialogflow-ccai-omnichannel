@@ -16,8 +16,9 @@ bold "Build container & push to registry"
 gcloud builds submit --config _cloudbuilder/setup.yaml
 
 bold "Eval the templates & deploy the containers..."
-kubectl apply -f _cloudbuilder/chatserver-deployment.yaml
-kubectl apply -f _cloudbuilder/web-deployment.yaml
+# https://stackoverflow.com/questions/23620827/envsubst-command-not-found-on-mac-os-x-10-8
+envsubst < _cloudbuilder/chatserver-deployment.yaml | kubectl apply -f -
+envsubst < _cloudbuilder/web-deployment.yaml | kubectl apply -f -
 
 bold "Create services..."
 kubectl apply -f _cloudbuilder/services.yaml

@@ -15,4 +15,4 @@ RUN npm run build
 
 EXPOSE 8080
 
-CMD ["pm2-runtime", "/app/dist/src/index.js"]
+CMD ["pm2-runtime", "/app/dist/index.js"]
