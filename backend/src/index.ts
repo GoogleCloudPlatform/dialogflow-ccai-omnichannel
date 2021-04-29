@@ -137,13 +137,21 @@ export class App {
             res.json({success: 'true'});
         });
         this.app.post('/twiml', (req, res) => {
-            res.setHeader('Content-Type', 'application/xml');
+            // this is the route you configure your HTTP POST webhook in the Twilio console to.
+            res.setHeader('Content-Type', 'text/xml');
             // ngrok sets x-original-host header
             const host = req.headers['x-original-host'] || req.hostname;
-            res.render('twiml', { host, layout: false });
+            console.log('Call started: ' + host);
+            // res.render('twiml', { host, layout: false });
+            // TODO I have to setup a certificate
+            res.send(`<Response>
+                <Connect>
+                    <Stream url="ws://${host}/api/phone"></Stream>
+                </Connect>
+            </Response>`);
         });
         // Twilio Ws Media Stream Route
-        this.app.ws('/media', (ws, req) => {
+        this.app.ws('/phone', (ws, req) => {
             me.debug.log('ws phone connected');
             me.ccai.stream(ws);
         });

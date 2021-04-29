@@ -69,6 +69,30 @@ https://dialogflow.cloud.google.com/cx/projects
 * Choose a timezone
 * Language: English
 
+## Twilio Phone/SMS
+
+1. Install Twilio CLI
+`npm install twilio-cli -g`
+
+2. Create a Twilio account:
+https://www.twilio.com/console/project/
+
+3. And a CLI profile:
+`twilio profiles:create`
+
+4. Buy a phone number:
+`twilio api:core:available-phone-numbers:local:list  --area-code="650" --country-code=US --voice-enabled` or https://www.twilio.com/console/phone-numbers/search
+
+5. Wire up your Twilio number with your endpoint on incoming calls. This will automatically start an ngrok tunnel to your machine.
+
+`twilio phone-numbers:update +3197010254316 --voice-url=http://localhost:8080/twiml`
+
+or manually (to only do this once)
+
+`ngrok http -subdomain=ccai 8080`
+and modify the URL in the [Twilio console](https://console.twilio.com/develop/phone-numbers/manage/active) to:
+https://ccai.ngrok.io/twiml
+
 ## Deploy to GKE
 
 This script will create a GKE cluster with the backend container and the client website.
@@ -106,7 +130,7 @@ To deploy another deployment:
 `cat _cloudbuilder/chatserver-deployment.yaml | envsubst | kubectl apply -f -`
 `cat _cloudbuilder/web-deployment.yaml | envsubst | kubectl apply -f -`
 
-## Components & Channels Setup
+## Local Components & Channels Setup
 
 The following steps will guide you to run all the various channels. These steps are optionally, in case you want to run it from your own machine.
 
@@ -217,27 +241,4 @@ gactions update --action_package action.json --project $GCP_PROJECT
 
 It will ask you to visit a URL for authentication, and you will have to copy paste a generated key in the terminal.
 
-### Twilio Phone/Text Channel
-
-1. Install Twilio CLI
-`npm install twilio-cli -g`
-
-2. Create a Twilio account:
-https://www.twilio.com/console/project/
-
-3. And a CLI profile:
-`twilio profiles:create`
-
-4. Buy a phone number:
-`twilio api:core:available-phone-numbers:local:list  --area-code="650" --country-code=US --voice-enabled` or https://www.twilio.com/console/phone-numbers/search
-
-5. Wire up your Twilio number with your endpoint on incoming calls. This will automatically start an ngrok tunnel to your machine.
-
-`twilio phone-numbers:update +3197010254316 --voice-url=http://localhost:8080/twiml`
-
-or manually (to only do this once)
-
-`ngrok http -subdomain=ccai 8080`
-and modify the URL in the [Twilio console](https://console.twilio.com/develop/phone-numbers/manage/active) to:
-https://ccai.ngrok.io/twiml
 
