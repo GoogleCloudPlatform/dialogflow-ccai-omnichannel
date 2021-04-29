@@ -93,9 +93,9 @@ In case you already have a cluster and a static IP. You can rebuild and deploy t
 
 In case you want to re-deploy individual containers, run the following build scripts:
 
-`gcloud builds submit --config cloudbuilder/chatserver.yaml`
+`gcloud builds submit --config _cloudbuilder/chatserver.yaml`
 
-`gcloud builds submit --config cloudbuilder/web.yaml`
+`gcloud builds submit --config _cloudbuilder/web.yaml`
 
 To delete deployments use:
 
@@ -103,9 +103,8 @@ To delete deployments use:
 
 To deploy another deployment:
 
-`kubectl apply -f cloudbuilder/web-deployment.yaml`
-
-`kubectl apply -f cloudbuilder/chatserver-deployment.yaml`
+`cat _cloudbuilder/chatserver-deployment.yaml | envsubst | kubectl apply -f -`
+`cat _cloudbuilder/web-deployment.yaml | envsubst | kubectl apply -f -`
 
 ## Components & Channels Setup
 
