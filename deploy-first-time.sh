@@ -22,16 +22,23 @@ bold "Create Secrets & Config maps"
 kubectl create configmap chatserver-config --from-env-file=backend/.env
 kubectl create secret generic credentials --from-file=master.json
 
+bold "SSL Domain"
+cat _cloudbuilder/domain.yaml | envsubst | kubectl apply -f -
+gcloud compute addresses create $GKE_CLUSTER \
+    --global \
+    --ip-version IPV4
+
 bold "Build container & push to registry"
 gcloud builds submit --config _cloudbuilder/setup.yaml
 
 bold "Eval the templates & deploy the containers..."
-# https://stackoverflow.com/questions/23620827/envsubst-command-not-found-on-mac-os-x-10-8
 cat _cloudbuilder/chatserver-deployment.yaml | envsubst | kubectl apply -f -
 cat _cloudbuilder/web-deployment.yaml | envsubst | kubectl apply -f -
 
 bold "Create services..."
 kubectl apply -f _cloudbuilder/services.yaml
 
-bold "Create a static IP"
-gcloud compute --project=$PROJECT_ID addresses create $GKE_CLUSTER --global --network-tier=PREMIUM
+bold "Create loadbalancer / Ingress..."
+cat _cloudbuilder/loadbalancer.yaml | envsubst | kubectl apply -f -
+
+

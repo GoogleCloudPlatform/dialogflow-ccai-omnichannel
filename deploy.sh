@@ -27,3 +27,5 @@ cat _cloudbuilder/web-deployment.yaml | envsubst | kubectl apply -f -
 bold "Create services..."
 kubectl apply -f _cloudbuilder/services.yaml
 
+bold "Create loadbalancer / Ingress..."
+cat _cloudbuilder/loadbalancer.yaml | envsubst | kubectl apply -f -

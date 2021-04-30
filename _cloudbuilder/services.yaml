@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: chatserver-service
 spec:
-  type: NodePort
+  type: LoadBalancer
   selector:
     app: chatserver
   ports:
@@ -17,7 +17,6 @@ metadata:
   name: web-service
 spec:
   type: LoadBalancer
-  #loadBalancerIP: 34.95.97.143 
   selector:
     app: web
   ports:

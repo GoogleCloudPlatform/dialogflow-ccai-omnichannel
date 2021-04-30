@@ -100,11 +100,10 @@ This will allow you to run a chatbot on a website as a channel.
 The other channels such as the mobile Flutter app, Twilio phone & SMS and Google Assistant,
 require additional configuration as desribed below.
 
-1. Rename **enx.txt** to **.env** and modify the values. This requires a GCP project id and Twilio configuration
-in case you want to run the demo via a phone.
+1. Rename **enx.txt** to **.env** and modify the values. This requires a GCP project id and Twilio configuration in case you want to run the demo via a phone.
 
-_Make sure you have executed `. setup.sh` before, to enable all services. Also you will need to have the following tool on your machine:_
-[envsubst](https://stackoverflow.com/questions/23620827/envsubst-command-not-found-on-mac-os-x-10-8), this allows you to eval the deployment
+_Make sure you have executed `. setup.sh` before, to enable all services. Also you will need to have **envsubst** and **kubectl** on your machine, in case you run it locally. See the *tools.sh* script.
+
 yaml files. It's also possible to edit these manually.
 
 1. Execute `. deploy-first-time.sh`
@@ -240,5 +239,3 @@ gactions update --action_package action.json --project $GCP_PROJECT
 ```
 
 It will ask you to visit a URL for authentication, and you will have to copy paste a generated key in the terminal.
-
-
