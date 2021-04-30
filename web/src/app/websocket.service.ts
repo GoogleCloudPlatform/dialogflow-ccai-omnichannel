@@ -17,7 +17,7 @@ export class WebSocketService {
         return of(this.API_URL).pipe(
           filter(apiUrl => !!apiUrl),
           // https becomes wws, http becomes ws
-          map(apiUrl => apiUrl.replace(/^http/, 'ws') + '/web-audio'),
+          map(apiUrl => apiUrl.replace(/^http/, 'ws') + '/api/web-audio/'),
           switchMap(wsUrl => {
              if (this.connectionAudio$) {
               return this.connectionAudio$;
@@ -45,7 +45,7 @@ export class WebSocketService {
       return of(this.API_URL).pipe(
         filter(apiUrl => !!apiUrl),
         // https becomes wws, http becomes ws
-        map(apiUrl => apiUrl.replace(/^http/, 'ws') + '/web-chat'),
+        map(apiUrl => apiUrl.replace(/^http/, 'ws') + '/api/web-chat/'),
         switchMap(wsUrl => {
            if (this.connectionChat$) {
             return this.connectionChat$;

@@ -72,26 +72,29 @@ export class App {
         });
 
         var me = this;
+        this.app.get('/api/', function(req, res) {
+            res.status(200).send('API OK');
+        });
         this.app.get('/', function(req, res) {
-            res.json({success: 'true'});
+            res.status(200).send('OK');
         });
 
         // Google Assistant Route & Handlers
         this.aog.registerHandlers(me.app);
 
         // Mobile Channel Route
-        this.app.post('/mobile/', async function(req, res) {
+        this.app.post('/api/mobile/', async function(req, res) {
             const text = req.body.msg;
             const responses = await me.web.detectIntentText(text);
             res.json({success: 'true', responses});
         });
 
         // Web Routes, Get & WebSockets
-        this.app.get('/web/', async function(req, res) {
+        this.app.get('/api/web/', async function(req, res) {
             const responses = await me.web.detectIntentText('test');
             res.json({success: 'true', responses});
         });
-        this.app.ws('/web-chat', (ws, req) => {
+        this.app.ws('/api/web-chat/', (ws, req) => {
             me.debug.log('ws text connected');
             var dialogflowResponses;
 
@@ -118,13 +121,13 @@ export class App {
                 }
             });
         });
-        this.app.ws('/web-audio', (ws, req) => {
+        this.app.ws('/api/web-audio/', (ws, req) => {
             me.debug.log('ws audio connected');
             me.web.stream(ws);
         });
 
         // Twilio Start Routes
-        this.app.post('/sms', (req, res) => {
+        this.app.post('/api/sms/', (req, res) => {
             const body = req.body;
             const query = body.Body;
             const phoneNr = body.From;
@@ -133,10 +136,10 @@ export class App {
 
             res.json({ response });
         });
-        this.app.get('/twiml', (req, res) => {
+        this.app.get('/api/twiml/', (req, res) => {
             res.json({success: 'true'});
         });
-        this.app.post('/twiml', (req, res) => {
+        this.app.post('/api/twiml/', (req, res) => {
             // this is the route you configure your HTTP POST webhook in the Twilio console to.
             res.setHeader('Content-Type', 'text/xml');
             // ngrok sets x-original-host header
@@ -146,12 +149,12 @@ export class App {
             // TODO I have to setup a certificate
             res.send(`<Response>
                 <Connect>
-                    <Stream url="wss://${host}/phone"></Stream>
+                    <Stream url="wss://${host}/api/phone/"></Stream>
                 </Connect>
             </Response>`);
         });
         // Twilio Ws Media Stream Route
-        this.app.ws('/phone', (ws, req) => {
+        this.app.ws('/api/phone/', (ws, req) => {
             me.debug.log('ws phone connected');
             me.ccai.stream(ws);
         });

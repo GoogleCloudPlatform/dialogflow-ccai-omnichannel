@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: chatserver-service
 spec:
-  type: LoadBalancer
+  type: NodePort
   selector:
     app: chatserver
   ports:

@@ -17,5 +17,5 @@
  */
 export const environment = {
   production: true,
-  serverUrl: 'http://35.204.64.128/api/'
+  serverUrl: 'https://www.cloudtricks.eu'
 };

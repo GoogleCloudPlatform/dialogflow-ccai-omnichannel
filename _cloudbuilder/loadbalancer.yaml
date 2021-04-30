@@ -8,7 +8,7 @@ metadata:
     kubernetes.io/ingress.global-static-ip-name: ${GKE_CLUSTER}
     networking.gke.io/managed-certificates: ssl
     #cloud.google.com/app-protocols: '{"my-https-port":"HTTPS","my-http-port":"HTTP"}'
-    kubernetes.io/ingress.allow-http: "false"
+    #kubernetes.io/ingress.allow-http: "false"
 spec:
   rules:
   - http:
