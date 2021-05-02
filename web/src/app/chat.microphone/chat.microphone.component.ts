@@ -100,7 +100,7 @@ export class MicrophoneComponent implements AfterViewInit {
 
               const buffer = await blob.arrayBuffer();
               console.log(buffer);
-              me.webSocket.sendAudio(buffer);
+              me.webSocket.sendAudio(blob);
           }
         });
         me.recordAudio.startRecording();

@@ -93,6 +93,10 @@ or manually (to only do this once)
 and modify the URL in the [Twilio console](https://console.twilio.com/develop/phone-numbers/manage/active) to:
 https://ccai.ngrok.io/twiml
 
+
+NOTE: For outbound calls you will need to whitelist the geo permissions you can call:
+https://console.twilio.com/us1/develop/voice/settings/geo-permissions
+
 ## Deploy to GKE
 
 This script will create a GKE cluster with the backend container and the client website.
@@ -102,9 +106,10 @@ require additional configuration as desribed below.
 
 1. Rename **enx.txt** to **.env** and modify the values. This requires a GCP project id and Twilio configuration in case you want to run the demo via a phone.
 
-_Make sure you have executed `. setup.sh` before, to enable all services. Also you will need to have **envsubst** and **kubectl** on your machine, in case you run it locally. See the *tools.sh* script.
+2. Modify the properties in the *.properties* file. You will need a domain to get an SSL certificate.
+We will need a valid TLS certificate, for secure websockets (WSS), which is what you need in order to make use of Twilio.
 
-yaml files. It's also possible to edit these manually.
+_Make sure you have executed `. setup.sh` before, to enable all services. Also you will need to have **envsubst** and **kubectl** on your machine, in case you run it locally. See the *tools.sh* script.
 
 1. Execute `. deploy-first-time.sh`
 

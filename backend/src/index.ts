@@ -25,7 +25,7 @@ import * as cors from 'cors';
 import { global } from './config';
 
 import { Aog } from './aog';
-import { Web } from './web';
+import { Web, WebStream } from './web';
 import { ContactCenterAi } from './ccai';
 
 
@@ -36,12 +36,14 @@ export class App {
     private app: any;
     private server: http.Server;
     private web: Web;
+    private webStream: WebStream;
     private ccai: ContactCenterAi;
     private aog: Aog;
     public debug: any;
 
     constructor() {
         this.web = new Web(global);
+        this.webStream = new WebStream(global);
         this.ccai = new ContactCenterAi(global);
         this.aog = new Aog(global);
         this.debug = global.debugger;
@@ -86,13 +88,13 @@ export class App {
         this.app.post('/api/mobile/', async function(req, res) {
             const text = req.body.msg;
             const responses = await me.web.detectIntentText(text);
-            res.json({success: 'true', responses});
+            res.json({success: true, responses});
         });
 
         // Web Routes, Get & WebSockets
         this.app.get('/api/web/', async function(req, res) {
             const responses = await me.web.detectIntentText('test');
-            res.json({success: 'true', responses});
+            res.json({success: true, responses});
         });
         this.app.ws('/api/web-chat/', (ws, req) => {
             me.debug.log('ws text connected');
@@ -123,30 +125,45 @@ export class App {
         });
         this.app.ws('/api/web-audio/', (ws, req) => {
             me.debug.log('ws audio connected');
-            me.web.stream(ws);
+            me.webStream.stream(ws);
         });
 
         // Twilio Start Routes
-        this.app.post('/api/sms/', (req, res) => {
+        this.app.post('/api/sms/', async function(req, res){
             const body = req.body;
             const query = body.Body;
             const phoneNr = body.From;
             // const phoneNrCountry = body.FromCountry
-            const response = me.ccai.sms(query, phoneNr);
+            await me.ccai.sms(query, phoneNr, function(data){
+                res.json(data);
+            });
 
-            res.json({ response });
+            // TODO this will be part from the flow
+            // and a fulfillment function in Dialogflow will trigger this
+            // route with a Body
+            // will this be part of the Dialogflow conversation
+            // or stored elsewhere?
         });
-        this.app.get('/api/twiml/', (req, res) => {
-            res.json({success: 'true'});
+        this.app.get('/api/twiml/', async function(req, res){
+            const phoneNr = req.query.phoneNr;
+            const protocol = req.secure? 'https://' : 'http://';
+            const host = protocol + req.hostname;
+            // get param phoneNr required
+            if(phoneNr){
+                await me.ccai.streamOutbound(phoneNr, host, function(data){
+                    res.json(data);
+                });
+            } else {
+                res.status(500);
+            }
         });
         this.app.post('/api/twiml/', (req, res) => {
             // this is the route you configure your HTTP POST webhook in the Twilio console to.
             res.setHeader('Content-Type', 'text/xml');
             // ngrok sets x-original-host header
             const host = req.headers['x-original-host'] || req.hostname;
-            console.log('Call started: ' + host);
+            me.debug.log('Call started: ' + host);
             // res.render('twiml', { host, layout: false });
-            // TODO I have to setup a certificate
             res.send(`<Response>
                 <Connect>
                     <Stream url="wss://${host}/api/phone/"></Stream>

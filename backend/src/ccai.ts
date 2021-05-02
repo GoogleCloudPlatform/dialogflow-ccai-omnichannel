@@ -1,4 +1,3 @@
-
 /**
  * @license
  * Copyright 2021 Google LLC
@@ -64,10 +63,9 @@ export class ContactCenterAi {
       }
     }
 
-    async sms(query:string, phoneNr:string){
+    async sms(query:string, phoneNr:string, cb){
       const botResponse = await this.dialogflow.detectIntentText(query);
 
-      // https://github.com/Gurenax/node-twilio-sms
       // https://www.twilio.com/docs/sms/send-messages
       this.twilio.messages.create(
         {
@@ -77,10 +75,26 @@ export class ContactCenterAi {
         }).then(function(message){
           // TODO PUBSUB
           this.debug.log(message);
-          return message;
+          cb({ succss: true, message: message});
         }).catch(function(error){
           this.debug.error(error);
-          return error;
+          cb({ success: false, error: error });
+        });
+    }
+
+    async streamOutbound(phoneNr:string, host: string, cb){
+      const me = this;
+      this.twilio.calls
+        .create({
+          // record: true,
+          url: `${host}/api/twiml/`,
+          to: phoneNr,
+          from: me.config.twilio['phone_number']
+        })
+        .then(function(call){
+          cb({ succss: true, call: call});
+        }).catch(function(error){
+          cb({ success: false, error: error });
         });
     }
 

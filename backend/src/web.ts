@@ -91,18 +91,18 @@ export class Web {
         // this.pubsub.pushToChannel(webResponse);
         return this.createSSML(webResponse);
     }
+}
 
-    // TODO CREATE 2ND CLASS
+export class WebStream extends Web {
+    public isFirst: boolean;
+
+    constructor(global) {
+      super(global);
+
+    }
 
     stream(ws: any): void{
-        var dialogflowResponses;
-        const dialogflow = new DialogflowV2Beta1Stream(global);
-
-        var ArrayBufferView = Object.getPrototypeOf(Object.getPrototypeOf(new Uint8Array())).constructor;
-        function isArrayBufferView(value) {
-            return value instanceof ArrayBufferView;
-        }
-
+    
         /*
 // Twilio
 <Buffer 7b 22 65 76 65 6e 74 22 3a 22 6d 65
@@ -125,6 +125,15 @@ Buffer(157568) [Uint8Array] [
  <Buffer 52 49 46 46 78 67 02 00 57 41 56 45 66 6d 74 2
  0 10 00 00 00 01 00 01 00 80 3e 00 00 00 7d 00 00 02 00 10 00 64 61 74 61 54 67 02 00 00 00 00 00 00 00 ... 157518 more bytes>
 */
+        var dialogflowResponses;
+        const dialogflow = new DialogflowV2Beta1Stream(global);
+
+        var ArrayBufferView = Object.getPrototypeOf(Object.getPrototypeOf(new Uint8Array())).constructor;
+        function isArrayBufferView(value) {
+            return value instanceof ArrayBufferView;
+        }
+
+
         const mediaStream = websocketStream(ws, {
             binary: false
         });
@@ -133,5 +142,6 @@ Buffer(157568) [Uint8Array] [
         mediaStream.on('data', data => {
 
         });
+
     }
 }
