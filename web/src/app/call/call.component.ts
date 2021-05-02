@@ -7,16 +7,22 @@ import { NgForm } from '@angular/forms';
   styleUrls: ['./call.component.scss']
 })
 export class CallComponent implements OnInit {
+  public phone: string;
+  public name: string;
 
-  constructor() { }
+  constructor() { 
+    this.name = "";
+    this.phone = "";
+  }
 
   ngOnInit(): void {
   }
 
   onSubmit(f: NgForm): void {
-    const phoneNumber = f.value.phoneNr;
-    if (phoneNumber.length > 0) {
-      
+    const phone = f.value.phone;
+    const name = f.value.name;
+    if (phone.length > 0) {
+      // TODO
     }
     f.reset();
   }

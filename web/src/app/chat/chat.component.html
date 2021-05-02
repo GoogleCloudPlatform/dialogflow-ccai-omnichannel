@@ -13,44 +13,44 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<div class="grid-container flex-item">
-    <mat-card class="support-card">
-        <mat-card-header>
-        <mat-card-title>
-            Talk with us
-        </mat-card-title>
-        </mat-card-header>
-        <mat-card-content class="support-content">
+<mat-card class="support-card flex-item">
+    <mat-card-header>
+    <mat-card-title>
+        Chat
+    </mat-card-title>
+    </mat-card-header>
+    <mat-card-content class="support-content">
 
 
-            <form #f="ngForm" (ngSubmit)="onSubmit(f)" id="chatbox">
+        <form #f="ngForm" (ngSubmit)="onSubmit(f)" id="chatbox">
 
-                <div class="chatarea">
-                    <div class="avatar"></div>
-                    <ul id="messages" class="history">
-                        <li *ngFor="let msg of messages" class="{{msg.class}}">
-                            {{msg.text}}
-                        </li>
-                    </ul>
-                </div>
+            <div class="chatarea">
+                <div class="avatar"></div>
+                <ul id="messages" class="history">
+                    <li *ngFor="let msg of messages" class="{{msg.class}}">
+                        {{msg.text}}
+                    </li>
+                </ul>
+            </div>
 
-                <div class="chatfooter">
+            <div class="chatfooter">
 
 
-                        <div class="chatinput">
-                            <mat-form-field class="example-full-width">
-                                <input matInput id="m" ngModel #m="ngModel" (keydown)="onKeyDown()" name="m" type="text" autocomplete="off">
-                            </mat-form-field>
-                        </div>
-                        <button mat-raised-button color="primary" type="submit">Send</button>
+                    <div class="chatinput">
+                        <mat-form-field class="example-full-width">
+                            <input matInput id="m" ngModel #m="ngModel" (keydown)="onKeyDown()" name="m" type="text" autocomplete="off">
+                        </mat-form-field>
+                    </div>
+                    <button mat-raised-button color="primary" type="submit">Send</button>
+                    <app-chat-microphone></app-chat-microphone>
 
-                </div>
+            </div>
 
-            </form>
+        </form>
 
-        
-        </mat-card-content>
-    </mat-card>
-</div>
-<app-chat-microphone></app-chat-microphone>
+    
+    </mat-card-content>
+</mat-card>
+
+
                         

@@ -1,3 +1,18 @@
-.call {
+:host {
+    width: 28%;
+    margin-top: -80px;
+}
+
+mat-card {
+    margin: 12px;
+    padding: 20px;
+    min-width: 280px;
+}
+
+mat-form-field {
     width: 100%;
+}
+
+mat-card-title {
+    margin: 25px 0;
 }

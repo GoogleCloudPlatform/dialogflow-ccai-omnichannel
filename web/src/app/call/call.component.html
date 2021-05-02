@@ -13,8 +13,8 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-
-<mat-card class="call-card flex-item">
+<div class="flex-item">
+<mat-card class="call-card">
     <div class="call">
         <mat-card-header>
         <mat-card-title>
@@ -23,8 +23,29 @@
         </mat-card-header>
         <mat-card-content class="call-content">
             <form #f="ngForm" (ngSubmit)="onSubmit(f)" id="callbox">
-
-            </form>    
+                <mat-form-field class="example-full-width" appearance="fill">
+                    <mat-label>Name</mat-label>
+                    <input matInput id="name" ngModel #m="ngModel" name="name" type="text" maxlength="50">
+                </mat-form-field> 
+                <mat-form-field class="example-full-width" appearance="fill">
+                    <mat-label>Phone</mat-label>
+                    <input matInput id="phone" ngModel #m="ngModel" name="phone" type="tel" maxlength="11">
+                </mat-form-field>
+                <button mat-raised-button color="primary" type="submit">Call now</button>
+            </form>   
         </mat-card-content>
     </div>
 </mat-card>
+<mat-card class="call-card">
+    <div class="call">
+        <mat-card-header>
+        <mat-card-title>
+            Location
+        </mat-card-title>
+        </mat-card-header>
+        <mat-card-content class="call-content">
+            <div class="mapouter"><div class="gmap_canvas"><iframe width="280" height="200" id="gmap_canvas" src="https://maps.google.com/maps?q=google%20sunnyvale&t=&z=13&ie=UTF8&iwloc=&output=embed" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"></iframe><a href="https://123movies-to.org"></a><br><style>.mapouter{position:relative;text-align:right;height:200px;width:280px;}</style><a href="https://www.embedgooglemap.net">map iframe</a><style>.gmap_canvas {overflow:hidden;background:none!important;height:200px;width:280px;}</style></div></div>
+        </mat-card-content>
+    </div>
+</mat-card>
+</div>
