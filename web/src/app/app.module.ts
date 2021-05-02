@@ -59,20 +59,24 @@ import {MatTableModule} from '@angular/material/table';
 import {MatSortModule} from '@angular/material/sort';
 import {MatPaginatorModule} from '@angular/material/paginator';
 
-import { AppRoutingModule } from './app-routing.module';
+import { RoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { ChatComponent } from './chat/chat.component';
 import { MicrophoneComponent } from './chat.microphone/chat.microphone.component';
+import { CallComponent } from './call/call.component';
+import { PhonenrComponent } from './phonenr/phonenr.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     ChatComponent,
-    MicrophoneComponent
+    MicrophoneComponent,
+    CallComponent,
+    PhonenrComponent
   ],
   imports: [
     BrowserModule.withServerTransition({appId: 'front-end'}),
-    AppRoutingModule,
+    RoutingModule,
     LayoutModule,
 
     FormsModule,
