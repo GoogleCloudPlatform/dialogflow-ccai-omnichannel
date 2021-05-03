@@ -61,10 +61,24 @@
 
 .logo {
     display: block;
-    width: 200px;
-    height: 50px;
-    background: #000;
+    background-size: 250px 50px;
+    background-repeat: no-repeat;
+    background-position: 0 50%;
+    height: 100px;
+    width: 500px;
     margin: 12px;
+}
+.logo.health {
+    background-image: url('../assets/logo-health.png');
+}
+.logo.insurances {
+  background-image: url('../assets/logo-insurances.png');
+}
+.logo.fsi {
+  background-image: url('../assets/logo-fsi.png');
+}
+.logo.retail {
+  background-image: url('../assets/logo-retail.png');
 }
 
   h1,
@@ -103,16 +117,19 @@
     width: 100%;
   }
 
-  .banner.health {
-    background: linear-gradient(-90deg, rgba(0,212,255,0) 30%, rgba(0,212,255,1) 75%); 
+  .banner {
+    background: linear-gradient(-90deg, rgba(38,50,56,0) 30%, rgba(55,71,79,1) 75%);
+    border-top: 1px solid #cfd8dc;
+    border-bottom: 1px solid #cfd8dc;
    }
-   .banner.fsi {
-    background: linear-gradient(-90deg, rgba(15, 150, 75, 0) 30%, rgba(15,150,25,1) 75%); 
+
+   .banner.health {
+      img {
+        background-image: url(../assets/logo-health.png);
+      }
    }
-   .banner.retail {
-    background: linear-gradient(-90deg, rgba(255, 174, 0, 0) 30%, rgba(255,174,0,1) 75%); 
-   }
-   
+
+
 
   .toolbar img {
     margin: 0 16px;
