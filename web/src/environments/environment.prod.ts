@@ -17,5 +17,5 @@
  */
 export const environment = {
   production: true,
-  serverUrl: 'https://www.cloudtricks.eu'
+  serverUrl: 'https://www.conv.dev'
 };

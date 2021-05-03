@@ -25,7 +25,10 @@ cat _cloudbuilder/chatserver-deployment.yaml | envsubst | kubectl apply -f -
 cat _cloudbuilder/web-deployment.yaml | envsubst | kubectl apply -f -
 
 bold "Create services..."
+kubectl delete -f _cloudbuilder/services.yaml
 kubectl apply -f _cloudbuilder/services.yaml
 
 bold "Create loadbalancer / Ingress..."
+kubectl delete -f _cloudbuilder/loadbalancer.yaml
 cat _cloudbuilder/loadbalancer.yaml | envsubst | kubectl apply -f -
+

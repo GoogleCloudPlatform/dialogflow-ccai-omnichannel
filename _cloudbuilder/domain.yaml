@@ -1,7 +1,8 @@
 apiVersion: networking.gke.io/v1
 kind: ManagedCertificate
 metadata:
-  name: ssl
+  name: cert-conv
 spec:
   domains:
-    - ${DOMAIN}
+    - $DOMAIN1
+    - www.$DOMAIN1

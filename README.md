@@ -109,6 +109,10 @@ require additional configuration as desribed below.
 2. Modify the properties in the *.properties* file. You will need a domain to get an SSL certificate.
 We will need a valid TLS certificate, for secure websockets (WSS), which is what you need in order to make use of Twilio.
 
+3. You will need to open your domain register console and add the following details:
+(Read more on domain config for GKE)[https://cloud.google.com/kubernetes-engine/docs/tutorials/configuring-domain-name-static-ip]
+
+
 _Make sure you have executed `. setup.sh` before, to enable all services. Also you will need to have **envsubst** and **kubectl** on your machine, in case you run it locally. See the *tools.sh* script.
 
 1. Execute `. deploy-first-time.sh`
