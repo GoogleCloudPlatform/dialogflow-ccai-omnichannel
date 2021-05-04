@@ -62,6 +62,8 @@ export interface GlobalConfig {
             sample_rate_hertz: number,
             single_utterance: boolean,
             interim_results: boolean,
+            model_variant: string,
+            model: string,
             welcome_event: string, // 'Welcome'
             speaking_rate: number // 1.0, // [0.25, 4.0] - 1 is normal, 2 is twice as fast
             pitch: number, // 1.0, /// Speaking pitch, in the range [-20.0, 20.0]. 20
@@ -94,11 +96,11 @@ const globalConfig: GlobalConfig = {
         gc_project_id: '.ENV',
         server_url: '.ENV',
         node_port: 8080,
-        vertical: 'health',
+        vertical: '.ENV',
         dialogflow: {
             version: 'cx', // 'v2beta1',
             cx_agent_id: '.ENV',
-            cx_location: 'global',
+            cx_location: '.ENV',
             language_code: 'en-US'
         },
         web: {
@@ -125,8 +127,10 @@ const globalConfig: GlobalConfig = {
             speaking_rate: 1.0,
             pitch: 1.0,
             volume_gain_db: 0.0,
-            voice_name: 'en-US-Standard-H',
-            ssml_gender: 'SSML_VOICE_GENDER_FEMALE'
+            voice_name: 'en-US-Wavenet-H',
+            ssml_gender: 'SSML_VOICE_GENDER_FEMALE',
+            model: 'phone_call',
+            model_variant: 'USE_ENHANCED'
         },
         angular: {
             angular_port: 4200
@@ -154,8 +158,12 @@ const projectId = process.env.npm_config_GC_PROJECT_ID || process.env.GC_PROJECT
 finalConfig.gc_project_id = projectId;
 const port = process.env.npm_config_PORT || process.env.PORT || envConfig.node_port;
 finalConfig.node_port = port;
+const vertical = process.env.npm_config_VERTICAL || process.env.VERTICAL || envConfig.vertical;
+finalConfig.node_port = vertical;
 const agentId = process.env.npm_config_AGENT_ID || process.env.AGENT_ID || envConfig.dialogflow.cx_agent_id;
 finalConfig.dialogflow.cx_agent_id = agentId;
+const cxLocation = process.env.npm_config_CX_LOCATION || process.env.CX_LOCATION || envConfig.dialogflow.cx_location;
+finalConfig.dialogflow.cx_agent_id = cxLocation;
 const phoneNumber = process.env.npm_config_PHONE_NR ||process.env.PHONE_NR || envConfig.twilio.phone_number;
 finalConfig.twilio.phone_number = phoneNumber;
 const accountSid = process.env.npm_config_TWILIO_ACCOUNT_SID ||process.env.TWILIO_ACCOUNT_SID || envConfig.twilio.account_sid;

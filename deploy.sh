@@ -32,3 +32,4 @@ bold "Create loadbalancer / Ingress..."
 kubectl delete -f _cloudbuilder/loadbalancer.yaml
 cat _cloudbuilder/loadbalancer.yaml | envsubst | kubectl apply -f -
 
+#kubectl scale deployment chat --replicas=0 -n service

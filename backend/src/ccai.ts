@@ -75,10 +75,10 @@ export class ContactCenterAi {
         }).then(function(message){
           // TODO PUBSUB
           this.debug.log(message);
-          cb({ succss: true, message: message});
+          cb({ succss: true, message});
         }).catch(function(error){
           this.debug.error(error);
-          cb({ success: false, error: error });
+          cb({ success: false, error });
         });
     }
 
@@ -92,9 +92,9 @@ export class ContactCenterAi {
           from: me.config.twilio['phone_number']
         })
         .then(function(call){
-          cb({ succss: true, call: call});
+          cb({ success: true, call});
         }).catch(function(error){
-          cb({ success: false, error: error });
+          cb({ success: false, error });
         });
     }
 
@@ -131,6 +131,8 @@ export class ContactCenterAi {
               audioEncoding: this.config.twilio['input_encoding'],
               sampleRateHertz: this.config.twilio['sample_rate_hertz'],
               singleUtterance: this.config.twilio['single_utterance'],
+              model: this.config.twilio['model'],
+              modelVariant: this.config.twilio['model_variant']
             }
           };
           queryInputObj['languageCode'] = this.config.dialogflow['language_code'];
@@ -140,6 +142,8 @@ export class ContactCenterAi {
             sampleRateHertz: this.config.twilio['sample_rate_hertz'],
             languageCode: this.config.dialogflow['language_code'],
             singleUtterance: this.config.twilio['single_utterance'],
+            model: this.config.twilio['model'],
+            modelVariant: this.config.twilio['model_variant']
           };
           queryInputObj['interimResults'] = this.config.twilio['interim_results'];
         }
