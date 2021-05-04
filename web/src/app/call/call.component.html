@@ -22,17 +22,20 @@
         </mat-card-title>
         </mat-card-header>
         <mat-card-content class="call-content">
-            <form #f="ngForm" (ngSubmit)="onSubmit(f)" id="callbox">
-                <mat-form-field class="example-full-width" appearance="fill">
-                    <mat-label>Name</mat-label>
-                    <input matInput id="name" ngModel #m="ngModel" name="name" type="text" maxlength="50">
-                </mat-form-field> 
-                <mat-form-field class="example-full-width" appearance="fill">
-                    <mat-label>Phone</mat-label>
-                    <input matInput id="phone" ngModel #m="ngModel" name="phone" type="tel" maxlength="11">
-                </mat-form-field>
-                <button mat-raised-button color="primary" type="submit">Call now</button>
-            </form>   
+
+        <form #f="ngForm" (ngSubmit)="onSubmit(f)" id="callbox" [hidden]="f.submitted">
+            <mat-form-field class="example-full-width" appearance="fill">
+                <mat-label>Name</mat-label>
+                <input matInput id="name" ngModel #m="ngModel" name="name" type="text" maxlength="50">
+            </mat-form-field> 
+            <mat-form-field class="example-full-width" appearance="fill">
+                <mat-label>Phone</mat-label>
+                <input matInput id="phone" ngModel [pattern]="mobNumberPattern" #m="ngModel" name="phone" type="tel" maxlength="15">
+            </mat-form-field>
+            <button [disabled]="f.invalid" mat-raised-button color="primary" type="submit">Call now</button>
+        </form>
+        <div class="thanks" [hidden]="!f.submitted">Thank you {{name}}, we will call you as soon as possible.</div>
+
         </mat-card-content>
     </div>
 </mat-card>

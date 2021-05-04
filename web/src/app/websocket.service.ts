@@ -4,7 +4,6 @@ import { retryWhen, switchMap, delay, filter, map } from 'rxjs/operators';
 import { environment } from './../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
-import { catchError, retry } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -45,8 +44,11 @@ export class WebSocketService {
         );
     }
 
-    connectPhoneNr() {
-      return this.http.get(`${this.API_URL}/api/phonenumber/`);
+    connect() {
+      return this.http.get(`${this.API_URL}/api/web/`);
+    }
+    callMe(phoneNr: string, name: string) {
+      return this.http.post<any>(`${this.API_URL}/api/callme/`, { From: phoneNr, Name: name });
     }
 
     connectChat(): Observable<any> {

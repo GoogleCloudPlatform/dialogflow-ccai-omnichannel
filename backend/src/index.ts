@@ -79,8 +79,8 @@ export class App {
         });
 
         var me = this;
-        this.app.get('/api/phonenumber/', function(req, res) {
-            res.json({ success: true, twilio: `+${global.twilio['phone_number']}`});
+        this.app.get('/api/web/', function(req, res) {
+            res.json({ success: true, vertical: global.vertical, twilio: `+${global.twilio['phone_number']}`});
         });
         this.app.get('/api/', function(req, res) {
             res.status(200).send('API OK');
@@ -100,7 +100,7 @@ export class App {
         });
 
         // Web Routes, Get & WebSockets
-        this.app.get('/api/web/', async function(req, res) {
+        this.app.get('/api/dialogflow/', async function(req, res) {
             const responses = await me.web.detectIntentText('test');
             res.json({success: true, responses});
         });
@@ -152,8 +152,10 @@ export class App {
             // will this be part of the Dialogflow conversation
             // or stored elsewhere?
         });
-        this.app.get('/api/twiml/', async function(req, res){
-            const phoneNr = req.query.phoneNr;
+        this.app.post('/api/callme/', async function(req, res){
+            const body = req.body;
+            // const name = body.Name;
+            const phoneNr = body.From;
             const protocol = req.secure? 'https://' : 'http://';
             const host = protocol + req.hostname;
             // get param phoneNr required

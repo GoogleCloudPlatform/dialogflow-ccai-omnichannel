@@ -15,7 +15,8 @@
  * limitations under the License.
  * =============================================================================
  */
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { WebSocketService } from './websocket.service';
 
 @Component({
   selector: 'front-end',
@@ -23,5 +24,24 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
+  public class: string;
+  public phoneNr: string;
   title = 'ccai360';
+
+  constructor(
+    private webSocket: WebSocketService
+  ) {
+    this.class = '';
+    this.phoneNr = '7';
+  }
+
+  ngOnInit(): void {
+    const me = this;
+    this.webSocket.connect()
+      .subscribe(function(data: any) {
+        me.class = data['vertical'];
+        me.phoneNr = data['twilio'];
+      });
+  }
+
 }

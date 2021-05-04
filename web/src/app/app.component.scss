@@ -7,3 +7,46 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
+  .phone {
+    margin: 10px;
+    padding: 5px;
+    display: block;
+  }
+
+  .retail {
+    .img {
+      background-image: url('../assets/banner-retail.png');
+    }
+  
+    .logo{
+      background-image: url('../assets/logo-retail.png');
+    }
+  }
+  
+  .insurances {
+    .img {
+      background-image: url('../assets/banner-insurances.png');
+    }
+    .logo {
+      background-image: url('../assets/logo-insurances.png');
+    }
+  }
+  
+  .fsi {
+    .img {
+      background-image: url('../assets/banner-fsi.png');
+    }
+    .logo {
+      background-image: url('../assets/logo-fsi.png');
+    }
+  }
+  
+  .health {
+    .img {
+      background-image: url('../assets/banner-health.png');
+    }
+    .logo {
+      background-image: url('../assets/logo-health.png');
+    }
+
+  }

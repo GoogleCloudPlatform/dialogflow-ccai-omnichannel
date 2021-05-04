@@ -26,7 +26,7 @@ export interface GlobalConfig {
         config_id: string // 'development' || 'production'
         gc_project_id: string
         debug: boolean
-        vertical: string // 'fsi' || 'healthcare' || 'retail'
+        vertical: string // 'fsi' || 'health' || 'retail' || 'insurances'
         server_url: string // url or ngrok tunnel
         node_port?: number
         dialogflow: {
@@ -94,7 +94,7 @@ const globalConfig: GlobalConfig = {
         gc_project_id: '.ENV',
         server_url: '.ENV',
         node_port: 8080,
-        vertical: 'fsi',
+        vertical: 'health',
         dialogflow: {
             version: 'cx', // 'v2beta1',
             cx_agent_id: '.ENV',
