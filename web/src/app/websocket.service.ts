@@ -2,7 +2,9 @@ import { Injectable } from '@angular/core';
 import { webSocket } from 'rxjs/webSocket';
 import { retryWhen, switchMap, delay, filter, map } from 'rxjs/operators';
 import { environment } from './../environments/environment';
-import { Observable, of } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { Observable, of, throwError } from 'rxjs';
+import { catchError, retry } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -12,6 +14,8 @@ export class WebSocketService {
     connectionAudio$: any
     RETRY_SECONDS = 10;
     API_URL = environment.serverUrl;
+
+    constructor(private http: HttpClient) { }
 
     connectAudio(): Observable<any> {
         return of(this.API_URL).pipe(
@@ -39,6 +43,10 @@ export class WebSocketService {
           }),
           retryWhen((errors) => errors.pipe(delay(this.RETRY_SECONDS)))
         );
+    }
+
+    connectPhoneNr() {
+      return this.http.get(`${this.API_URL}/api/phonenumber/`);
     }
 
     connectChat(): Observable<any> {

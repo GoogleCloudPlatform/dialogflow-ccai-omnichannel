@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { WebSocketService } from '../websocket.service';
 
 @Component({
   selector: 'app-phonenr',
@@ -8,11 +9,15 @@ import { Component, OnInit } from '@angular/core';
 export class PhonenrComponent implements OnInit {
   public phoneNr: string;
 
-  constructor() {
-    this.phoneNr = "123";
+  constructor(
+    private webSocket: WebSocketService
+  ) {
+    this.phoneNr = '';
   }
 
   ngOnInit(): void {
+    this.webSocket.connectPhoneNr()
+      .subscribe((data: any) => this.phoneNr = data['twilio']);
   }
 
 }

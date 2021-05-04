@@ -39,7 +39,6 @@ export class ChatComponent implements OnInit {
 
     ngOnInit(): void {
       const me = this;
-      var isMsg = true;
       me.webSocket.connectChat().pipe(
         takeUntil(this.destroyed$)
       ).subscribe(agentResponse => {

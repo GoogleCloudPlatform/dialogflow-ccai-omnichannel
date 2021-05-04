@@ -59,6 +59,11 @@ export class App {
             perMessageDeflate: false
         });
 
+        // var corsOptions = {
+        //    origin: 'http://example.com',
+        //    optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+        // }
+
         this.app.use(cors());
         this.app.use(express.urlencoded({
             extended: true
@@ -74,6 +79,9 @@ export class App {
         });
 
         var me = this;
+        this.app.get('/api/phonenumber/', function(req, res) {
+            res.json({ success: true, twilio: `+${global.twilio['phone_number']}`});
+        });
         this.app.get('/api/', function(req, res) {
             res.status(200).send('API OK');
         });
