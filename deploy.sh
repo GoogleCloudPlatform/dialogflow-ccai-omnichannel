@@ -13,7 +13,7 @@ set -a
   set +a
 
 bold "Renew config maps"
-kubectl remove configmap chatserver-config
+#kubectl remove configmap chatserver-config
 kubectl create configmap chatserver-config --from-env-file=backend/.env
 
 bold "Build container & push to registry"
