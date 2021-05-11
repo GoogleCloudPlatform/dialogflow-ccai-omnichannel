@@ -12,6 +12,10 @@ set -a
   source .properties
   set +a
 
+bold "Renew config maps"
+kubectl remove configmap chatserver-config
+kubectl create configmap chatserver-config --from-env-file=backend/.env
+
 bold "Build container & push to registry"
 gcloud builds submit --config _cloudbuilder/setup.yaml
 
@@ -35,4 +39,4 @@ cat _cloudbuilder/loadbalancer.yaml | envsubst | kubectl apply -f -
 bold "Deploy Ad website"
 cd ads
 gcloud builds submit --tag gcr.io/$PROJECT_ID/ads
-gcloud run deploy --image gcr.io/$PROJECT_ID/ads
+gcloud run deploy ads --platform=managed --allow-unauthenticated --region $REGION_ALTERNATIVE --image gcr.io/$PROJECT_ID/ads
