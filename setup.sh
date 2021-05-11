@@ -30,6 +30,7 @@ err() {
 bold "Create a service account"
 export SERVICE_ACCOUNT_NAME=$GCP_PROJECT-serviceaccount
 export SA_EMAIL=$SERVICE_ACCOUNT_NAME@$GCP_PROJECT.iam.gserviceaccount.com
+export BUCKET_NAME=$GCP_PROJECT-bucket
 
 gcloud iam service-accounts create \
   $SERVICE_ACCOUNT_NAME \
@@ -97,3 +98,9 @@ gcloud services enable \
 ## ADD FIREBASE
 bold "Add firebase to your GCP project"
 firebase projects:addfirebase $GCP_PROJECT --debug  
+
+## CREATE A BUCKET
+gsutil mb gs://$BUCKET_NAME
+gsutil cp ccai-360-key.json gs://$BUCKET_NAME
+gsutil acl ch -u dapio-prod@appspot.gserviceaccount.com:READ gs://$BUCKET_NAME/ccai-360-key.json
+

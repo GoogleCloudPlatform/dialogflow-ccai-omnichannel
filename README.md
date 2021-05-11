@@ -142,6 +142,19 @@ To deploy another deployment:
 
 The following steps will guide you to run all the various channels. These steps are optionally, in case you want to run it from your own machine.
 
+### AdLingo
+
+[AdLingo Dialogflow Docs](https://docs.adlingo.com/adlingo-api/v2/dialogflow/)
+
+1. Login into your AdLingo environment: https://adsbuilder.adlingo.com/
+2. Create a [conversational agent](https://adsbuilder.adlingo.com/agents/add-new/dialogflow_service_account?activeWorkgroupId=5739925852913664):
+   - Specify the GCS bucket name and path to service account (it will be gs://[project-name]-bucket/ccai-360-key.json)
+   - Event name: `WELCOME-ADLINGO`
+3. Create a creative
+   - Upload an background image 600x1200 hi-res PNG
+   - Upload a logo
+   - Upload an avatar
+
 ### Node JS Backend Server
 
 1. In order to run this demo on your local machine. You will need to have Node installed.

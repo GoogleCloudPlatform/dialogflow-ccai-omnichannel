@@ -98,7 +98,7 @@ const globalConfig: GlobalConfig = {
         node_port: 8080,
         vertical: '.ENV',
         dialogflow: {
-            version: 'cx', // 'v2beta1',
+            version: 'v2beta1', // 'v2beta1' || 'cx',
             cx_agent_id: '.ENV',
             cx_location: '.ENV',
             language_code: 'en-US'
