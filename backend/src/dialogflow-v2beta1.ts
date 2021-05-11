@@ -110,7 +110,7 @@
          var botResponse;
          try {
              const [response] = await this.sessionClient.detectIntent(request);
-             // this.debug.log(response);
+             this.debug.log(response);
              botResponse = this.beautifyResponses(response, input);
          } catch(e) {
              this.debug.error(e);
@@ -142,7 +142,7 @@
                  sentiment: response.queryResult.sentimentAnalysisResult,
                  text: response.queryResult.queryText, // override
                  responseMessages: response.queryResult.fulfillmentMessages,
-                 fulfillmentText: response.queryResult.responseMessages[0].text.text[0],
+                 fulfillmentText: response.queryResult.fulfillmentText,
                  webhookPayloads: response.queryResult.webhookPayload,
                  webhookStatuses: response.queryResult.webhookStatus,
                  webhookSource: response.queryResult.webhookSource,

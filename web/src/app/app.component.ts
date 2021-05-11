@@ -32,7 +32,7 @@ export class AppComponent {
     private webSocket: WebSocketService
   ) {
     this.class = '';
-    this.phoneNr = '7';
+    this.phoneNr = '';
   }
 
   ngOnInit(): void {

@@ -42,10 +42,14 @@ export class ChatComponent implements OnInit {
       me.webSocket.connectChat().pipe(
         takeUntil(this.destroyed$)
       ).subscribe(agentResponse => {
-        me.messages.push({
-          text: agentResponse.responseMessages[0].text.text,
-          class: 'agent balloon'
-        });
+        if(!agentResponse.error){
+          me.messages.push({
+            text: agentResponse.responseMessages[0].text.text,
+            class: 'agent balloon'
+          });
+        } else {
+          console.log(`server error: ${agentResponse.error}`);
+        }
       });
       me.webSocket.sendChat({'web-event' : 'WELCOME' });
     }

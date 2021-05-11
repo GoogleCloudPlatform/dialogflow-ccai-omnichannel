@@ -42,6 +42,11 @@ spec:
               configMapKeyRef:
                 name: chatserver-config
                 key: PHONE_NR
+          - name: "VERTICAL"
+            valueFrom:
+              configMapKeyRef:
+                name: chatserver-config
+                key: VERTICAL
           - name: "TWILIO_ACCOUNT_SID"
             valueFrom:
               configMapKeyRef:
