@@ -93,7 +93,8 @@ gcloud services enable \
   container.googleapis.com \
   containerregistry.googleapis.com \
   cloudbuild.googleapis.com \
-  storage.googleapis.com
+  storage.googleapis.com \
+  run.googleapis.com
 
 ## ADD FIREBASE
 bold "Add firebase to your GCP project"

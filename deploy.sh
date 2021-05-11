@@ -32,3 +32,7 @@ bold "Create loadbalancer / Ingress..."
 kubectl delete -f _cloudbuilder/loadbalancer.yaml
 cat _cloudbuilder/loadbalancer.yaml | envsubst | kubectl apply -f -
 
+bold "Deploy Ad website"
+cd ads
+gcloud builds submit --tag gcr.io/$PROJECT_ID/ads
+gcloud run deploy --image gcr.io/$PROJECT_ID/ads
