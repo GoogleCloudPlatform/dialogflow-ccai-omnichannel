@@ -40,16 +40,11 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 footer {
   margin: 8px;
-  color: #ccc;
-  display: flex;
+  color: #ababab;
   align-items: center;
   line-height: 20px;
-  text-align: right;
-}
-
-footer a {
-  display: flex;
-  align-items: center;
+  text-align: center;
+  padding: 20px;
 }
 
 .logo {

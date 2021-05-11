@@ -7,6 +7,19 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
+  .okgoogle {
+    background: url('../assets/googlenestmini.png') 0 50% no-repeat;
+    padding: 60px 100px;
+    color: #fff;
+    font-size: 20px;
+    line-height: 28px;
+
+    .invoke {
+      display: block;
+      font-style: italic;
+    }
+  }
+
   .phone {
     margin: 10px;
     padding: 5px;
