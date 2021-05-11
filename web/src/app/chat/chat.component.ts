@@ -20,6 +20,7 @@ import { NgForm } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { WebSocketService } from '../websocket.service';
+import * as $ from 'jquery';
 
 @Component({
   selector: 'app-chat',
@@ -44,9 +45,16 @@ export class ChatComponent implements OnInit {
       ).subscribe(agentResponse => {
         if(!agentResponse.error){
           me.messages.push({
-            text: agentResponse.responseMessages[0].text.text,
-            class: 'agent balloon'
+            text: 'The virtual agent is typing...',
+            class: 'spinner'
           });
+          setTimeout(function(){
+            me.messages[me.messages.length-1] = {
+              text: agentResponse.responseMessages[0].text.text,
+              class: 'agent balloon'
+            };
+            $('.chatarea').stop().animate({ scrollTop: $('.chatarea')[0].scrollHeight}, 2000);
+          }, 1000);
         } else {
           console.log(`server error: ${agentResponse.error}`);
         }
@@ -60,6 +68,7 @@ export class ChatComponent implements OnInit {
         text: query,
         class: 'user balloon'
       });
+      $('.chatarea').stop().animate({ scrollTop: $('.chatarea')[0].scrollHeight}, 1000);
     }
 
     onSubmit(f: NgForm): void {

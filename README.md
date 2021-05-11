@@ -154,6 +154,7 @@ The following steps will guide you to run all the various channels. These steps 
    - Upload an background image 600x1200 hi-res PNG
    - Upload a logo
    - Upload an avatar
+4. For this demo we are integrating an iframe with the preview of the add in the external website interface. In a real world application, this will be provided through an ads platform.
 
 ### Node JS Backend Server
 
