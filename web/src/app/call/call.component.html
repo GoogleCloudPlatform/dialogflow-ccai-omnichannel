@@ -32,7 +32,7 @@
                 <mat-label>Phone</mat-label>
                 <input matInput id="phone" ngModel [pattern]="mobNumberPattern" #m="ngModel" name="phone" type="tel" maxlength="15">
             </mat-form-field>
-            <button [disabled]="f.invalid" mat-raised-button color="primary" type="submit">Call now</button>
+            <button [disabled]="f.invalid" mat-raised-button type="submit">Call now</button>
         </form>
         <div class="thanks" [hidden]="!f.submitted">Thank you {{name}}, we will call you as soon as possible.</div>
 

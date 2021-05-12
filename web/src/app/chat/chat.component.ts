@@ -44,8 +44,14 @@ export class ChatComponent implements OnInit {
         takeUntil(this.destroyed$)
       ).subscribe(agentResponse => {
         if(!agentResponse.error){
+          var seconds = 2000;
+          const str = agentResponse.responseMessages[0].text.text;
+          const totalChars = str.length;
+          const factor = totalChars / 75; // a sentence has an avarage of 75 - 100 characters
+          if(factor > 1) seconds = factor * 2000;
+          if(factor > 4) seconds = 8000;
+
           me.messages.push({
-            text: 'The virtual agent is typing...',
             class: 'spinner'
           });
           setTimeout(function(){
@@ -54,7 +60,7 @@ export class ChatComponent implements OnInit {
               class: 'agent balloon'
             };
             $('.chatarea').stop().animate({ scrollTop: $('.chatarea')[0].scrollHeight}, 2000);
-          }, 1000);
+          }, seconds);
         } else {
           console.log(`server error: ${agentResponse.error}`);
         }
