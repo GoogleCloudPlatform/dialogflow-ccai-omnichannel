@@ -64,18 +64,19 @@ export class ContactCenterAi {
     }
 
     async sms(query:string, phoneNr:string, cb){
+      const me = this;
       const botResponse = await this.dialogflow.detectIntentText(query);
 
       // https://www.twilio.com/docs/sms/send-messages
-      this.twilio.messages.create(
+      me.twilio.messages.create(
         {
           to: phoneNr, // Recipient's number
-          from: this.config.twilio['phone_number'],
+          from: me.config.twilio['phone_number'],
           body: botResponse.fulfillmentText // Message to Recipient
         }).then(function(message){
           // TODO PUBSUB
           this.debug.log(message);
-          cb({ succss: true, message});
+          cb({ success: true, message});
         }).catch(function(error){
           this.debug.error(error);
           cb({ success: false, error });

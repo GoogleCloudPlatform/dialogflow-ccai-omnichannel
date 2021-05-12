@@ -146,16 +146,16 @@ export class App {
                 res.json(data);
             });
 
-            // TODO this will be part from the flow
-            // and a fulfillment function in Dialogflow will trigger this
-            // route with a Body
-            // will this be part of the Dialogflow conversation
-            // or stored elsewhere?
+            // For OUTBOUND we can configure a fulfillment Cloud Function
+            // Which makes a POST call, with a Body = "confirmation"
+            // and a From = send to some number.
+            // TODO add this to a cloud function in the project.
         });
         this.app.post('/api/callme/', async function(req, res){
             const body = req.body;
             // const name = body.Name;
             const phoneNr = body.From;
+            console.log(phoneNr);
             const protocol = req.secure? 'https://' : 'http://';
             const host = protocol + req.hostname;
             // get param phoneNr required
