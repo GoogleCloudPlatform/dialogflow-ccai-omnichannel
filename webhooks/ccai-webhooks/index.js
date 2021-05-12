@@ -34,7 +34,7 @@ async function doRequest(data, path){
     });
 }
 
-async function handleRequest(map, request){
+async function handleRequest(map, request, response){
     let intent;  
     if(request.body && request.body.queryResult && request.body.queryResult.intent){
       intent = request.body.queryResult.intent.displayName;
