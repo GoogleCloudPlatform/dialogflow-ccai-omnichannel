@@ -2,25 +2,25 @@
 
 const axios = require('axios');
 
-async function textMsg(request) {
+async function textMsg(request, response) {
     const data = JSON.stringify({
         Body: 'CONFIRMATION',
         From: '31651536814'
     });
     const path = '/api/sms/';
 
-    let res = await doRequest(data, path);
-    res.json(res);
+    let results = await doRequest(data, path);
+    response.json(results);
 }
 
-async function call(request) {
+async function call(request, response) {
     const data = JSON.stringify({
         From: '31651536814'
     });
     const path = '/api/callme/';
 
-    let res = await doRequest(data, path);
-    res.json(res);
+    let results = await doRequest(data, path);
+    response.json(results);
 }
 
 async function doRequest(data, path){
@@ -33,15 +33,16 @@ async function doRequest(data, path){
     });
 }
 
-
-function handleRequest(map, request){
+async function handleRequest(map, request){
     let intent;  
     if(request.body && request.body.queryResult && request.body.queryResult.intent){
-          intent = request.body.queryResult.intent.displayName;
+      intent = request.body.queryResult.intent.displayName;
     }
     let response;	
+    console.log(intent);
     if (map.has(intent) !== false){
-        response = map.get(intent)(request);
+        response = await map.get(intent)(request);
+        console.log(response);
     } else {
         response = map.get('Default Fallback Intent')(request);
     }

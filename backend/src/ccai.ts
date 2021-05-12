@@ -75,10 +75,10 @@ export class ContactCenterAi {
           body: botResponse.fulfillmentText // Message to Recipient
         }).then(function(message){
           // TODO PUBSUB
-          this.debug.log(message);
+          me.debug.log(message);
           cb({ success: true, message});
         }).catch(function(error){
-          this.debug.error(error);
+          me.debug.error(error);
           cb({ success: false, error });
         });
     }

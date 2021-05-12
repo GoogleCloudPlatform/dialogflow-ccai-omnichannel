@@ -80,7 +80,11 @@ export class App {
 
         var me = this;
         this.app.get('/api/web/', function(req, res) {
-            res.json({ success: true, vertical: global.vertical, twilio: `+${global.twilio['phone_number']}`});
+            res.json({
+                success: true,
+                vertical: global.vertical,
+                twilio: global.twilio['phone_number']
+            });
         });
         this.app.get('/api/', function(req, res) {
             res.status(200).send('API OK');
@@ -141,6 +145,11 @@ export class App {
             const body = req.body;
             const query = body.Body;
             const phoneNr = body.From;
+
+            console.log(body);
+            console.log(phoneNr);
+            console.log(query);
+
             // const phoneNrCountry = body.FromCountry
             await me.ccai.sms(query, phoneNr, function(data){
                 res.json(data);
