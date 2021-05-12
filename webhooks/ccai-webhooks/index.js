@@ -2,7 +2,7 @@
 
 const axios = require('axios');
 
-async function textMsg(request, response) {
+async function textMsg() {
     const data = JSON.stringify({
         Body: 'CONFIRMATION',
         From: '31651536814'
@@ -10,23 +10,24 @@ async function textMsg(request, response) {
     const path = '/api/sms/';
 
     let results = await doRequest(data, path);
-    response.json(results);
+    return results;
 }
 
-async function call(request, response) {
+async function call() {
     const data = JSON.stringify({
         From: '31651536814'
     });
     const path = '/api/callme/';
 
     let results = await doRequest(data, path);
-    response.json(results);
+    return results;
 }
 
 async function doRequest(data, path){
     axios.post(`https://www.conv.dev${path}`, data)
-      .then(function (response) {
+      .then(function (results) {
         console.log('call was made');
+        console.log(results);
       })
       .catch(function (error) {
         console.log(error);
@@ -38,22 +39,21 @@ async function handleRequest(map, request){
     if(request.body && request.body.queryResult && request.body.queryResult.intent){
       intent = request.body.queryResult.intent.displayName;
     }
-    let response;	
-    console.log(intent);
+    let results;	
     if (map.has(intent) !== false){
-        response = await map.get(intent)(request);
-        console.log(response);
+        results = await map.get(intent)(request);
+        console.log(results);
     } else {
-        response = map.get('Default Fallback Intent')(request);
+      results = map.get('Default Fallback Intent')(request);
     }
-    return response;
+    response.json(results);
 }
 
 exports.sendConfirmation = function sendConfirmation (request, response) {
     let intentMap = new Map();
     intentMap.set('callme-now', call);
     intentMap.set('confirm-appointment', textMsg);
-    let webhookResponse = handleRequest(intentMap, request);
+    let webhookResponse = handleRequest(intentMap, request, response);
     console.log(webhookResponse);
     response.json(webhookResponse)
 };
