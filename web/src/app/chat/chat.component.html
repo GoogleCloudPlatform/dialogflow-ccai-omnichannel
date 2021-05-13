@@ -25,10 +25,11 @@
         <form #f="ngForm" (ngSubmit)="onSubmit(f)" id="chatbox">
 
             <div class="chatarea">
-                <div class="avatar"></div>
                 <ul id="messages" class="history">
                     <li *ngFor="let msg of messages" class="{{msg.class}}">
+                        <div>
                         {{msg.text}}
+                        </div>
                     </li>
                 </ul>
             </div>

@@ -20,6 +20,7 @@ import { NgForm } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { WebSocketService } from '../websocket.service';
+import * as $ from 'jquery';
 
 @Component({
   selector: 'app-chat',
@@ -41,17 +42,46 @@ export class ChatComponent implements OnInit {
       const me = this;
       me.webSocket.connectChat().pipe(
         takeUntil(this.destroyed$)
-      ).subscribe(agentResponse => {
+      ).subscribe(async agentResponse => {
+
+        // console.log(agentResponse);
+
         if(!agentResponse.error){
-          me.messages.push({
-            text: agentResponse.responseMessages[0].text.text,
-            class: 'agent balloon'
-          });
+          const messages = agentResponse.responseMessages; var i = 0;
+          for(i; i<messages.length; i++) {
+            const m = messages[i].text.text;
+            await this.task(i, m);
+          }
         } else {
           console.log(`server error: ${agentResponse.error}`);
         }
       });
       me.webSocket.sendChat({'web-event' : 'WELCOME' });
+    }
+
+    async task(i: number, m: string){
+      const me = this;
+      var seconds = 2000;
+      const totalChars = m.length;
+      const factor = totalChars / 75; // a sentence has an avarage of 75 - 100 characters
+      if(factor > 1) seconds = factor * 2000;
+      if(factor > 4) seconds = 8000;
+
+      me.messages.push({
+        class: 'spinner'
+      });
+
+      await me.timer(seconds);
+
+      me.messages[me.messages.length-1] = { // TODO
+        text: m,
+        class: 'agent balloon'
+      };
+      $('.chatarea').stop().animate({ scrollTop: $('.chatarea')[0].scrollHeight}, 2000);
+    }
+
+    timer(ms: number) {
+      return new Promise(res => setTimeout(res, ms));
     }
 
     intentMatching(query: any): void {
@@ -60,6 +90,7 @@ export class ChatComponent implements OnInit {
         text: query,
         class: 'user balloon'
       });
+      $('.chatarea').stop().animate({ scrollTop: $('.chatarea')[0].scrollHeight}, 1000);
     }
 
     onSubmit(f: NgForm): void {

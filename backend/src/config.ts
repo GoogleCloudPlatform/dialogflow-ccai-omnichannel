@@ -123,7 +123,7 @@ const globalConfig: GlobalConfig = {
             sample_rate_hertz: 8000,
             single_utterance: true,
             interim_results: false,
-            welcome_event: 'WELCOME',
+            welcome_event: 'WELCOME-PHONE',
             speaking_rate: 1.0,
             pitch: 1.0,
             volume_gain_db: 0.0,

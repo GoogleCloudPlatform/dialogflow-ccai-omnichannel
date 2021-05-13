@@ -84,6 +84,7 @@ bold "Enable APIs..."
 gcloud services enable \
   bigquery-json.googleapis.com \
   cloudtrace.googleapis.com \
+  cloudfunctions.googleapis.com \
   dialogflow.googleapis.com \
   firestore.googleapis.com \
   pubsub.googleapis.com \
@@ -105,3 +106,14 @@ gsutil mb gs://$BUCKET_NAME
 gsutil cp ccai-360-key.json gs://$BUCKET_NAME
 gsutil acl ch -u dapio-prod@appspot.gserviceaccount.com:READ gs://$BUCKET_NAME/ccai-360-key.json
 
+## CREATE A CLOUD FUNCTION FOR WEBHOOKS
+bold "Creating Cloud Functions..."
+gcloud functions deploy ccaiWebhook --region=$REGION_ALTERNATIVE \
+--memory=512MB \
+--runtime=nodejs10 \
+--trigger-http \
+--source=webhooks/ccai-webhook \
+--stage-bucket=$BUCKET_NAME \
+--timeout=60s \
+--allow-unauthenticated \
+--entry-point=sendConfirmation

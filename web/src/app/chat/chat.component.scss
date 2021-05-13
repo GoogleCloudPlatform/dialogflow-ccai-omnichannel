@@ -6,121 +6,141 @@ $alternative: #29434e;
     margin-top: -30px;
 }
 
-mat-card {
+.support-card {
     margin: 12px;
-    padding: 42px;
+    padding: 22px 12px 12px 12px;
+    background: lighten($primary, 52%);  
 }
 
 #chatbox { 
     margin: 0 auto;
-    position: relative;
-    min-height: 450px;
-    overflow: scroll;
-    width: 100%;
-    position: relative;
 }
 
 .chatarea{
-    height: 420px;
+    height: 300px;
     overflow-x: hidden;
     position: relative;
 }
 
+
 .chatfooter{
-    height: 50px;
-    position: relative;
-    width: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: flex-end;
+    align-content: stretch;
 }
 
 #chatbox .chatinput {
+    display: block;
+    flex-grow: 0;
+    flex-shrink: 1;
+    flex-basis: auto;
+    align-self: auto;
+    order: 0;
     width: 80%;
-    position: absolute;
-    left: 0;
-    height: 50px;
- 
-    .mat-form-field {
-        width: 100%;
+    mat-form-field {
+        display: block;
+        height: 38px;
+        padding: 5px;
+        margin-right: 10px;
     }
 }
 #chatbox button { 
-    position: absolute;
-    right: 2px;
-}
-
-.avatar {
-    display: inline-block;
-    //background-image:url('chatavatar.png');
-    background-repeat: no-repeat;
-    background-size: 100px 117px;
-    height: 117px;
-    width: 100px;
-    left: 0;
-    position: absolute;
+    display: block;
+    flex-grow: 0;
+    flex-shrink: 1;
+    flex-basis: auto;
+    align-self: flex-end;
+    order: 0;
+    width: 20%;
 }
 
 #messages { 
-    list-style-type: none; 
-    margin: 0;
-    padding: 0; 
-    display: inline-block;
-    left: 120px;
-    width: 80%;
-    position: absolute;
-}
-
-:host ::ng-deep .balloon {
-    border-radius: .4em;
-    padding: 10px;
-    margin: 15px 0;
-    position: relative;
-    width: 80%;
+    list-style-type: none;
+    margin: 0 0 0 30px;
+    padding: 0;
+    display: block;
 }
 
 :host ::ng-deep a {
 	color: #fff;
 }
 
-:host ::ng-deep .agent { 
-	background: $primary;   
-    color: #fff;
-    font-weight: bold;
-    margin-right: 20px;
-    margin-left: 0px;
-}
-:host ::ng-deep .agent:after { 
-	content: '';
-	position: absolute;
-	left: 0;
-	top: 50%;
-	width: 0;
-    height: 0;
-    border: 10px solid transparent;
-	border-right-color: $primary;
-	border-left: 0;
-	border-top: 0;
-	margin-top: -10px;
-	margin-left: -8px;
+:host ::ng-deep .balloon {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: flex-end;
+    align-content: stretch;
+    position: relative;
 }
 
-:host ::ng-deep .user { 
+:host ::ng-deep .balloon div {
+    padding: 8px;
+    border-radius: 5px;
+    position: relative;
+    max-width: 300px;
+}
+
+:host ::ng-deep .agent div:before { 
+    content: ''; position: absolute;
+    width: 0; height: 0; left: -8px; top: 8px;
+    border-top: 4px solid transparent;
+    border-right: 8px solid $primary;
+    border-bottom: 4px solid transparent;
+}
+
+:host ::ng-deep .agent:before { 
+    content: "B";
+    position: absolute;
+    padding: 3px 8px;
+    left: -28px;
+    top: 8px;
+    background: #43a047;
+    border-radius: 35px;
+    color: white;
+}
+
+:host ::ng-deep .agent div { 
+	background: $primary;   
+    color: #fff;
+    display: block;
+    flex-grow: 0;
+    flex-shrink: 1;
+    flex-basis: auto;
+    align-self: flex-start;
+    order: 0;
+}
+
+:host ::ng-deep .user div:after { 
+    content: ''; position: absolute;
+    width: 0; height: 0; right: -8px; bottom: 8px;
+    border-top: 4px solid transparent;
+    border-left: 8px solid $alternative;
+    border-bottom: 4px solid transparent;
+}
+
+:host ::ng-deep .user div { 
 	background: $alternative;    
     color: #fff;
-    margin-right: 0px;
-    margin-left: 20px;
+
+    display: block;
+    flex-grow: 0;
+    flex-shrink: 1;
+    flex-basis: auto;
+    align-self: flex-end;
+    order: 0;
 }
-:host ::ng-deep .user:after { 
-    content: '';
-	position: absolute;
-	right: 0;
-	top: 50%;
-	width: 0;
-    height: 0;
-	border: 10px solid transparent;
-	border-left-color: $alternative;
-	border-right: 0;
-	border-top: 0;
-	margin-top: -10px;
-	margin-right: -8px;
+
+:host ::ng-deep .spinner { 
+	background: url('../../assets/bullet3.gif') no-repeat;
+    background-size: 30px;
+    background-position: 0 20px;
+    height: 30px;
+    display: block;
 }
 
 #messages li { padding: 5px 10px; }
