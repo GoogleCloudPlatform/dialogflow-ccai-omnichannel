@@ -6,3 +6,5 @@ spec:
   domains:
     - $DOMAIN1
     - www.$DOMAIN1
+    - ads.$DOMAIN1
+    - ccai.$DOMAIN1
