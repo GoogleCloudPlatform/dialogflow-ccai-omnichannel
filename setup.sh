@@ -112,7 +112,7 @@ gcloud functions deploy ccaiWebhook --region=$REGION_ALTERNATIVE \
 --memory=512MB \
 --runtime=nodejs10 \
 --trigger-http \
---source=webhooks/ccai-webhook \
+--source=webhooks/ccai-webhooks \
 --stage-bucket=$BUCKET_NAME \
 --timeout=60s \
 --allow-unauthenticated \

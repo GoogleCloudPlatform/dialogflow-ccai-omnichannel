@@ -3,20 +3,13 @@
 const axios = require('axios');
 
 async function textMsg() {
-    const data = JSON.stringify({
-        Body: 'CONFIRMATION',
-        From: '31651536814'
-    });
-    const path = '/api/sms/';
+    const path = '/api/sms/confirmation/';
 
     let results = await doRequest(data, path);
     return results;
 }
 
 async function call() {
-    const data = JSON.stringify({
-        From: '31651536814'
-    });
     const path = '/api/callme/';
 
     let results = await doRequest(data, path);
@@ -24,9 +17,8 @@ async function call() {
 }
 
 async function doRequest(data, path){
-    axios.post(`https://www.conv.dev${path}`, data)
+    axios.get(`https://www.conv.dev${path}`)
       .then(function (results) {
-        console.log('call was made');
         console.log(results);
       })
       .catch(function (error) {

@@ -7,7 +7,7 @@ metadata:
     kubernetes.io/ingress.class: "gce"
     kubernetes.io/ingress.global-static-ip-name: ${GKE_CLUSTER}
     networking.gke.io/managed-certificates: cert-conv
-    #kubernetes.io/ingress.allow-http: "false"
+    kubernetes.io/ingress.allow-http: "true"
 spec:
   rules:
   - http:

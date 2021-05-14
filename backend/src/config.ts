@@ -81,6 +81,9 @@ export interface GlobalConfig {
             table_name: string
             columns: string
         }
+        profile: {
+            my_phone_number: string
+        }
     }
     production?: {
         config_id: string,
@@ -134,6 +137,9 @@ const globalConfig: GlobalConfig = {
         },
         angular: {
             angular_port: 4200
+        },
+        profile: {
+            my_phone_number: '.ENV'
         }
 
     },
@@ -170,6 +176,9 @@ const accountSid = process.env.npm_config_TWILIO_ACCOUNT_SID ||process.env.TWILI
 finalConfig.twilio.account_sid = accountSid;
 const authToken = process.env.npm_config_TWILIO_ACCOUNT_TOKEN ||process.env.TWILIO_ACCOUNT_TOKEN || envConfig.twilio.auth_token;
 finalConfig.twilio.auth_token = authToken;
+const myPhoneNumber = process.env.npm_config_MY_PHONE_NUMBER ||process.env.MY_PHONE_NUMBER || envConfig.profile.my_phone_number;
+finalConfig.profile.my_phone_number = myPhoneNumber;
+
 
 finalConfig.debugger = new Debug(finalConfig);
 
