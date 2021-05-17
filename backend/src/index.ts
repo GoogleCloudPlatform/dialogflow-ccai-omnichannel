@@ -141,24 +141,26 @@ export class App {
         });
 
         // Twilio Start Routes
+        var me = this;
+        this.app.get('/api/sms/confirmation/', async function(req, res) {
+
+            const phoneNr = global.profile['my_phone_number'];
+            const query = 'CONFIRMATION';
+
+            await me.ccai.sms(query, phoneNr, function(data){
+                res.json(data);
+            });
+        });
+
         this.app.post('/api/sms/', async function(req, res){
             const body = req.body;
             const query = body.Body;
             const phoneNr = body.From;
 
-            console.log(body);
-            console.log(phoneNr);
-            console.log(query);
-
             // const phoneNrCountry = body.FromCountry
             await me.ccai.sms(query, phoneNr, function(data){
                 res.json(data);
             });
-
-            // For OUTBOUND we can configure a fulfillment Cloud Function
-            // Which makes a POST call, with a Body = "confirmation"
-            // and a From = send to some number.
-            // TODO add this to a cloud function in the project.
         });
         this.app.post('/api/callme/', async function(req, res){
             const body = req.body;
@@ -175,6 +177,17 @@ export class App {
             } else {
                 res.status(500);
             }
+        });
+        this.app.get('/api/callme/', async function(req, res) {
+
+            // TODO this should come from a profile
+            const phoneNr = global.profile['my_phone_number'];
+            const protocol = req.secure? 'https://' : 'http://';
+            const host = protocol + req.hostname;
+
+            await me.ccai.streamOutbound(phoneNr, host, function(data){
+                res.json(data);
+            });
         });
         this.app.post('/api/twiml/', (req, res) => {
             // this is the route you configure your HTTP POST webhook in the Twilio console to.

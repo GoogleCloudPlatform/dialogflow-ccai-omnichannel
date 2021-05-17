@@ -13,7 +13,7 @@ set -a
   set +a
 
 bold "Renew config maps"
-#kubectl remove configmap chatserver-config
+kubectl delete configmap chatserver-config
 kubectl create configmap chatserver-config --from-env-file=backend/.env
 
 bold "Build container & push to registry"
@@ -40,3 +40,15 @@ bold "Deploy Ad website"
 cd ads
 gcloud builds submit --tag gcr.io/$PROJECT_ID/ads
 gcloud run deploy ads --platform=managed --allow-unauthenticated --region $REGION_ALTERNATIVE --image gcr.io/$PROJECT_ID/ads
+
+bold "Deploy Cloud Function"
+cd ..
+gcloud functions deploy ccaiWebhook --region=$REGION_ALTERNATIVE \
+--memory=512MB \
+--runtime=nodejs10 \
+--trigger-http \
+--source=webhooks/ccai-webhooks \
+--stage-bucket=$GCP_PROJECT-bucket \
+--timeout=60s \
+--allow-unauthenticated \
+--entry-point=sendConfirmation

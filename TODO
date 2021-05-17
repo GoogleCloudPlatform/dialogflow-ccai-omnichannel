@@ -7,13 +7,3 @@ Test the flutter app
 
 curl -d "From=31651536814&Body=CONFIRMATION" -X POST https://www.conv.dev/api/sms/
 curl -d "From=31651536814&Body=PHONE" -X POST https://www.conv.dev/api/callme/
-
-gcloud functions deploy ccaiWebhook --region=europe-west1 \
---memory=512MB \
---runtime=nodejs10 \
---trigger-http \
---source=webhooks/ccai-webhooks \
---stage-bucket=ccai-360-bucket \
---timeout=60s \
---allow-unauthenticated \
---entry-point=sendConfirmation

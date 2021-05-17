@@ -57,6 +57,11 @@ spec:
               configMapKeyRef:
                 name: chatserver-config
                 key: TWILIO_ACCOUNT_TOKEN
+          - name: "MY_PHONE_NUMBER"
+            valueFrom:
+              configMapKeyRef:
+                name: chatserver-config
+                key: MY_PHONE_NUMBER
         volumeMounts:
           - name: mykeys
             mountPath: /var/secrets/
