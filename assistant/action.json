@@ -1,7 +1,7 @@
 {
   "actions": [
     {
-      "description": "Default Welcome Intent",
+      "description": "Google Assistant Welcome",
       "name": "MAIN",
       "fulfillment": {
         "conversationName": "welcome"
@@ -9,7 +9,12 @@
       "intent": {
         "name": "actions.intent.MAIN",
         "trigger": {
-          "queryPatterns":["talk to CCAIDemo"]
+          "queryPatterns":[
+            "talk to G Mortgages",
+            "I need mortgage help",
+            "I have a mortgage question",
+            "Start G Mortgages"
+          ]
         }
       }
     },
@@ -20,21 +25,18 @@
         "conversationName": "dialogflow_intent"
       },
       "intent": {
-        "name": "actions.intent.TEXT",
-        "trigger": {
-          "queryPatterns": []
-        }
+        "name": "actions.intent.TEXT"
       }
     }
   ],
   "conversations": {
     "welcome": {
       "name": "welcome",
-      "url": "https://5d9233546d75.ngrok.io/aog/"
+      "url": "https://www.conv.dev/api/aog/"
     },
     "dialogflow_intent": {
       "name": "dialogflow_intent",
-      "url": "https://5d9233546d75.ngrok.io/aog/"
+      "url": "https://www.conv.dev/api/aog/"
     }
   },
   "locale": "en"

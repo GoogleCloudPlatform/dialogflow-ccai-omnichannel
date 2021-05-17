@@ -241,7 +241,7 @@ ngrok http 8080
 
 2. Modify **actions.json** to point to your local ngrok https URL
 
-3. TODO Once your Node backend server is deployed to the Google Cloud, you can take over those URLs
+3. Once your Node backend server is deployed to the Google Cloud, you can take over those URLs
 
 4. You can test your fulfillment by making an example post call
 
@@ -249,7 +249,7 @@ ngrok http 8080
 curl --header "Content-Type: application/json" \
 --request POST \
 --data '{"user":{"locale":"en-US","userVerificationStatus":"VERIFIED"},"conversation":{"conversationId":"ABwppHEjwDSpkSNHiGX76mlQAdMSUcsT9bVTrpPqs2xRTHSAz-UtlLY8_LS-bCgQWbraSrZLtFk","type":"NEW"},"inputs":[{"intent":"actions.intent.MAIN","rawInputs":[{"inputType":"VOICE","query":"Talk to CCAIDemo"}]}],"surface":{"capabilities":[{"name":"actions.capability.SCREEN_OUTPUT"},{"name":"actions.capability.AUDIO_OUTPUT"},{"name":"actions.capability.ACCOUNT_LINKING"},{"name":"actions.capability.MEDIA_RESPONSE_AUDIO"}]},"isInSandbox":true,"requestType":"SIMULATOR"}' \
-https://0b9f4a537727.ngrok.io/aog/
+https://www.conv.dev/api/aog/
 ```
 
 #### Deploy your action

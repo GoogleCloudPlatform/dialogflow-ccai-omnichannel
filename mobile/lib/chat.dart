@@ -16,7 +16,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:sound_stream/sound_stream.dart';
 
@@ -37,6 +36,7 @@ class _ChatState extends State<Chat> {
   StreamSubscription _recorderStatus;
   StreamSubscription<List<int>> _audioStreamSubscription;
   BehaviorSubject<List<int>> _audioStream;
+  List messages;
 
   @override
   void initState() {
@@ -84,7 +84,7 @@ class _ChatState extends State<Chat> {
     });
 
     http.Response response =
-        await http.post(Uri.https('619fc7dbb354.ngrok.io', 'mobile'),
+        await http.post(Uri.https('www.conv.dev', 'api/mobile'),
             headers: <String, String>{
               'Content-Type': 'application/json; charset=UTF-8',
             },
@@ -93,18 +93,19 @@ class _ChatState extends State<Chat> {
             }));
 
     Map<String, dynamic> data = json.decode(response.body);
-    String msg = data['responses']['responseMessages'][0]['text']['text'][0];
+    messages = data['responses']['responseMessages'];
+    for (var i = 0; i < messages.length; i++) {
+      if (response.statusCode == 200) {
+        ChatMessage botMessage = ChatMessage(
+          text: messages[i]['text']['text'][0],
+          name: "Bot",
+          type: false,
+        );
 
-    if (response.statusCode == 200) {
-      ChatMessage botMessage = ChatMessage(
-        text: msg,
-        name: "Bot",
-        type: false,
-      );
-
-      setState(() {
-        _messages.insert(0, botMessage);
-      });
+        setState(() {
+          _messages.insert(0, botMessage);
+        });
+      }
     }
   }
 
@@ -116,67 +117,6 @@ class _ChatState extends State<Chat> {
       //print(data);
       _audioStream.add(data);
     });
-
-    // TODO DEAL WITH STREAMS
-    /*
-    // TODO Create SpeechContexts
-    var biasList = SpeechContextV2Beta1(phrases: [
-      'Dialogflow CX',
-      'Dialogflow Essentials',
-      'Action Builder',
-      'HIPAA'
-    ], boost: 20.0);
-
-    // TODO Create and audio InputConfig
-    //  See: https://cloud.google.com/dialogflow/es/docs/reference/rpc/google.cloud.dialogflow.v2#google.cloud.dialogflow.v2.InputAudioConfig
-    var config = InputConfigV2beta1(
-        encoding: 'AUDIO_ENCODING_LINEAR_16',
-        languageCode: 'en-US',
-        sampleRateHertz: 16000,
-        singleUtterance: false,
-        speechContexts: [biasList]);
-
-    // TODO Make the streamingDetectIntent call, with the InputConfig and the audioStream
-    final responseStream =
-        dialogflow.streamingDetectIntent(config, _audioStream);
-    
-    // TODO Get the transcript and detectedIntent and show on screen
-// Get the transcript and detectedIntent and show on screen
-    responseStream.listen((data) {
-      //print('----');
-      setState(() {
-        //print(data);
-        String transcript = data.recognitionResult.transcript;
-        String queryText = data.queryResult.queryText;
-        String fulfillmentText = data.queryResult.fulfillmentText;
-
-        if (fulfillmentText.isNotEmpty) {
-          ChatMessage message = new ChatMessage(
-            text: queryText,
-            name: "You",
-            type: true,
-          );
-
-          ChatMessage botMessage = new ChatMessage(
-            text: fulfillmentText,
-            name: "Bot",
-            type: false,
-          );
-
-          _messages.insert(0, message);
-          _textController.clear();
-          _messages.insert(0, botMessage);
-        }
-        if (transcript.isNotEmpty) {
-          _textController.text = transcript;
-        }
-      });
-    }, onError: (e) {
-      //print(e);
-    }, onDone: () {
-      //print('done');
-    });
-    */
   }
 
   // The chat interface

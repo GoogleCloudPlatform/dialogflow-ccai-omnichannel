@@ -1,9 +1,4 @@
 ## TODOS
 
-The web should be able to execute fulfillment
-The fulfillment should make a callnow post
-Test the Google Assistant.
 Test the flutter app
 
-curl -d "From=31651536814&Body=CONFIRMATION" -X POST https://www.conv.dev/api/sms/
-curl -d "From=31651536814&Body=PHONE" -X POST https://www.conv.dev/api/callme/

@@ -63,7 +63,7 @@ export class Aog {
             return this.detectIntentText(conv, input)
         });
 
-        expressApp.post('/aog/', this.assistant)
+        expressApp.post('/api/aog/', this.assistant)
     }
 
     createRichMessages(conv, response){
