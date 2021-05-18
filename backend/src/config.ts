@@ -45,14 +45,6 @@ export interface GlobalConfig {
         angular?: {
             angular_port: number
         }
-        ccai?: {
-            encoding: string, // 'AUDIO_ENCODING_LINEAR_16' ||
-            // ... https://cloud.google.com/dialogflow/cx/docs/reference/rpc/google.cloud.dialogflow.cx.v3
-            // #google.cloud.dialogflow.cx.v3.AudioEncoding
-            sample_rate_hertz: number, // 16000 || 8000 || 44100 || 48000 ... https://cloud.google.com/speech-to-text/docs/basics
-            single_utterance: boolean,
-            output_encoding?: string // 'OUTPUT_AUDIO_ENCODING_LINEAR_16'
-        },
         twilio?: {
             phone_number: string // .env
             account_sid: string // .env Your Account SID from www.twilio.com/console
@@ -71,7 +63,8 @@ export interface GlobalConfig {
             volume_gain_db: number, // 0.0, // //Volume gain (in dB) of the
             // normal native volume supported by the specific voice, in the range [-96.0, 16.0].
             voice_name: string, // 'en-US-Standard-H', ////https://cloud.google.com/text-to-speech/docs/voices
-            ssml_gender: string // 'SSML_VOICE_GENDER_FEMALE'
+            ssml_gender: string // 'SSML_VOICE_GENDER_FEMALE',
+            live_agent_phone_number: string
         },
         pubsub?: {
             topic_name: string
@@ -133,7 +126,8 @@ const globalConfig: GlobalConfig = {
             voice_name: 'en-US-Wavenet-H',
             ssml_gender: 'SSML_VOICE_GENDER_FEMALE',
             model: 'phone_call',
-            model_variant: 'USE_ENHANCED'
+            model_variant: 'USE_ENHANCED',
+            live_agent_phone_number: '.ENV'
         },
         angular: {
             angular_port: 4200
@@ -178,7 +172,9 @@ const authToken = process.env.npm_config_TWILIO_ACCOUNT_TOKEN ||process.env.TWIL
 finalConfig.twilio.auth_token = authToken;
 const myPhoneNumber = process.env.npm_config_MY_PHONE_NUMBER ||process.env.MY_PHONE_NUMBER || envConfig.profile.my_phone_number;
 finalConfig.profile.my_phone_number = myPhoneNumber;
-
+const liveAgentPhoneNumber = process.env.npm_config_LIVE_AGENT_PHONE_NUMBER ||
+    process.env.LIVE_AGENT_PHONE_NUMBER || envConfig.twilio.live_agent_phone_number;
+finalConfig.profile.live_agent_phone_number = liveAgentPhoneNumber;
 
 finalConfig.debugger = new Debug(finalConfig);
 

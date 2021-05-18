@@ -292,6 +292,12 @@ export class DialogflowCXStream extends DialogflowCX {
                 ) {
                     this.emit('interrupted', data.recognitionResult.transcript);
                 }
+
+                // TODO isHandover
+                if(data.queryResult.intent === 'phone-transfer'){
+                    this.emit('isHandOver');
+                }
+
                 if (
                     data.queryResult &&
                     data.queryResult.intent &&

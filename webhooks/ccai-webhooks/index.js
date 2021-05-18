@@ -53,7 +53,6 @@ exports.sendConfirmation = async function sendConfirmation(request, response) {
     let intentMap = new Map();
     intentMap.set('callme-now', call);
     intentMap.set('confirm-appointment', textMsg);
-
     let webhookResponse = await handleRequest(intentMap, request);
     console.log(webhookResponse);
     response.json(webhookResponse);

@@ -202,6 +202,12 @@ export class ContactCenterAi {
             }
         });
 
+        // TODO
+        this.dialogflow.on('isHandOver', () => {
+          const response = new Twilio.twiml.VoiceResponse();
+          return response.dial(this.config.twilio['live_agent_phone_number']);
+        });
+
         this.dialogflow.on('endOfInteraction', (queryResult) => {
             const response = new Twilio.twiml.VoiceResponse();
             const url = process.env.END_OF_INTERACTION_URL;

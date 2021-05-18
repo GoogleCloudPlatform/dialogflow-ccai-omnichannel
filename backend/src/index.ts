@@ -189,6 +189,17 @@ export class App {
                 res.json(data);
             });
         });
+        this.app.get('/api/call/transfer/', async function(req, res) {
+
+            // TODO this should come from a profile
+            const phoneNr = global.profile['my_phone_number'];
+            const protocol = req.secure? 'https://' : 'http://';
+            const host = protocol + req.hostname;
+
+            await me.ccai.streamOutbound(phoneNr, host, function(data){
+                res.json(data);
+            });
+        });
         this.app.post('/api/twiml/', (req, res) => {
             // this is the route you configure your HTTP POST webhook in the Twilio console to.
             res.setHeader('Content-Type', 'text/xml');
@@ -202,12 +213,12 @@ export class App {
                 </Connect>
             </Response>`);
         });
+
         // Twilio Ws Media Stream Route
         this.app.ws('/api/phone/', (ws, req) => {
             me.debug.log('ws phone connected');
             me.ccai.stream(ws);
         });
-
     }
 
     private listen(): void {
