@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "ccai-360",
+  "private_key_id": "0ac3864526e284d3af1cfc949dd2614f5f60f843",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCh5/4J8qH14e5m\ne+B53n1DDq4umSkDjChfG2hz7HkO9F8PBoqmSISzrThIbbPg1GvTeaHNm8JIh9ff\nqfPDthOEvG2n7QCl7rCOocvH484Q+vwgozrbD5EaBEUYmM9KbCWudNB65uFsBIAB\nD3aBdXe0/v2XWqrNPHR6g8aOGfn+ujcHrzFgger0dLiWwjQRA1ypECN2/wUIcOdr\n6uKS8BaGd9YgGNYvtGoztldWVgTz65k6IU3iNwPly54tdtBgr7anroh+3D/xqLe/\nGg8ZblCl2e3N2iV9pPshHYA3ZP5CyJuVU75ZOsY5RJByVVSyvIwqyz8RBx9Wr8jn\n1qk44uEVAgMBAAECggEAFQzi3daS5zNXpIcmUZdeBZTINx0eaix+vUAvgvmeaGrZ\nByJBxEqOclwAWC5nN5ahaaPup8XAwLRkxVrv63oQrJk2eqGuYWSYxlqpR5UfStw5\ntrac+t6vGMkFq3kxY7WO6qabyoxFMnRH/kX35u9nv9EdazXUb42/foRZPErf/ZXH\nI6+NOT5eOVc7kvYqzsfLYoxBYErP9i8prZbVMkN/MN1stAQVBpyluQuoWqrSniIs\nVjSd5lui/xlZfn6lUw7g5Z0sdfPPyDYgLbnq29UthZiRYM9iyLNrXc6/dSRhF8kx\nQPT+8jIGn3kAAeGutnqChozrYv+/EzsJHGpk2aazmwKBgQDWuGwlGKVL4yGKjS4s\nSTgm+5w8p/xd0XOi8oYNBlKAEfBde6nZvnXpmtf5N9bKUefN6Qwhzjpc9uYQ6xo7\nWryGPDtyvmGnzOGrKBfsOMfl+iiVXnP3icXXyFhyjeMW6+a3myBPJdM38svBDE3W\nWo0zYnM21qRI+sB2mYe0QiscSwKBgQDBCErOm0Qna9BTYZwmMlJfadWghO0an7vp\nLtMG6zA1d57IiogzqEyytbMOpeFHc/Votf82O9RFtW1XyRrWE9G2IX01IlGsHgKo\n6IZeDT1ByuaZZ2tmOjqFGR+CBqD1BPveDd9LRb4CAoYQrse3n6C/b6fV/zclZ9V+\nURt9D87cHwKBgFe3jY52DAj9Z9VnKYaz/rmGLmRlJ+bXywq1Uuf9PjTNn0lBXLj0\nYs0lEbfhBOEwJqdq3ibtTdBumLwun0/CGKQp9QtCFTjsrQAz59n7tEYSNQQYSv3E\nDcvCL8fUiQHzKxS0zbUnuarwiCZ8NUwtP+PPA0xS0Vhy/68zt0l/gocTAoGBAJNU\nJOR0FRyRaTt6sJdmqQAx4t7VFbLQX7emCWKqdu0YE5S0RyhGN+PeUn/Hk53Zn2EA\nJ33ZRDbANmheEaF7FwCPpuS7AOMBNL5+Wq/GIw7oMgC7snkf0DJt7mJrdMYNu77L\nj7X/0PnvuytYew5nQ2VZbxwh4pEmIwh6FyTov9W5AoGAK3bx006EWCH/COI54zps\nQ1IUsQ7Ny3EqB/pefoc8E4p3jzxTmOpg14ssmYXU6wiVBujCPhdeAHabRnLeULtp\nth3k6flZLhZxJbuIILM7OHmDpshGZONDAE7zpwBCVPhun3TFo535sDXnfEPir8nf\nSIckdSazb1NpOfCUnCf8Wjo=\n-----END PRIVATE KEY-----\n",
+  "client_email": "ccai-360-serviceaccount@ccai-360.iam.gserviceaccount.com",
+  "client_id": "103034024344258719373",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/ccai-360-serviceaccount%40ccai-360.iam.gserviceaccount.com"
+}

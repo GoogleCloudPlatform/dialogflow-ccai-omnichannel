@@ -105,7 +105,7 @@ const globalConfig: GlobalConfig = {
             single_utterance: false
         },
         pubsub: {
-            topic_name: 'dialogflow'
+            topic_name: '.ENV'
         },
         // bigquery: {
         //
@@ -156,6 +156,8 @@ const finalConfig = {...defaultConfig, ...envConfig};
 // it will override the config.json
 const projectId = process.env.npm_config_GC_PROJECT_ID || process.env.GC_PROJECT_ID || envConfig.gc_project_id;
 finalConfig.gc_project_id = projectId;
+const pubsub = process.env.npm_config_PUBSUB_TOPIC || process.env.PUBSUB_TOPIC || envConfig.pubsub.topic_name;
+finalConfig.pubsub.topic_name = pubsub;
 const port = process.env.npm_config_PORT || process.env.PORT || envConfig.node_port;
 finalConfig.node_port = port;
 const vertical = process.env.npm_config_VERTICAL || process.env.VERTICAL || envConfig.vertical;

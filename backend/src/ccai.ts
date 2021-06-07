@@ -44,6 +44,7 @@ export class ContactCenterAi {
       } else {
           this.dialogflow = new DialogflowV2Beta1Stream(global);
       }
+      this.pubsub = new MyPubSub(global);
 
       try {
           if(this.debug){
@@ -74,7 +75,7 @@ export class ContactCenterAi {
           from: me.config.twilio['phone_number'],
           body: botResponse.fulfillmentText // Message to Recipient
         }).then(function(message){
-          // TODO PUBSUB
+          me.pubsub.pushToChannel(botResponse);
           me.debug.log(message);
           cb({ success: true, message});
         }).catch(function(error){
@@ -236,6 +237,7 @@ export class ContactCenterAi {
     // Convert the LINEAR 16 Wavefile to 8000/mulaw
     // TTS
     createAudioResponseStream() {
+      var me = this;
       return new Transform({
         objectMode: true,
         transform: (chunk, encoding, callback) => {
@@ -255,6 +257,10 @@ export class ContactCenterAi {
 
           wav.toSampleRate(8000);
           wav.toMuLaw();
+
+          // TODO var botResponse = me.dialogflow.beautifyResponses(chunk.recognitionResult, chunk, input);
+          // TODO me.pubsub.pushToChannel(botResponse);
+
           return callback(null, Buffer.from(wav.data['samples']));
         },
       });

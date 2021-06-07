@@ -22,7 +22,6 @@ import { DialogflowV2Beta1, DialogflowV2Beta1Stream } from './dialogflow-v2beta1
 import { DialogflowCX } from './dialogflow-cx';
 import { DialogflowCXV3Beta1 } from './dialogflow-cxv3beta1';
 import { MyPubSub } from './pubsub';
-import { Transform } from 'stream';
 
 export class Web {
     private pubsub: MyPubSub;
@@ -44,9 +43,7 @@ export class Web {
             this.dialogflow = new DialogflowV2Beta1Stream(global);
         }
 
-        console.log('start web');
-
-        // this.pubsub = new MyPubSub(global);
+        this.pubsub = new MyPubSub(global);
 
         this.streamRequest = {
             audioConfig: {
@@ -76,19 +73,19 @@ export class Web {
     async detectIntentText(query: string, lang?: string, contexts?: Array<string>) {
         const webResponse = await this.dialogflow.detectIntentText(query, lang, contexts);
         webResponse.platform = 'web';
-        // this.pubsub.pushToChannel(webResponse);
+        this.pubsub.pushToChannel(webResponse);
         return this.createRichMessages(webResponse);
     }
     async detectIntentEvent(eventName: string, lang?: string, params?: Array<string>) {
         const webResponse = await this.dialogflow.detectIntentEvent(eventName, lang, params);
         webResponse.platform = 'web';
-        // this.pubsub.pushToChannel(webResponse);
+        this.pubsub.pushToChannel(webResponse);
         return this.createRichMessages(webResponse);
     }
     async detectIntentAudioStream(stream: any, lang?: string) {
         const webResponse = await this.dialogflow.detectIntentText(stream, lang);
         webResponse.platform = 'web';
-        // this.pubsub.pushToChannel(webResponse);
+        this.pubsub.pushToChannel(webResponse);
         return this.createSSML(webResponse);
     }
 }
@@ -98,11 +95,10 @@ export class WebStream extends Web {
 
     constructor(global) {
       super(global);
-
     }
 
     stream(ws: any): void{
-    
+
         /*
 // Twilio
 <Buffer 7b 22 65 76 65 6e 74 22 3a 22 6d 65

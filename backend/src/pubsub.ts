@@ -28,28 +28,10 @@ export class MyPubSub {
         this.pubsub = new PubSub({
             projectId: global['gc_project_id']
         });
-        // this.setupPubSub(global.pubsub['topic_name']);
     }
-
-    public setupPubSub(topicName: string) {
-        const topic = this.pubsub.topic(`projects/${global['gc_project_id']}/topics/${topicName}`);
-        topic.exists((err: any, exists: any) => {
-            if (err) this.debug.error(err);
-            if (!exists) {
-                this.pubsub.createTopic(topicName).then(results => {
-                    this.debug.log(results);
-                    this.debug.log(`Topic ${topicName} created.`);
-                })
-                .catch(e => {
-                    this.debug.error(e);
-                });
-            }
-        });
-    }
-
 
     public async pushToChannel(json: object, topicName = this.config.pubsub['topic_name']):Promise<any> {
-        const topic = this.pubsub.topic(`projects/${global['gc_project_id']}/topics/${topicName}`);
+        const topic = this.pubsub.topic(`projects/${this.config['gc_project_id']}/topics/${topicName}`);
         const dataBuffer = Buffer.from(JSON.stringify(json), 'utf-8');
         const messageId = await topic.publish(dataBuffer);
         this.debug.log(`Message ${messageId} published to topic: ${topicName}`);

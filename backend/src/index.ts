@@ -23,7 +23,6 @@ import * as hbs from 'express-handlebars';
 import * as cors from 'cors';
 
 import { global } from './config';
-
 import { Aog } from './aog';
 import { Web, WebStream } from './web';
 import { ContactCenterAi } from './ccai';

@@ -19,12 +19,6 @@ you will need for this demo.
 
 https://console.cloud.google.com
 
-1. Create an environment variable for your project in order to run the setup script
-   
-```
-   export GCP_PROJECT=[project-id]
-```
-
 1. Either clone this Git repo on your local HD with the following command:
 
 ```

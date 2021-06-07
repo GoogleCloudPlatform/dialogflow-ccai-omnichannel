@@ -1,4 +1,17 @@
 ## TODOS
 
-Test the flutter app
+* BigQuery & PubSub
+* Add to PubSub from phonecall ccai.ts ln262
+* Test the flutter app
+* Fix Bug in CCAI Twilio flow (DF ES, after 2 turns, the call is closed)
+* Funnel Steps
+* Firebase Admin SDK retrieve user by UID
+
+
+STEPS
+- ADVERTISING (AdLingo, we cant link to user)
+- APPOINTMENT_SCHEDULING (On the website, link to user)
+- APPOINTMENT_CONFIRMED (SMS confirmation)
+- SUPPLEMENTAL
+- OVERVIEW
 
