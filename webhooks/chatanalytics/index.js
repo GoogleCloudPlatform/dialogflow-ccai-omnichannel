@@ -101,6 +101,7 @@ var getSentiment = function(text, callback){
   //Insert rows in BigQuery
   var insertInBq = async function(row){
     table.insert(row, function(err, apiResponse){
+        console.log(apiResponse)
       if (!err) {
         console.log(row);
         console.log("[BIGQUERY] - Saved.");
@@ -123,9 +124,9 @@ var getSentiment = function(text, callback){
     bqRow['PLATFORM'] = buf.platform;
     bqRow['LANGUAGE_CODE'] = buf.languageCode;
     bqRow['DATE_TIME'] = (buf.dateTimeStamp/1000);
-    bqRow['QUERY'] = buf.query;
+    bqRow['QUERY_TEXT'] = buf.query;
     bqRow['FULFILLMENT_TEXT'] = buf.fulfillmentText;
-    bqRow['RESPONSE_MESSAGES'] = buf.responseMessages;
+    //bqRow['RESPONSE_MESSAGES'] = buf.responseMessages;
 
     //FUNNEL_STEP:
     //USER_UID:
