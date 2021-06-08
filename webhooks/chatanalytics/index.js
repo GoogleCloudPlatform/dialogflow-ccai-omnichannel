@@ -68,13 +68,13 @@ var detectPIIData = async function(text) {
     const resultString = response.item.value;
     console.log(`REDACTED TEXT: ${resultString}`);
     if (resultString) {
-      bqRow['TEXT'] = resultString;
+      bqRow['QUERY_TEXT'] = resultString;
     } else {
-        bqRow['TEXT'] = text;
+        bqRow['QUERY_TEXT'] = text;
     }
   } catch (err) {
     console.log(`Error in deidentifyContent: ${err.message || err}`);
-    bqRow['TEXT'] = text;
+    bqRow['QUERY_TEXT'] = text;
   }
 }
 
@@ -106,8 +106,10 @@ var getSentiment = function(text, callback){
         console.log(row);
         console.log("[BIGQUERY] - Saved.");
       } else {
-        console.error(err);
-        console.log(err.errors)
+        console.log(err.errors);
+        for(var i = 0; i<err.errors.length; i++){
+            console.log(err.errors[i].errors);
+        }
       }
     });
   };
@@ -117,26 +119,23 @@ var getSentiment = function(text, callback){
     const buffer = Buffer.from(pubSubMessage.data, 'base64').toString();
     var buf = JSON.parse(buffer);
     
-    console.log(buf.text);
-
     bqRow['SESSION_ID'] = buf.sessionId;
     bqRow['SESSION_PATH'] = buf.sessionPath;
     bqRow['PLATFORM'] = buf.platform;
     bqRow['LANGUAGE_CODE'] = buf.languageCode;
-    bqRow['DATE_TIME'] = (buf.dateTimeStamp/1000);
-    bqRow['QUERY_TEXT'] = buf.query;
-    bqRow['FULFILLMENT_TEXT'] = buf.fulfillmentText;
-    //bqRow['RESPONSE_MESSAGES'] = buf.responseMessages;
+    bqRow['DATE_TIME'] = buf.dateTimeStamp;
+    //bqRow['QUERY_TEXT'] = buf.queryText;
+    await detectPIIData(buf.queryText);
+    bqRow['QUERY_EVENT'] = buf.queryEvent;
+    bqRow['TEXT_RESPONSE'] = buf.fulfillmentText;
+    // TODO bqRow['RESPONSE_MESSAGES'] = buf.responseMessages; maybe insert as string JSON.stringify
 
-    //FUNNEL_STEP:
-    //USER_UID:
-    //TOPIC_MINING:
-    //NPS:
-    //CSAT:
-    //CES:
-
-
-    await detectPIIData(buf.text);
+    // TODO FUNNEL_STEP:
+    // TODO USER_UID:
+    // TODO TOPIC_MINING:
+    // TODO NPS:
+    // TODO CSAT:
+    // TODO CES:
 
     if(buf.intentDetection && buf.intentDetection.intent){
         bqRow['INTENT_DETECTION_DISPLAYNAME'] = buf.intentDetection.intent.displayName;
@@ -145,15 +144,14 @@ var getSentiment = function(text, callback){
         bqRow['INTENT_DETECTION_IS_END'] = buf.intentDetection.intent.isEndInteraction;
         bqRow['INTENT_DETECTION_CONFIDENCE'] = buf.intentDetection.intent.intentDetectionConfidence;
         bqRow['INTENT_DETECTION_IS_LIVE_AGENT'] = buf.intentDetection.intent.isLiveAgent;
-        //bqRow['INTENT_DETECTION_EVENT'] = buf.intentDetection.intent.events;
-        //bqRow['INTENT_DETECTION_PARAMETERS'] = buf.intentDetection.intent.parameters;
+        bqRow['INTENT_DETECTION_PARAMETERS'] = buf.intentDetection.intent.parameters;
     }
 
     if(buf.sentiment && buf.sentiment.score && buf.sentiment.magnitude){
         bqRow['SENTIMENT_SCORE'] = buf.sentiment.score;
         bqRow['SENTIMENT_MAGNITUDE'] = buf.sentiment.magnitude;
     } else {
-        await getSentiment(buf.text);
+        await getSentiment(buf.queryText);
     }
 
     await insertInBq(bqRow);

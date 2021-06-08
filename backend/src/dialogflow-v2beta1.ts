@@ -126,7 +126,7 @@
              sessionId: this.sessionId,
              sessionPath: this.sessionPath,
              projectId: this.projectId,
-             dateTimeStamp: new Date().getTime()/1000,
+             dateTimeStamp: new Date().toISOString(),
              text: input, // in case DF doesn't respond anything, we can still capture these
              languageCode: this.config.dialogflow['language_code'], // in case DF doesn't respond anything, we can still capture these
          }
@@ -139,8 +139,8 @@
 
              var dialogflowResponses = {
                  languageCode: response.queryResult.languageCode, // override
-                 sentiment: response.queryResult.sentimentAnalysisResult,
-                 text: response.queryResult.queryText, // override
+                 sentiment: response.queryResult.sentimentAnalysisResult.queryTextSentiment,
+                 queryText: response.queryResult.queryText,
                  responseMessages: response.queryResult.fulfillmentMessages,
                  fulfillmentText: response.queryResult.fulfillmentText,
                  webhookPayloads: response.queryResult.webhookPayload,
@@ -157,13 +157,14 @@
                          intent: {
                              displayName: response.queryResult.intent.displayName,
                              name: response.queryResult.intent.name,
-                             parameters: response.queryResult.intent.parameters,
+                             parameters: [struct.structProtoToJson(
+                              response.queryResult.intent.parameters
+                             )],
                              priority: response.queryResult.intent.priority,
                              trainingPhrases: response.queryResult.intent.trainingPhrases,
                              isFallback: response.queryResult.intent.isFallback,
                              intentDetectionConfidence: response.queryResult.intentDetectionConfidence,
                              isEndInteraction: response.queryResult.intent.endInteraction,
-                             events: response.queryResult.intent.events,
                              isLiveAgent: response.queryResult.intent.liveAgentHandoff,
                              inputContextNames: response.queryResult.intent.inputContextNames,
                              outputContexts: response.queryResult.intent.outputContexts,
@@ -175,12 +176,20 @@
                      }
                  };
                  dialogflowResponses = {...dialogflowResponses, ...intentDetectionObj }
+
+                 if(response.queryResult.intent.events && response.queryResult.intent.events.length > 0){
+                  // in Dialogflow CX, there is a queryEvent, no intent.events
+                  // therefore, if events is available at it to the queryEvent
+                  // Makes it easy for analytics purposes in e.g. BigQuery.
+                  dialogflowResponses['queryEvent'] = response.queryResult.intent.events.join()
+                 }
              }
 
              botResponse = {...dialogflowConfig, ...dialogflowResponses }
          } else {
              botResponse = dialogflowConfig;
          }
+         console.log(botResponse);
          return botResponse;
      }
  }

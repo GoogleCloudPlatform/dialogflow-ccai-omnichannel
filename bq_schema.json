@@ -1,0 +1,169 @@
+[
+    {
+        "name": "SESSION_ID",
+        "type": "STRING",
+        "mode": "REQUIRED"
+    },
+    {
+        "name": "SESSION_PATH",
+        "type": "STRING",
+        "mode": "REQUIRED"
+    },
+    {
+        "name": "PLATFORM",
+        "type": "STRING",
+        "mode": "REQUIRED"
+    },
+    {
+        "name": "LANGUAGE_CODE",
+        "type": "STRING",
+        "mode": "REQUIRED"
+    },
+    {
+        "name": "DATE_TIME",
+        "type": "TIMESTAMP",
+        "mode": "REQUIRED"
+    },
+    {
+        "name": "QUERY_TEXT",
+        "type": "STRING",
+        "mode": "NULLABLE"
+    },
+    {
+        "name": "QUERY_TRANSCRIPT",
+        "type": "STRING",
+        "mode": "NULLABLE"
+    },
+    {
+        "name": "QUERY_EVENT",
+        "type": "STRING",
+        "mode": "NULLABLE"
+    },
+    {
+        "name": "QUERY_INTENT",
+        "type": "STRING",
+        "mode": "NULLABLE"
+    },
+    {
+        "name": "QUERY_DTMF",
+        "type": "STRING",
+        "mode": "NULLABLE"
+    },
+    {
+        "name": "TEXT_RESPONSE",
+        "type": "STRING",
+        "mode": "NULLABLE"
+    },
+    {
+        "name": "RESPONSE_MESSAGES",
+        "type": "RECORD",
+        "fields": [
+            {
+            "mode": "NULLABLE",
+            "name": "platform",
+            "type": "STRING"
+            },
+            {
+            "mode": "NULLABLE",
+            "name": "text",
+            "type": "STRING"
+            },
+            {
+            "mode": "NULLABLE",
+            "name": "message",
+            "type": "STRING"
+            }
+        ],
+        "mode": "REPEATED"
+    },
+    {
+        "name": "SENTIMENT_SCORE",
+        "type": "FLOAT"
+    },
+    {
+        "name": "SENTIMENT_MAGNITUDE",
+        "type": "FLOAT"
+    },
+    {
+        "name": "INTENT_DETECTION_DISPLAYNAME",
+        "type": "STRING"
+    },
+    {
+        "name": "INTENT_DETECTION_NAME",
+        "type": "STRING"
+    },
+    {
+        "name": "INTENT_DETECTION_CONFIDENCE",
+        "type": "FLOAT"
+    },
+    {
+        "name": "INTENT_DETECTION_PARAMETERS",
+        "type": "RECORD",
+        "fields": [
+            {
+                "mode": "NULLABLE",
+                "name": "name",
+                "type": "STRING"
+            },
+            {
+                "mode": "NULLABLE",
+                "name": "value",
+                "type": "STRING"
+            }
+        ],
+        "mode": "REPEATED"
+    },
+    {
+        "name": "INTENT_DETECTION_IS_FALLBACK",
+        "type": "BOOLEAN"
+    },
+    {
+        "name": "INTENT_DETECTION_IS_END",
+        "type": "BOOLEAN"
+    },
+    {
+        "name": "INTENT_DETECTION_IS_LIVE_AGENT",
+        "type": "BOOLEAN"
+    },
+    {
+        "name": "INTENT_IS_ERROR",
+        "type": "BOOLEAN"
+    },
+    {
+        "name": "FUNNEL_STEP",
+        "type": "STRING"
+    },
+    {
+        "name": "USER_UID",
+        "type": "STRING"
+    },
+    {
+        "name": "TOPIC_MINING",
+        "type": "RECORD",
+        "fields": [
+            {
+            "mode": "NULLABLE",
+            "name": "name",
+            "type": "STRING"
+            },
+            {
+            "mode": "NULLABLE",
+            "name": "value",
+            "type": "STRING"
+            }
+        ],
+        "mode": "REPEATED"
+    },
+    {
+        "name": "NPS",
+        "type": "FLOAT"
+    },
+    {
+        "name": "CSAT",
+        "type": "FLOAT"
+    },
+    {
+        "name": "CES",
+        "type": "FLOAT"
+    }
+]

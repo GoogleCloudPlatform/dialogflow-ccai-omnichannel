@@ -65,7 +65,6 @@ export class DialogflowCX extends EventEmitter {
         super();
         this.config = global;
         this.debug = global.debugger;
-
         this.projectId = global['gc_project_id'];
         this.agentId = global.dialogflow['cx_agent_id'];
         this.location = global.dialogflow['cx_location'];
@@ -148,8 +147,7 @@ export class DialogflowCX extends EventEmitter {
             sessionPath: this.sessionPath,
             projectId: this.projectId,
             agentId: this.agentId,
-            location: this.location,
-            dateTimeStamp: new Date().getTime()/1000,
+            dateTimeStamp: new Date().toISOString(),
             text: input, // in case DF doesn't respond anything, we can still capture these
             languageCode: this.config.dialogflow['language_code'], // in case DF doesn't respond anything, we can still capture these
         }
@@ -164,14 +162,23 @@ export class DialogflowCX extends EventEmitter {
                 languageCode: response.queryResult.languageCode, // override
                 sentiment: response.queryResult.sentimentAnalysisResult,
                 currentPage: response.queryResult.currentPage,
-                query: response.queryResult.query,
-                text: response.queryResult.text, // override
+                queryText: response.queryResult.text,
+                queryEvent: response.queryResult.trigger_event,
+                queryIntent: response.queryResult.trigger_intent,
+                queryTranscript: response.queryResult.transcript,
                 responseMessages: response.queryResult.responseMessages,
                 fulfillmentText: response.queryResult.responseMessages[0].text.text[0],
                 webhookPayloads: response.queryResult.webhookPayloads,
                 webhookStatuses: response.queryResult.webhookStatuses,
                 outputAudio: response.outputAudio,
                 responseId: response.responseId
+            }
+            if (response.queryResult.transcript) {
+                // in Dialogflow ES, there is only a queryText, no queryTranscript
+                // audio transcripts will be automatically returned as queryText
+                // therefore, if it's missing add it to the beautifyResponse also
+                // as queryText. Makes it easy for analytics purposes in e.g. BigQuery.
+                dialogflowResponses['queryText'] = response.queryResult.transcript;
             }
 
             if(response.queryResult.intent){
@@ -180,11 +187,13 @@ export class DialogflowCX extends EventEmitter {
                         intent: {
                             displayName: response.queryResult.intent.displayName,
                             name: response.queryResult.intent.name,
-                            parameters: response.queryResult.intent.parameters,
+                            parameters: [struct.structProtoToJson(
+                                response.queryResult.intent.parameters
+                            )],
                             priority: response.queryResult.intent.priority,
                             trainingPhrases: response.queryResult.intent.trainingPhrases,
                             isFallback: response.queryResult.intent.isFallback,
-                            intentDetectionConfidence: response.queryResult.intentDetectionConfidence
+                            intentDetectionConfidence: response.queryResult.match.confidence
                         }
                     }
                 };
@@ -196,6 +205,7 @@ export class DialogflowCX extends EventEmitter {
             botResponse = dialogflowConfig;
         }
 
+        console.log(botResponse);
         return botResponse;
     }
 }

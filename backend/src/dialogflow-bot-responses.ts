@@ -20,12 +20,13 @@ export interface BotResponse {
     sessionPath?: string,
     projectId: string,
     agentId?: string,
-    location?: string,
     platform?: string,
     languageCode: string,
-    dateTimeStamp: number,
-    query?: string,
-    text?: string,
+    dateTimeStamp: string,
+    queryText?: string,
+    queryEvent?: string,
+    queryTranscript?: string,
+    queryIntent?: string,
     fulfillmentText?: string,
     sentiment?: {
         score: number,
@@ -41,8 +42,7 @@ export interface BotResponse {
             isFallback: boolean,
             isEndInteraction?: boolean,
             intentDetectionConfidence: number
-
-            events?: any,
+            events?: Array<string>,
             isLiveAgent?: boolean,
             inputContextNames?: any,
             outputContexts?: any,

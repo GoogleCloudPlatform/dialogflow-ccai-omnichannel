@@ -144,4 +144,4 @@ gcloud pubsub topics create projects/$PROJECT_ID/topics/$PUBSUB_TOPIC
 bold "Creating BQ dataset..."
 bq --location=$BQ_LOCATION mk $DATASET
 bold "Creating BQ table..."
-bq mk $DATASET.$TABLE $SCHEMA
+bq mk --table $DATASET.$TABLE ./bq_schema.json
