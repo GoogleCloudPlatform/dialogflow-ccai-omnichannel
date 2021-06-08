@@ -147,6 +147,10 @@ var getSentiment = function(text, callback){
         bqRow['INTENT_DETECTION_CONFIDENCE'] = buf.intentDetection.intent.intentDetectionConfidence;
         bqRow['INTENT_DETECTION_IS_LIVE_AGENT'] = buf.intentDetection.intent.isLiveAgent;
         bqRow['INTENT_DETECTION_PARAMETERS'] = JSON.stringify(buf.intentDetection.intent.parameters);
+
+        if(buf.intentDetection.intent.parameters && buf.intentDetection.intent.parameters.action){
+            bqRow['FUNNEL_STEP'] = buf.intentDetection.intent.parameters.action
+        }
     }
 
     if(buf.sentiment && buf.sentiment.score && buf.sentiment.magnitude){

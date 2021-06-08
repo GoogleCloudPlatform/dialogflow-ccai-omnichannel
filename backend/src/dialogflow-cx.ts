@@ -195,8 +195,10 @@ export class DialogflowCX extends EventEmitter {
                         }
                     }
                 };
-                if(response.queryResult.parameters.fields){
-                    intentDetectionObj.intentDetection.intent['parameters'] = response.queryResult.parameters.fields;
+                if(response.queryResult.parameters){
+                    intentDetectionObj.intentDetection.intent['parameters'] = struct.structProtoToJson(
+                        response.queryResult.parameters
+                      );
                 }
                 dialogflowResponses = {...dialogflowResponses, ...intentDetectionObj }
             }
