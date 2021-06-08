@@ -162,10 +162,6 @@ export class DialogflowCX extends EventEmitter {
                 languageCode: response.queryResult.languageCode, // override
                 sentiment: response.queryResult.sentimentAnalysisResult,
                 currentPage: response.queryResult.currentPage,
-                queryText: response.queryResult.text,
-                queryEvent: response.queryResult.trigger_event,
-                queryIntent: response.queryResult.trigger_intent,
-                queryTranscript: response.queryResult.transcript,
                 responseMessages: response.queryResult.responseMessages,
                 fulfillmentText: response.queryResult.responseMessages[0].text.text[0],
                 webhookPayloads: response.queryResult.webhookPayloads,
@@ -173,30 +169,35 @@ export class DialogflowCX extends EventEmitter {
                 outputAudio: response.outputAudio,
                 responseId: response.responseId
             }
+
             if (response.queryResult.transcript) {
-                // in Dialogflow ES, there is only a queryText, no queryTranscript
-                // audio transcripts will be automatically returned as queryText
-                // therefore, if it's missing add it to the beautifyResponse also
-                // as queryText. Makes it easy for analytics purposes in e.g. BigQuery.
-                dialogflowResponses['queryText'] = response.queryResult.transcript;
+                dialogflowResponses['query'] = response.queryResult.transcript;
+            }
+            else if (response.queryResult.trigger_event) {
+                dialogflowResponses['query'] = response.queryResult.trigger_event;
+            }
+            else if (response.queryResult.trigger_intent) {
+                dialogflowResponses['query'] = response.queryResult.trigger_intent;
+            } else {
+                dialogflowResponses['query'] = response.queryResult.text;
             }
 
-            if(response.queryResult.intent){
+            if(response.queryResult.match){
                 const intentDetectionObj = {
                     intentDetection: {
                         intent: {
-                            displayName: response.queryResult.intent.displayName,
-                            name: response.queryResult.intent.name,
-                            parameters: [struct.structProtoToJson(
-                                response.queryResult.intent.parameters
-                            )],
-                            priority: response.queryResult.intent.priority,
-                            trainingPhrases: response.queryResult.intent.trainingPhrases,
-                            isFallback: response.queryResult.intent.isFallback,
+                            displayName: response.queryResult.match.intent.displayName,
+                            name: response.queryResult.intent.match.name,
+                            priority: response.queryResult.match.intent.priority,
+                            trainingPhrases: response.queryResult.match.intent.trainingPhrases,
+                            isFallback: response.queryResult.match.intent.isFallback,
                             intentDetectionConfidence: response.queryResult.match.confidence
                         }
                     }
                 };
+                if(response.queryResult.parameters.fields){
+                    intentDetectionObj.intentDetection.intent['parameters'] = response.queryResult.parameters.fields;
+                }
                 dialogflowResponses = {...dialogflowResponses, ...intentDetectionObj }
             }
 

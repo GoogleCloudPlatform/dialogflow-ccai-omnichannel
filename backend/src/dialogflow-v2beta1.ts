@@ -139,8 +139,7 @@
 
              var dialogflowResponses = {
                  languageCode: response.queryResult.languageCode, // override
-                 sentiment: response.queryResult.sentimentAnalysisResult.queryTextSentiment,
-                 queryText: response.queryResult.queryText,
+                 query: response.queryResult.queryText,
                  responseMessages: response.queryResult.fulfillmentMessages,
                  fulfillmentText: response.queryResult.fulfillmentText,
                  webhookPayloads: response.queryResult.webhookPayload,
@@ -150,6 +149,9 @@
                  responseId: response.responseId,
                  action: response.queryResult.action,
              }
+             if(response.queryResult.sentimentAnalysisResult && response.queryResult.sentimentAnalysisResult.queryTextSentiment){
+              dialogflowResponses['sentiment'] = response.queryResult.sentimentAnalysisResult.queryTextSentiment;
+             }
 
              if(response.queryResult.intent){
                  const intentDetectionObj = {
@@ -157,9 +159,6 @@
                          intent: {
                              displayName: response.queryResult.intent.displayName,
                              name: response.queryResult.intent.name,
-                             parameters: [struct.structProtoToJson(
-                              response.queryResult.intent.parameters
-                             )],
                              priority: response.queryResult.intent.priority,
                              trainingPhrases: response.queryResult.intent.trainingPhrases,
                              isFallback: response.queryResult.intent.isFallback,
@@ -175,14 +174,10 @@
                          }
                      }
                  };
-                 dialogflowResponses = {...dialogflowResponses, ...intentDetectionObj }
-
-                 if(response.queryResult.intent.events && response.queryResult.intent.events.length > 0){
-                  // in Dialogflow CX, there is a queryEvent, no intent.events
-                  // therefore, if events is available at it to the queryEvent
-                  // Makes it easy for analytics purposes in e.g. BigQuery.
-                  dialogflowResponses['queryEvent'] = response.queryResult.intent.events.join()
+                 if(response.queryResult.parameters.fields){
+                  intentDetectionObj.intentDetection.intent['parameters'] = response.queryResult.parameters.fields;
                  }
+                 dialogflowResponses = {...dialogflowResponses, ...intentDetectionObj }
              }
 
              botResponse = {...dialogflowConfig, ...dialogflowResponses }
@@ -190,6 +185,7 @@
              botResponse = dialogflowConfig;
          }
          console.log(botResponse);
+         console.log(botResponse.intentDetection.intent.parameters);
          return botResponse;
      }
  }

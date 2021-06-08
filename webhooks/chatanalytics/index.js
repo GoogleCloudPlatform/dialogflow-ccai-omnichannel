@@ -68,13 +68,13 @@ var detectPIIData = async function(text) {
     const resultString = response.item.value;
     console.log(`REDACTED TEXT: ${resultString}`);
     if (resultString) {
-      bqRow['QUERY_TEXT'] = resultString;
+      bqRow['QUERY'] = resultString;
     } else {
-        bqRow['QUERY_TEXT'] = text;
+        bqRow['QUERY'] = text;
     }
   } catch (err) {
     console.log(`Error in deidentifyContent: ${err.message || err}`);
-    bqRow['QUERY_TEXT'] = text;
+    bqRow['QUERY'] = text;
   }
 }
 
@@ -124,11 +124,9 @@ var getSentiment = function(text, callback){
     bqRow['PLATFORM'] = buf.platform;
     bqRow['LANGUAGE_CODE'] = buf.languageCode;
     bqRow['DATE_TIME'] = buf.dateTimeStamp;
-    //bqRow['QUERY_TEXT'] = buf.queryText;
-    await detectPIIData(buf.queryText);
-    bqRow['QUERY_EVENT'] = buf.queryEvent;
+    await detectPIIData(buf.query);
     bqRow['TEXT_RESPONSE'] = buf.fulfillmentText;
-    // TODO bqRow['RESPONSE_MESSAGES'] = buf.responseMessages; maybe insert as string JSON.stringify
+    bqRow['RESPONSE_MESSAGES'] = JSON.stringify(buf.responseMessages);
 
     // TODO FUNNEL_STEP:
     // TODO USER_UID:
@@ -137,6 +135,10 @@ var getSentiment = function(text, callback){
     // TODO CSAT:
     // TODO CES:
 
+    if(buf.error){
+        bqRow['ERROR'] = buf.error;
+    }
+
     if(buf.intentDetection && buf.intentDetection.intent){
         bqRow['INTENT_DETECTION_DISPLAYNAME'] = buf.intentDetection.intent.displayName;
         bqRow['INTENT_DETECTION_NAME'] = buf.intentDetection.intent.name;
@@ -144,7 +146,7 @@ var getSentiment = function(text, callback){
         bqRow['INTENT_DETECTION_IS_END'] = buf.intentDetection.intent.isEndInteraction;
         bqRow['INTENT_DETECTION_CONFIDENCE'] = buf.intentDetection.intent.intentDetectionConfidence;
         bqRow['INTENT_DETECTION_IS_LIVE_AGENT'] = buf.intentDetection.intent.isLiveAgent;
-        bqRow['INTENT_DETECTION_PARAMETERS'] = buf.intentDetection.intent.parameters;
+        bqRow['INTENT_DETECTION_PARAMETERS'] = JSON.stringify(buf.intentDetection.intent.parameters);
     }
 
     if(buf.sentiment && buf.sentiment.score && buf.sentiment.magnitude){

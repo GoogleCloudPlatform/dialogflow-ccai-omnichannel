@@ -23,10 +23,7 @@ export interface BotResponse {
     platform?: string,
     languageCode: string,
     dateTimeStamp: string,
-    queryText?: string,
-    queryEvent?: string,
-    queryTranscript?: string,
-    queryIntent?: string,
+    query?: string,
     fulfillmentText?: string,
     sentiment?: {
         score: number,

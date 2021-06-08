@@ -25,27 +25,7 @@
         "mode": "REQUIRED"
     },
     {
-        "name": "QUERY_TEXT",
-        "type": "STRING",
-        "mode": "NULLABLE"
-    },
-    {
-        "name": "QUERY_TRANSCRIPT",
-        "type": "STRING",
-        "mode": "NULLABLE"
-    },
-    {
-        "name": "QUERY_EVENT",
-        "type": "STRING",
-        "mode": "NULLABLE"
-    },
-    {
-        "name": "QUERY_INTENT",
-        "type": "STRING",
-        "mode": "NULLABLE"
-    },
-    {
-        "name": "QUERY_DTMF",
+        "name": "QUERY",
         "type": "STRING",
         "mode": "NULLABLE"
     },
@@ -56,25 +36,8 @@
     },
     {
         "name": "RESPONSE_MESSAGES",
-        "type": "RECORD",
-        "fields": [
-            {
-            "mode": "NULLABLE",
-            "name": "platform",
-            "type": "STRING"
-            },
-            {
-            "mode": "NULLABLE",
-            "name": "text",
-            "type": "STRING"
-            },
-            {
-            "mode": "NULLABLE",
-            "name": "message",
-            "type": "STRING"
-            }
-        ],
-        "mode": "REPEATED"
+        "type": "STRING",
+        "mode": "NULLABLE"
     },
     {
         "name": "SENTIMENT_SCORE",
@@ -98,20 +61,8 @@
     },
     {
         "name": "INTENT_DETECTION_PARAMETERS",
-        "type": "RECORD",
-        "fields": [
-            {
-                "mode": "NULLABLE",
-                "name": "name",
-                "type": "STRING"
-            },
-            {
-                "mode": "NULLABLE",
-                "name": "value",
-                "type": "STRING"
-            }
-        ],
-        "mode": "REPEATED"
+        "type": "STRING",
+        "mode": "NULLABLE"
     },
     {
         "name": "INTENT_DETECTION_IS_FALLBACK",
@@ -126,16 +77,14 @@
         "type": "BOOLEAN"
     },
     {
-        "name": "INTENT_IS_ERROR",
-        "type": "BOOLEAN"
-    },
-    {
         "name": "FUNNEL_STEP",
-        "type": "STRING"
+        "type": "STRING",
+        "mode": "NULLABLE"
     },
     {
         "name": "USER_UID",
-        "type": "STRING"
+        "type": "STRING",
+        "mode": "NULLABLE"
     },
     {
         "name": "TOPIC_MINING",
@@ -165,5 +114,9 @@
     {
         "name": "CES",
         "type": "FLOAT"
+    },
+    {
+        "name": "ERROR",
+        "type": "STRING"
     }
 ]
