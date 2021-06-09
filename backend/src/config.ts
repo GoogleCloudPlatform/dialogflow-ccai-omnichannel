@@ -172,7 +172,7 @@ const myPhoneNumber = process.env.npm_config_MY_PHONE_NUMBER ||process.env.MY_PH
 finalConfig.profile.my_phone_number = myPhoneNumber;
 const liveAgentPhoneNumber = process.env.npm_config_LIVE_AGENT_PHONE_NUMBER ||
     process.env.LIVE_AGENT_PHONE_NUMBER || envConfig.twilio.live_agent_phone_number;
-finalConfig.profile.live_agent_phone_number = liveAgentPhoneNumber;
+finalConfig.twilio.live_agent_phone_number = liveAgentPhoneNumber;
 
 finalConfig.debugger = new Debug(finalConfig);
 
