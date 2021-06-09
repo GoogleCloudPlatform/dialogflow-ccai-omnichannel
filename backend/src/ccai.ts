@@ -72,9 +72,10 @@ export class ContactCenterAi {
       me.twilio.messages.create(
         {
           to: phoneNr, // TODO Recipient's number
-          from: me.config.twilio['live_agent_phone_number'],
+          from: me.config.twilio['bot_agent_phone_number'],
           body: botResponse.fulfillmentText // Message to Recipient
         }).then(function(message){
+          botResponse.platform = 'sms';
           me.pubsub.pushToChannel(botResponse);
           me.debug.log(message);
           cb({ success: true, message});
@@ -91,7 +92,7 @@ export class ContactCenterAi {
           // record: true,
           url: `${host}/api/twiml/`,
           to: phoneNr,
-          from: me.config.twilio['live_agent_phone_number']
+          from: me.config.twilio['bot_agent_phone_number']
         })
         .then(function(call){
           cb({ success: true, call});
@@ -151,6 +152,10 @@ export class ContactCenterAi {
         }
 
         mediaStream.on('data', data => {
+
+          this.debug.log('websocket data: ');
+          this.debug.log(data);
+
           this.dialogflow.send(data, this.createAudioResponseStream, queryInputObj, welcomeEvent, outputAudioConfig);
         });
 
@@ -160,6 +165,7 @@ export class ContactCenterAi {
         });
 
         this.dialogflow.on('callStarted', data => {
+          this.debug.log('call started');
           callSid = data.callSid;
           streamSid = data.streamSid;
         });
@@ -238,6 +244,16 @@ export class ContactCenterAi {
     // TTS
     createAudioResponseStream() {
       var me = this;
+      var input = {
+        audio: {
+          config: {
+              audioEncoding: this.config.dialogflow['encoding'],
+              sampleRateHertz: this.config.dialogflow['sample_rate_hertz']
+          }
+        },
+        languageCode: this.config.dialogflow['language_code']
+      };
+
       return new Transform({
         objectMode: true,
         transform: (chunk, encoding, callback) => {
@@ -245,7 +261,7 @@ export class ContactCenterAi {
           if(df === 'cx'){
             if (!chunk.detectIntentResponse
               || !chunk.detectIntentResponse.outputAudio || chunk.detectIntentResponse.outputAudio.length === 0) {
-              return callback();
+                return callback();
             }
             wav.fromBuffer(chunk.detectIntentResponse.outputAudio);
           } else {
@@ -258,8 +274,9 @@ export class ContactCenterAi {
           wav.toSampleRate(8000);
           wav.toMuLaw();
 
-          // TODO var botResponse = me.dialogflow.beautifyResponses(chunk.recognitionResult, chunk, input);
-          // TODO me.pubsub.pushToChannel(botResponse);
+          var botResponse = me.dialogflow.beautifyResponses(chunk.detectIntentResponse, input);
+          botResponse.platform = 'phone';
+          me.pubsub.pushToChannel(botResponse);
 
           return callback(null, Buffer.from(wav.data['samples']));
         },

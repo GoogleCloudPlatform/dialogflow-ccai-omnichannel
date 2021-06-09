@@ -1,12 +1,11 @@
 ## TODOS
 
-* Test BigQuery & PubSub for CX
-* Get the funnel step from the parameters. (could be session parameter CX or action in ES)
+* Test BigQuery & PubSub & Funnel Step for CX
 * Add to PubSub from phonecall ccai.ts ln262
 * Test the flutter app
 * Fix Bug in CCAI Twilio flow (DF ES, after 2 turns, the call is closed)
-* Funnel Steps
 * Firebase Admin SDK retrieve user by UID
+* Build agent handover
 
 
 STEPS

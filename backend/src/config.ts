@@ -63,6 +63,7 @@ export interface GlobalConfig {
             // normal native volume supported by the specific voice, in the range [-96.0, 16.0].
             voice_name: string, // 'en-US-Standard-H', ////https://cloud.google.com/text-to-speech/docs/voices
             ssml_gender: string // 'SSML_VOICE_GENDER_FEMALE',
+            bot_agent_phone_number: string
             live_agent_phone_number: string
         },
         pubsub?: {
@@ -122,6 +123,7 @@ const globalConfig: GlobalConfig = {
             ssml_gender: 'SSML_VOICE_GENDER_FEMALE',
             model: 'phone_call',
             model_variant: 'USE_ENHANCED',
+            bot_agent_phone_number: '.ENV',
             live_agent_phone_number: '.ENV'
         },
         angular: {
@@ -170,6 +172,9 @@ finalConfig.profile.my_phone_number = myPhoneNumber;
 const liveAgentPhoneNumber = process.env.npm_config_LIVE_AGENT_PHONE_NUMBER ||
     process.env.LIVE_AGENT_PHONE_NUMBER || envConfig.twilio.live_agent_phone_number;
 finalConfig.twilio.live_agent_phone_number = liveAgentPhoneNumber;
+const botAgentPhoneNumber = process.env.npm_config_BOT_AGENT_PHONE_NUMBER ||
+    process.env.BOT_AGENT_PHONE_NUMBER || envConfig.twilio.bot_agent_phone_number;
+finalConfig.twilio.bot_agent_phone_number = botAgentPhoneNumber;
 
 finalConfig.debugger = new Debug(finalConfig);
 

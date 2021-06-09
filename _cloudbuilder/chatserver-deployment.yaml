@@ -57,6 +57,11 @@ spec:
               configMapKeyRef:
                 name: chatserver-config
                 key: LIVE_AGENT_PHONE_NUMBER
+          - name: "BOT_AGENT_PHONE_NUMBER"
+            valueFrom:
+              configMapKeyRef:
+                name: chatserver-config
+                key: BOT_AGENT_PHONE_NUMBER
           - name: "TWILIO_ACCOUNT_SID"
             valueFrom:
               configMapKeyRef:
