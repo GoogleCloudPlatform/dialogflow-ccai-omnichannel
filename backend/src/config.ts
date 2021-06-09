@@ -106,9 +106,6 @@ const globalConfig: GlobalConfig = {
         pubsub: {
             topic_name: '.ENV'
         },
-        // bigquery: {
-        //
-        // },
         twilio: {
             account_sid: '.ENV',
             auth_token: '.ENV',
@@ -178,7 +175,6 @@ finalConfig.debugger = new Debug(finalConfig);
 
 // make the configs global available
 export const global = finalConfig;
-
 
 // 3) Test AOG
 // 4) Refactor CCAI

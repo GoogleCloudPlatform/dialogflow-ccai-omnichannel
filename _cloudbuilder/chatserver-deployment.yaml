@@ -37,16 +37,26 @@ spec:
               configMapKeyRef:
                 name: chatserver-config
                 key: AGENT_ID
-          - name: "LIVE_AGENT_PHONE_NUMBER"
+          - name: "CX_LOCATION"
             valueFrom:
               configMapKeyRef:
                 name: chatserver-config
-                key: LIVE_AGENT_PHONE_NUMBER
+                key: CX_LOCATION
           - name: "VERTICAL"
             valueFrom:
               configMapKeyRef:
                 name: chatserver-config
                 key: VERTICAL
+          - name: "MY_PHONE_NUMBER"
+            valueFrom:
+              configMapKeyRef:
+                name: chatserver-config
+                key: MY_PHONE_NUMBER
+          - name: "LIVE_AGENT_PHONE_NUMBER"
+            valueFrom:
+              configMapKeyRef:
+                name: chatserver-config
+                key: LIVE_AGENT_PHONE_NUMBER
           - name: "TWILIO_ACCOUNT_SID"
             valueFrom:
               configMapKeyRef:
@@ -57,11 +67,31 @@ spec:
               configMapKeyRef:
                 name: chatserver-config
                 key: TWILIO_ACCOUNT_TOKEN
-          - name: "MY_PHONE_NUMBER"
+          - name: "PUBSUB_TOPIC"
             valueFrom:
               configMapKeyRef:
                 name: chatserver-config
-                key: MY_PHONE_NUMBER
+                key: PUBSUB_TOPIC
+          - name: "BQ_LOCATION"
+            valueFrom:
+              configMapKeyRef:
+                name: chatserver-config
+                key: BQ_LOCATION
+          - name: "DATASET"
+            valueFrom:
+              configMapKeyRef:
+                name: chatserver-config
+                key: DATASET
+          - name: "TABLE"
+            valueFrom:
+              configMapKeyRef:
+                name: chatserver-config
+                key: TABLE
+          - name: "DOMAIN1"
+            valueFrom:
+              configMapKeyRef:
+                name: chatserver-config
+                key: DOMAIN1
         volumeMounts:
           - name: mykeys
             mountPath: /var/secrets/
