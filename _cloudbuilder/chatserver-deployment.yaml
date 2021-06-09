@@ -37,11 +37,11 @@ spec:
               configMapKeyRef:
                 name: chatserver-config
                 key: AGENT_ID
-          - name: "PHONE_NR"
+          - name: "LIVE_AGENT_PHONE_NUMBER"
             valueFrom:
               configMapKeyRef:
                 name: chatserver-config
-                key: PHONE_NR
+                key: LIVE_AGENT_PHONE_NUMBER
           - name: "VERTICAL"
             valueFrom:
               configMapKeyRef:

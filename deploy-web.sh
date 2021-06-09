@@ -18,6 +18,10 @@ gcloud builds submit --config _cloudbuilder/web.yaml
 bold "Remove old deployments"
 kubectl delete deployment web
 
+kubectl scale deployment web --replicas=0
+kubectl scale deployment web --replicas=1
+
+
 bold "Eval the templates & deploy the containers..."
 cat _cloudbuilder/web-deployment.yaml | envsubst | kubectl apply -f -
 

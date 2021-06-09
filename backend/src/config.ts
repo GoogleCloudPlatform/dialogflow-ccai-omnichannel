@@ -46,7 +46,6 @@ export interface GlobalConfig {
             angular_port: number
         }
         twilio?: {
-            phone_number: string // .env
             account_sid: string // .env Your Account SID from www.twilio.com/console
             auth_token: string // .env Your Auth Token from www.twilio.com/console
             input_encoding: string // 'AUDIO_ENCODING_MULAW',
@@ -111,7 +110,6 @@ const globalConfig: GlobalConfig = {
         //
         // },
         twilio: {
-            phone_number: '.ENV',
             account_sid: '.ENV',
             auth_token: '.ENV',
             input_encoding: 'AUDIO_ENCODING_MULAW',
@@ -166,8 +164,6 @@ const agentId = process.env.npm_config_AGENT_ID || process.env.AGENT_ID || envCo
 finalConfig.dialogflow.cx_agent_id = agentId;
 const cxLocation = process.env.npm_config_CX_LOCATION || process.env.CX_LOCATION || envConfig.dialogflow.cx_location;
 finalConfig.dialogflow.cx_location = cxLocation;
-const phoneNumber = process.env.npm_config_PHONE_NR ||process.env.PHONE_NR || envConfig.twilio.phone_number;
-finalConfig.twilio.phone_number = phoneNumber;
 const accountSid = process.env.npm_config_TWILIO_ACCOUNT_SID ||process.env.TWILIO_ACCOUNT_SID || envConfig.twilio.account_sid;
 finalConfig.twilio.account_sid = accountSid;
 const authToken = process.env.npm_config_TWILIO_ACCOUNT_TOKEN ||process.env.TWILIO_ACCOUNT_TOKEN || envConfig.twilio.auth_token;

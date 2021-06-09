@@ -71,8 +71,8 @@ export class ContactCenterAi {
       // https://www.twilio.com/docs/sms/send-messages
       me.twilio.messages.create(
         {
-          to: phoneNr, // Recipient's number
-          from: me.config.twilio['phone_number'],
+          to: phoneNr, // TODO Recipient's number
+          from: me.config.twilio['live_agent_phone_number'],
           body: botResponse.fulfillmentText // Message to Recipient
         }).then(function(message){
           me.pubsub.pushToChannel(botResponse);
@@ -91,7 +91,7 @@ export class ContactCenterAi {
           // record: true,
           url: `${host}/api/twiml/`,
           to: phoneNr,
-          from: me.config.twilio['phone_number']
+          from: me.config.twilio['live_agent_phone_number']
         })
         .then(function(call){
           cb({ success: true, call});
