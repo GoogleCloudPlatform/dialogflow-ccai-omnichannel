@@ -40,6 +40,20 @@
         "mode": "NULLABLE"
     },
     {
+        "name": "SPEECH_TRANSCRIPT",
+        "type": "STRING",
+        "mode": "NULLABLE"
+    },
+    {
+        "name": "SPEECH_CONFIDENCE",
+        "type": "FLOAT",
+        "mode": "NULLABLE"
+    },
+    {
+        "name": "SENTIMENT_SCORE",
+        "type": "FLOAT"
+    },
+    {
         "name": "SENTIMENT_SCORE",
         "type": "FLOAT"
     },

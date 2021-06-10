@@ -128,7 +128,6 @@ var getSentiment = function(text, callback){
     bqRow['TEXT_RESPONSE'] = buf.fulfillmentText;
     bqRow['RESPONSE_MESSAGES'] = JSON.stringify(buf.responseMessages);
 
-    // TODO FUNNEL_STEP:
     // TODO USER_UID:
     // TODO TOPIC_MINING:
     // TODO NPS:
@@ -151,6 +150,11 @@ var getSentiment = function(text, callback){
         if(buf.intentDetection.intent.parameters && buf.intentDetection.intent.parameters.action){
             bqRow['FUNNEL_STEP'] = buf.intentDetection.intent.parameters.action
         }
+    }
+
+    if(buf.recognitionResult && buf.recognitionResult.transcript){
+      bqRow['SPEECH_TRANSCRIPT'] = buf.recognitionResult.transcript;
+      bqRow['SPEECH_CONFIDENCE'] = buf.recognitionResult.confidence;
     }
 
     if(buf.sentiment && buf.sentiment.score && buf.sentiment.magnitude){

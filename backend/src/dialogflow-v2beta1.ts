@@ -22,7 +22,7 @@
  import { EventEmitter } from 'events';
  import { PassThrough, pipeline } from 'stream';
  import { Transform } from 'stream';
-
+ import { WaveFile } from 'wavefile';
  const struct = require('./structjson');
 
  export interface QueryInputV2Beta1 {
@@ -116,7 +116,7 @@
              this.debug.error(e);
              botResponse = this.beautifyResponses(null, input, e);
          }
-         // this.debug.log(botResponse);
+         this.debug.log(botResponse);
          return botResponse;
      }
 
@@ -127,7 +127,7 @@
              sessionPath: this.sessionPath,
              projectId: this.projectId,
              dateTimeStamp: new Date().toISOString(),
-             text: input, // in case DF doesn't respond anything, we can still capture these
+             query: input, // in case DF can't detect, still store the user utterance
              languageCode: this.config.dialogflow['language_code'], // in case DF doesn't respond anything, we can still capture these
          }
          if(e) {
@@ -152,8 +152,8 @@
              if(response.queryResult.sentimentAnalysisResult && response.queryResult.sentimentAnalysisResult.queryTextSentiment){
               dialogflowResponses['sentiment'] = response.queryResult.sentimentAnalysisResult.queryTextSentiment;
              }
-
-             if(response.queryResult.intent){
+             /// TODO something breaks here
+             if(response.queryResult && response.queryResult.intent){
                  const intentDetectionObj = {
                      intentDetection: {
                          intent: {
@@ -186,8 +186,8 @@
          } else {
              botResponse = dialogflowConfig;
          }
-         console.log(botResponse);
-         console.log(botResponse.intentDetection.intent.parameters);
+
+         this.debug.log(botResponse);
          return botResponse;
      }
  }
@@ -211,8 +211,8 @@ export class DialogflowV2Beta1Stream extends DialogflowV2Beta1 {
       this.isInterrupted = false;
     }
 
-    send(message, createAudioResponseStream, queryInputObj, welcomeEvent:string, outputAudioConfig) {
-      const stream = this.startPipeline(createAudioResponseStream, queryInputObj, welcomeEvent, outputAudioConfig);
+    send(message, queryInputObj, welcomeEvent:string, outputAudioConfig) {
+      const stream = this.startPipeline(queryInputObj, welcomeEvent, outputAudioConfig);
       stream.write(message);
     }
 
@@ -233,7 +233,7 @@ export class DialogflowV2Beta1Stream extends DialogflowV2Beta1 {
       }
     }
 
-    startPipeline(createAudioResponseStream: any, queryInputObj, welcomeEvent:string, outputAudioConfig) {
+    startPipeline(queryInputObj, welcomeEvent:string, outputAudioConfig) {
       if (!this.isBusy) {
         // Generate the streams
         this._requestStreamPassThrough = new PassThrough({ objectMode: true });
@@ -241,7 +241,8 @@ export class DialogflowV2Beta1Stream extends DialogflowV2Beta1 {
         const detectStream = this.createDetectStream(queryInputObj, welcomeEvent, outputAudioConfig);
 
         const responseStreamPassThrough = new PassThrough({ objectMode: true });
-        this.audioResponseStream = createAudioResponseStream();
+        this.audioResponseStream = this.createAudioResponseStream();
+
         if (this.isFirst) this.isFirst = false;
         this.isInterrupted = false;
         // Pipeline is async....
@@ -277,7 +278,12 @@ export class DialogflowV2Beta1Stream extends DialogflowV2Beta1 {
           }
         });
 
+        // TODO
+        // CHANGES FOR CX
         responseStreamPassThrough.on('data', (data) => {
+          var botResponse;
+          var mergeObj = {};
+
           if (
             data.recognitionResult &&
             data.recognitionResult.transcript &&
@@ -285,6 +291,38 @@ export class DialogflowV2Beta1Stream extends DialogflowV2Beta1 {
           ) {
             this.emit('interrupted', data.recognitionResult.transcript);
           }
+
+          if(data.recognitionResult && data.recognitionResult.isFinal) {
+            if(data.recognitionResult.transcript){
+              mergeObj['query'] = data.recognitionResult.transcript;
+            }
+            if(data.recognitionResult.dtmfDigits){
+              // TODO for CX this will be different
+              mergeObj['query'] = data.recognitionResult.dtmfDigits;
+            }
+
+            mergeObj['recognitionResult'] = {};
+            mergeObj['recognitionResult']['transcript'] = data.recognitionResult.transcript;
+            mergeObj['recognitionResult']['confidence'] = data.recognitionResult.confidence;
+          }
+
+          if(data.queryResult && data.queryResult.intent){
+
+            botResponse = this.beautifyResponses(data, 'audio');
+            botResponse = {...botResponse, ...mergeObj};
+            this.emit('botResponse', botResponse);
+
+            // TODO for CX this will be different
+            // TODO this should be in a business logics layer
+            if(data.queryResult.intent.parameters &&
+              data.queryResult.intent.parameters.action &&
+              data.queryResult.intent.parameters.action === 'HANDOVER'
+              ){
+              botResponse['intentDetection']['isLiveAgent'] = true;
+              this.emit('isHandOver', botResponse);
+            }
+          }
+
           if (
             data.queryResult &&
             data.queryResult.intent &&
@@ -297,10 +335,13 @@ export class DialogflowV2Beta1Stream extends DialogflowV2Beta1 {
             this.stop();
           }
         });
+
         this.audioResponseStream.on('data', (data) => {
+          // data is the wav samples to return
           this.emit('audio', data.toString('base64'));
           this.isBusy = false;
         });
+
         this.isBusy = true;
       }
       return this._requestStreamPassThrough;
@@ -341,6 +382,26 @@ export class DialogflowV2Beta1Stream extends DialogflowV2Beta1 {
         if (msg.event !== 'media') return callback();
         // For Twilio, this is mulaw/8000 base64-encoded
         return callback(null, { inputAudio: msg.media.payload });
+      },
+    });
+  }
+
+  // Create audio response stream for twilio
+  // Convert the LINEAR 16 Wavefile to 8000/mulaw
+  // TTS
+  createAudioResponseStream() {
+    return new Transform({
+      objectMode: true,
+      transform: (chunk, encoding, callback) => {
+        const wav = new WaveFile();
+        if (!chunk.outputAudio || chunk.outputAudio.length === 0) {
+          return callback();
+        }
+        wav.fromBuffer(chunk.outputAudio);
+        wav.toSampleRate(8000);
+        wav.toMuLaw();
+
+        return callback(null, Buffer.from(wav.data['samples']));
       },
     });
   }

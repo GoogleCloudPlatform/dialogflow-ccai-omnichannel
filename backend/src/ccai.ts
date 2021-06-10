@@ -20,11 +20,8 @@ import { DialogflowV2Beta1, DialogflowV2Beta1Stream } from './dialogflow-v2beta1
 import { DialogflowCX, DialogflowCXStream } from './dialogflow-cx';
 import { DialogflowCXV3Beta1, DialogflowCXV3Beta1Stream } from './dialogflow-cxv3beta1';
 import { MyPubSub } from './pubsub';
-import { Transform } from 'stream';
-import { WaveFile } from 'wavefile';
-
-const Twilio = require('twilio');
 var df;
+const Twilio = require('twilio');
 
 export class ContactCenterAi {
     private pubsub: MyPubSub;
@@ -105,6 +102,8 @@ export class ContactCenterAi {
         // This will get populated on callStarted
         let callSid;
         let streamSid;
+        var previousBotResponse = null;
+
         // MediaStream coming from Twilio
         const mediaStream = websocketStream(ws, {
           binary: false
@@ -151,17 +150,11 @@ export class ContactCenterAi {
           queryInputObj['interimResults'] = this.config.twilio['interim_results'];
         }
 
+
+        // EVENT LISTENERS
+
         mediaStream.on('data', data => {
-
-          this.debug.log('websocket data: ');
-          this.debug.log(data);
-
-          this.dialogflow.send(data, this.createAudioResponseStream, queryInputObj, welcomeEvent, outputAudioConfig);
-        });
-
-        mediaStream.on('finish', () => {
-          this.debug.log('MediaStream has finished');
-          this.dialogflow.finish();
+          this.dialogflow.send(data, queryInputObj, welcomeEvent, outputAudioConfig);
         });
 
         this.dialogflow.on('callStarted', data => {
@@ -181,6 +174,8 @@ export class ContactCenterAi {
           const mediaJSON = JSON.stringify(mediaMessage);
           this.debug.log(`Sending audio (${audio.length} characters)`);
           mediaStream.write(mediaJSON);
+
+
           // If this is the last message
           if (this.dialogflow.isStopped) {
             const markMessage = {
@@ -191,7 +186,7 @@ export class ContactCenterAi {
               }
             };
             const markJSON = JSON.stringify(markMessage);
-            // console.log('Sending end of interaction mark', markJSON);
+            this.debug.log('Sending end of interaction mark', markJSON);
             mediaStream.write(markJSON);
           }
         });
@@ -209,12 +204,27 @@ export class ContactCenterAi {
             }
         });
 
+        this.dialogflow.on('botResponse', botResponse => {
+          this.debug.log(botResponse);
+
+          botResponse['platform'] = 'phone';
+
+          // store first bot response
+          if(previousBotResponse === null) previousBotResponse = botResponse;
+          // only push to pubsub if there is a different timestamp
+          // else we can assume it's the same
+          if(previousBotResponse.dateTimeStamp !== botResponse.dateTimeStamp){
+            this.pubsub.pushToChannel(botResponse);
+          }
+        });
+
         // TODO
         this.dialogflow.on('isHandOver', () => {
           const response = new Twilio.twiml.VoiceResponse();
           return response.dial(this.config.twilio['live_agent_phone_number']);
         });
 
+        // TODO
         this.dialogflow.on('endOfInteraction', (queryResult) => {
             const response = new Twilio.twiml.VoiceResponse();
             const url = process.env.END_OF_INTERACTION_URL;
@@ -237,50 +247,17 @@ export class ContactCenterAi {
               )
               .catch(err => this.debug.error(err));
         });
-    }
 
-    // Create audio response stream for twilio
-    // Convert the LINEAR 16 Wavefile to 8000/mulaw
-    // TTS
-    createAudioResponseStream() {
-      var me = this;
-      var input = {
-        audio: {
-          config: {
-              audioEncoding: this.config.dialogflow['encoding'],
-              sampleRateHertz: this.config.dialogflow['sample_rate_hertz']
-          }
-        },
-        languageCode: this.config.dialogflow['language_code']
-      };
+        // TODO
+        mediaStream.on('error', () => {
+          this.debug.log('MediaStream had an error');
+          this.dialogflow.finish();
+        });
 
-      return new Transform({
-        objectMode: true,
-        transform: (chunk, encoding, callback) => {
-          const wav = new WaveFile();
-          if(df === 'cx'){
-            if (!chunk.detectIntentResponse
-              || !chunk.detectIntentResponse.outputAudio || chunk.detectIntentResponse.outputAudio.length === 0) {
-                return callback();
-            }
-            wav.fromBuffer(chunk.detectIntentResponse.outputAudio);
-          } else {
-            if (!chunk.outputAudio || chunk.outputAudio.length === 0) {
-              return callback();
-            }
-            wav.fromBuffer(chunk.outputAudio);
-          }
-
-          wav.toSampleRate(8000);
-          wav.toMuLaw();
-
-          var botResponse = me.dialogflow.beautifyResponses(chunk.detectIntentResponse, input);
-          botResponse.platform = 'phone';
-          me.pubsub.pushToChannel(botResponse);
-
-          return callback(null, Buffer.from(wav.data['samples']));
-        },
-      });
+        mediaStream.on('finish', () => {
+          this.debug.log('MediaStream has finished');
+          this.dialogflow.finish();
+        });
     }
 }
 

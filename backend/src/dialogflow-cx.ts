@@ -24,6 +24,7 @@ import { BotResponse } from './dialogflow-bot-responses';
 import { EventEmitter } from 'events';
 import { PassThrough, pipeline } from 'stream';
 import { Transform } from 'stream';
+import { WaveFile } from 'wavefile';
 
 const struct = require('./structjson');
 
@@ -148,7 +149,7 @@ export class DialogflowCX extends EventEmitter {
             projectId: this.projectId,
             agentId: this.agentId,
             dateTimeStamp: new Date().toISOString(),
-            text: input, // in case DF doesn't respond anything, we can still capture these
+            query: input, // in case DF can't detect, still store the user utterance
             languageCode: this.config.dialogflow['language_code'], // in case DF doesn't respond anything, we can still capture these
         }
         if(e) {
@@ -198,7 +199,7 @@ export class DialogflowCX extends EventEmitter {
                 if(response.queryResult.parameters){
                     intentDetectionObj.intentDetection.intent['parameters'] = struct.structProtoToJson(
                         response.queryResult.parameters
-                      );
+                    );
                 }
                 dialogflowResponses = {...dialogflowResponses, ...intentDetectionObj }
             }
@@ -232,8 +233,8 @@ export class DialogflowCXStream extends DialogflowCX {
       this.isInterrupted = false;
     }
 
-    send(message, createAudioResponseStream, queryInputObj, welcomeEvent:string, outputAudioConfig) {
-      const stream = this.startPipeline(createAudioResponseStream, queryInputObj, welcomeEvent, outputAudioConfig);
+    send(message, queryInputObj, welcomeEvent:string, outputAudioConfig) {
+      const stream = this.startPipeline(queryInputObj, welcomeEvent, outputAudioConfig);
       stream.write(message);
     }
 
@@ -254,7 +255,7 @@ export class DialogflowCXStream extends DialogflowCX {
       }
     }
 
-    startPipeline(createAudioResponseStreamCallback: any, queryInputObj, welcomeEvent:string, outputAudioConfig) {
+    startPipeline(queryInputObj, welcomeEvent:string, outputAudioConfig) {
         if (!this.isBusy) {
             // Generate the streams
             this._requestStreamPassThrough = new PassThrough({ objectMode: true });
@@ -262,7 +263,7 @@ export class DialogflowCXStream extends DialogflowCX {
             const detectStream = this.createDetectStream(queryInputObj, welcomeEvent, outputAudioConfig);
 
             const responseStreamPassThrough = new PassThrough({ objectMode: true });
-            this.audioResponseStream = createAudioResponseStreamCallback();
+            this.audioResponseStream = this.createAudioResponseStream();
             if (this.isFirst) this.isFirst = false;
             this.isInterrupted = false;
             // Pipeline is async....
@@ -295,20 +296,52 @@ export class DialogflowCXStream extends DialogflowCX {
                         this.emit('endOfInteraction', this.getFinalQueryResult());
                     }
                 }
+
+                // TODO CAN WE GET THE DTMF?
+                console.log(data);
             });
 
             responseStreamPassThrough.on('data', (data) => {
+                var botResponse;
+                var mergeObj = {};
+
                 if (
-                    data.recognitionResult &&
-                    data.recognitionResult.transcript &&
-                    data.recognitionResult.transcript.length > 0
+                  data.recognitionResult &&
+                  data.recognitionResult.transcript &&
+                  data.recognitionResult.transcript.length > 0
                 ) {
-                    this.emit('interrupted', data.recognitionResult.transcript);
+                  this.emit('interrupted', data.recognitionResult.transcript);
                 }
 
-                // TODO isHandover
-                if(data.queryResult.intent === 'phone-transfer'){
-                    this.emit('isHandOver');
+                console.log(data);
+                // TODO - In CX DTMF is part of the QueryInput (in the StreamingDetectIntentRequest)
+                // we likely can't collect it here. but in the _requestStreamPassThrough
+                // if (dtmf){
+                //    mergeObj['query'] = dtmf;
+                // }
+
+                if(data.recognitionResult && data.recognitionResult.isFinal) {
+                  if(data.recognitionResult.transcript){
+                    mergeObj['query'] = data.recognitionResult.transcript;
+                  }
+
+                  mergeObj['recognitionResult'] = {};
+                  mergeObj['recognitionResult']['transcript'] = data.recognitionResult.transcript;
+                  mergeObj['recognitionResult']['confidence'] = data.recognitionResult.confidence;
+                }
+
+                if(data.queryResult && data.queryResult.intent){
+                  botResponse = this.beautifyResponses(data, 'audio');
+                  botResponse = {...botResponse, ...mergeObj};
+                  this.emit('botResponse', botResponse);
+
+                  if(data.queryResult.intent.parameters &&
+                    data.queryResult.intent.parameters.action &&
+                    data.queryResult.intent.parameters.action === 'HANDOVER'
+                    ){
+                    botResponse['intentDetection']['isLiveAgent'] = true;
+                    this.emit('isHandOver', botResponse);
+                  }
                 }
 
                 if (
@@ -372,6 +405,27 @@ export class DialogflowCXStream extends DialogflowCX {
                 // For Twilio, this is mulaw/8000 base64-encoded
                 return callback(null, { queryInput: { audio: { audio: msg.media.payload }}});
             }
+        });
+    }
+
+    // Create audio response stream for twilio
+    // Convert the LINEAR 16 Wavefile to 8000/mulaw
+    // TTS
+    createAudioResponseStream() {
+        return new Transform({
+        objectMode: true,
+        transform: (chunk, encoding, callback) => {
+            const wav = new WaveFile();
+            if (!chunk.detectIntentResponse
+            || !chunk.detectIntentResponse.outputAudio || chunk.detectIntentResponse.outputAudio.length === 0) {
+                return callback();
+            }
+            wav.fromBuffer(chunk.detectIntentResponse.outputAudio);
+            wav.toSampleRate(8000);
+            wav.toMuLaw();
+
+            return callback(null, Buffer.from(wav.data['samples']));
+        },
         });
     }
 

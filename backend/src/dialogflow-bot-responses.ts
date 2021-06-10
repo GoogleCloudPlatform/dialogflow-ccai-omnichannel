@@ -29,6 +29,10 @@ export interface BotResponse {
         score: number,
         magnitude: number
     },
+    recognitionResult?: {
+        transcript: string,
+        confidence: number
+    },
     intentDetection?: {
         intent: {
             displayName: string,
