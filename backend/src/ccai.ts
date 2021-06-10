@@ -249,8 +249,9 @@ export class ContactCenterAi {
         });
 
         // TODO
-        mediaStream.on('error', () => {
+        mediaStream.on('error', (e) => {
           this.debug.log('MediaStream had an error');
+          this.debug.error(e);
           this.dialogflow.finish();
         });
 
