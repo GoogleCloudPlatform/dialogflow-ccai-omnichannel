@@ -54,10 +54,6 @@
         "type": "FLOAT"
     },
     {
-        "name": "SENTIMENT_SCORE",
-        "type": "FLOAT"
-    },
-    {
         "name": "SENTIMENT_MAGNITUDE",
         "type": "FLOAT"
     },
