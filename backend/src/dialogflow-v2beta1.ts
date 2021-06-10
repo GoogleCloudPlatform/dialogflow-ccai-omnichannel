@@ -309,7 +309,9 @@ export class DialogflowV2Beta1Stream extends DialogflowV2Beta1 {
           if(data.queryResult && data.queryResult.intent){
 
             botResponse = this.beautifyResponses(data, 'audio');
-            botResponse = {...botResponse, ...mergeObj};
+            botResponse['recognitionResult'] = {};
+            botResponse['recognitionResult']['transcript'] = mergeObj['recognitionResult']['transcript'];
+            botResponse['recognitionResult']['confidence'] = mergeObj['recognitionResult']['confidence'];
             this.emit('botResponse', botResponse);
 
             // TODO for CX this will be different

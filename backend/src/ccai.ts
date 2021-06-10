@@ -205,10 +205,8 @@ export class ContactCenterAi {
         });
 
         this.dialogflow.on('botResponse', botResponse => {
-          this.debug.log(botResponse);
-
           botResponse['platform'] = 'phone';
-
+          this.debug.log(botResponse);
           // store first bot response
           if(previousBotResponse === null) previousBotResponse = botResponse;
           // only push to pubsub if there is a different timestamp
