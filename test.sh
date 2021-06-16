@@ -27,14 +27,14 @@ err() {
 }
 
 bold "Set all vars..."
-export SERVICE_ACCOUNT_NAME=$PROJECT_ID-serviceaccount
-export SA_EMAIL=$SERVICE_ACCOUNT_NAME@$PROJECT_ID.iam.gserviceaccount.com
-export BUCKET_NAME=$PROJECT_ID-bucket
-
 set -a
   source .properties
   source backend/.env
   set +a
+
+export SERVICE_ACCOUNT_NAME=$PROJECT_ID-serviceaccount
+export SA_EMAIL=$SERVICE_ACCOUNT_NAME@$PROJECT_ID.iam.gserviceaccount.com
+export BUCKET_NAME=$PROJECT_ID-bucket
 
 gcloud functions deploy chatanalytics --region=$REGION_ALTERNATIVE \
 --memory=512MB \
