@@ -1,5 +1,24 @@
 ## TODOS
 
+* Test user management with firebase SMS
+* Build user management for Website
+* Build user management for phone
+* Build user management for flutter
+* Build user management for GA
+
+        // the channels can get the users
+            // TWILIO before the welcome message, get the phone number, the phone number must match
+              // hello display-name
+                // we couldn't retrieve your g-mortgage account
+                // please use the same phone number as registered on the website
+            // GOOGLE ASSISTANT - on load fetch the google assistant data, the email must match
+              // hello display-name
+                // we couldn't link you to your user account
+                // please do account linking on the website
+            // Web, on load, ask to login.
+              // hello display-name
+                // please login
+
 * Test BigQuery & PubSub & Funnel Step for CX
 * Build agent handover / Test it in ES and CX
 * Firebase Admin SDK retrieve user by UID

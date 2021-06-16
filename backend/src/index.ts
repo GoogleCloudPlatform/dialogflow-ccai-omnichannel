@@ -56,20 +56,8 @@ export class App {
         this.getUser();
     }
 
+    // testing purposes
     private getUser(): void {
-
-        // the channels can get the users
-            // TWILIO before the welcome message, get the phone number, the phone number must match
-              // hello display-name
-                // we couldn't retrieve your g-mortgage account
-                // please use the same phone number as registered on the website
-            // GOOGLE ASSISTANT - on load fetch the google assistant data, the email must match
-              // hello display-name
-                // we couldn't link you to your user account
-                // please do account linking on the website
-            // Web, on load, ask to login.
-              // hello display-name
-                // please login
 
         this.firebase.getUser({ email: global.employee['live_agent_email'] })
         .then((userRecord) => {
