@@ -27,7 +27,8 @@ export interface User {
     displayName?: string,
     photoURL?: string,
     providerId?: string,
-    providerUid?: string
+    providerUid?: string,
+    country?: string
 }
 
 export class Firebase {

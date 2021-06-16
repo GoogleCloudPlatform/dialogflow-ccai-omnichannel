@@ -97,6 +97,11 @@
         "mode": "NULLABLE"
     },
     {
+        "name": "USER_COUNTRY",
+        "type": "STRING",
+        "mode": "NULLABLE"
+    },
+    {
         "name": "TOPIC_MINING",
         "type": "RECORD",
         "fields": [

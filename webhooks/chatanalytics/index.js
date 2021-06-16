@@ -128,6 +128,9 @@ var getSentiment = function(text, callback){
     bqRow['TEXT_RESPONSE'] = buf.fulfillmentText;
     bqRow['RESPONSE_MESSAGES'] = JSON.stringify(buf.responseMessages);
 
+    bqRow['USER_UID'] = buf.uid;
+    bqRow['USER_COUNTRY'] = buf.country;
+
     // TODO USER_UID:
     // TODO TOPIC_MINING:
     // TODO NPS:

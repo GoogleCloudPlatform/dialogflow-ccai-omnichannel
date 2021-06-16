@@ -148,7 +148,7 @@ export class App {
             res.json({
                 success: true,
                 vertical: global.vertical,
-                twilio: global.profile['my_phone_number']
+                twilio: global.twilio['bot_agent_phone_number']
             });
         });
         this.app.get('/api/', function(req, res) {
@@ -221,10 +221,24 @@ export class App {
             const body = req.body;
             const query = body.Body;
             const phoneNr = body.From;
+            const country = body.FromCountry;
 
-            // const phoneNrCountry = body.FromCountry
-            await me.ccai.sms(query, phoneNr, function(data){
-                res.json(data);
+            me.firebase.getUser({phoneNumber: phoneNr})
+            .then(async (userRecord) => {
+                this.debug.log('Found user with this phone_nr: ');
+                this.debug.log(userRecord);
+                userRecord.country = country;
+
+                await me.ccai.sms(query, userRecord, function(data){
+                    res.json(data);
+                });
+            })
+            .catch(async (error) => {
+                this.debug.error(error);
+                // const phoneNrCountry = body.FromCountry
+                await me.ccai.sms(query, {phoneNumber: phoneNr, country}, function(data){
+                    res.json(data);
+                });
             });
         });
         this.app.post('/api/callme/', async function(req, res){
