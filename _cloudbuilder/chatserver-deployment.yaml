@@ -47,21 +47,6 @@ spec:
               configMapKeyRef:
                 name: chatserver-config
                 key: VERTICAL
-          - name: "MY_PHONE_NUMBER"
-            valueFrom:
-              configMapKeyRef:
-                name: chatserver-config
-                key: MY_PHONE_NUMBER
-          - name: "LIVE_AGENT_PHONE_NUMBER"
-            valueFrom:
-              configMapKeyRef:
-                name: chatserver-config
-                key: LIVE_AGENT_PHONE_NUMBER
-          - name: "BOT_AGENT_PHONE_NUMBER"
-            valueFrom:
-              configMapKeyRef:
-                name: chatserver-config
-                key: BOT_AGENT_PHONE_NUMBER
           - name: "TWILIO_ACCOUNT_SID"
             valueFrom:
               configMapKeyRef:
@@ -97,6 +82,51 @@ spec:
               configMapKeyRef:
                 name: chatserver-config
                 key: DOMAIN1
+          - name: "MY_PHONE_NUMBER"
+            valueFrom:
+              configMapKeyRef:
+                name: chatserver-config
+                key: MY_PHONE_NUMBER
+          - name: "MY_EMAIL"
+            valueFrom:
+              configMapKeyRef:
+                name: chatserver-config
+                key: MY_EMAIL
+          - name: "MY_PASS"
+            valueFrom:
+              configMapKeyRef:
+                name: chatserver-config
+                key: MY_PASS
+          - name: "MY_DISPLAY_NAME"
+            valueFrom:
+              configMapKeyRef:
+                name: chatserver-config
+                key: MY_DISPLAY_NAME
+          - name: "LIVE_AGENT_PHONE_NUMBER"
+            valueFrom:
+              configMapKeyRef:
+                name: chatserver-config
+                key: LIVE_AGENT_PHONE_NUMBER
+          - name: "LIVE_AGENT_EMAIL"
+            valueFrom:
+              configMapKeyRef:
+                name: chatserver-config
+                key: LIVE_AGENT_EMAIL
+          - name: "LIVE_AGENT_PASS"
+            valueFrom:
+              configMapKeyRef:
+                name: chatserver-config
+                key: LIVE_AGENT_PASS
+          - name: "LIVE_AGENT_DISPLAY_NAME"
+            valueFrom:
+              configMapKeyRef:
+                name: chatserver-config
+                key: LIVE_AGENT_DISPLAY_NAME
+          - name: "BOT_AGENT_PHONE_NUMBER"
+            valueFrom:
+              configMapKeyRef:
+                name: chatserver-config
+                key: BOT_AGENT_PHONE_NUMBER
         volumeMounts:
           - name: mykeys
             mountPath: /var/secrets/

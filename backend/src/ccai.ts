@@ -219,7 +219,7 @@ export class ContactCenterAi {
         // TODO
         this.dialogflow.on('isHandOver', () => {
           const response = new Twilio.twiml.VoiceResponse();
-          return response.dial(this.config.twilio['live_agent_phone_number']);
+          return response.dial(this.config.employee['live_agent_phone_number']);
         });
 
         // TODO

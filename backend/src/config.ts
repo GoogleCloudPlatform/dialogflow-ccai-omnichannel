@@ -64,7 +64,6 @@ export interface GlobalConfig {
             voice_name: string, // 'en-US-Standard-H', ////https://cloud.google.com/text-to-speech/docs/voices
             ssml_gender: string // 'SSML_VOICE_GENDER_FEMALE',
             bot_agent_phone_number: string
-            live_agent_phone_number: string
         },
         pubsub?: {
             topic_name: string
@@ -75,7 +74,16 @@ export interface GlobalConfig {
             columns: string
         }
         profile: {
-            my_phone_number: string
+            my_phone_number?: string,
+            my_email?: string,
+            my_pass?: string,
+            my_display_name?: string,
+        },
+        employee: {
+            live_agent_phone_number?: string,
+            live_agent_email?: string,
+            live_agent_pass?: string,
+            live_agent_display_name?: string
         }
     }
     production?: {
@@ -124,13 +132,21 @@ const globalConfig: GlobalConfig = {
             model: 'phone_call',
             model_variant: 'USE_ENHANCED',
             bot_agent_phone_number: '.ENV',
-            live_agent_phone_number: '.ENV'
         },
         angular: {
             angular_port: 4200
         },
         profile: {
-            my_phone_number: '.ENV'
+            my_phone_number: '.ENV',
+            my_email: '.ENV',
+            my_pass: '.ENV',
+            my_display_name: '.ENV'
+        },
+        employee: {
+            live_agent_phone_number: '.ENV',
+            live_agent_email: '.ENV',
+            live_agent_pass: '.ENV',
+            live_agent_display_name: '.ENV'
         }
 
     },
@@ -169,9 +185,24 @@ const authToken = process.env.npm_config_TWILIO_ACCOUNT_TOKEN ||process.env.TWIL
 finalConfig.twilio.auth_token = authToken;
 const myPhoneNumber = process.env.npm_config_MY_PHONE_NUMBER ||process.env.MY_PHONE_NUMBER || envConfig.profile.my_phone_number;
 finalConfig.profile.my_phone_number = myPhoneNumber;
-const liveAgentPhoneNumber = process.env.npm_config_LIVE_AGENT_PHONE_NUMBER ||
-    process.env.LIVE_AGENT_PHONE_NUMBER || envConfig.twilio.live_agent_phone_number;
-finalConfig.twilio.live_agent_phone_number = liveAgentPhoneNumber;
+const myEmail = process.env.npm_config_MY_EMAIL ||process.env.MY_EMAIL || envConfig.profile.my_email;
+finalConfig.profile.my_email = myEmail;
+const myPass = process.env.npm_config_MY_PASS ||process.env.MY_PASS || envConfig.profile.my_pass;
+finalConfig.profile.my_pass = myPass;
+const myDisplayName = process.env.npm_config_MY_DISPLAY_NAME ||process.env.MY_DISPLAY_NAME || envConfig.profile.my_display_name;
+finalConfig.profile.my_display_name = myDisplayName;
+
+const liveAgentPhoneNumber = process.env.npm_config_LIVE_AGENT_PHONE_NUMBER
+|| process.env.LIVE_AGENT_PHONE_NUMBER || envConfig.employee.live_agent_phone_number;
+finalConfig.employee.live_agent_phone_number = liveAgentPhoneNumber;
+const liveAgentEmail = process.env.npm_config_LIVE_AGENT_EMAIL || process.env.LIVE_AGENT_EMAIL || envConfig.employee.live_agent_email;
+finalConfig.employee.live_agent_email = liveAgentEmail;
+const liveAgentPass = process.env.npm_config_LIVE_AGENT_PASS || process.env.LIVE_AGENT_PASS || envConfig.employee.live_agent_pass;
+finalConfig.employee.live_agent_pass = liveAgentPass;
+const liveAgentDisplayName = process.env.npm_config_LIVE_AGENT_DISPLAY_NAME
+|| process.env.LIVE_AGENT_DISPLAY_NAME || envConfig.employee.live_agent_display_name;
+finalConfig.employee.live_agent_display_name = liveAgentDisplayName;
+
 const botAgentPhoneNumber = process.env.npm_config_BOT_AGENT_PHONE_NUMBER ||
     process.env.BOT_AGENT_PHONE_NUMBER || envConfig.twilio.bot_agent_phone_number;
 finalConfig.twilio.bot_agent_phone_number = botAgentPhoneNumber;

@@ -26,6 +26,7 @@ import { global } from './config';
 import { Aog } from './aog';
 import { Web, WebStream } from './web';
 import { ContactCenterAi } from './ccai';
+import * as fb from './firebase';
 
 
 export class App {
@@ -38,17 +39,82 @@ export class App {
     private webStream: WebStream;
     private ccai: ContactCenterAi;
     private aog: Aog;
+    private firebase: fb.FirebaseUsers;
     public debug: any;
 
     constructor() {
         this.web = new Web(global);
         this.webStream = new WebStream(global);
         this.ccai = new ContactCenterAi(global);
+        this.firebase = new fb.FirebaseUsers(global);
         this.aog = new Aog(global);
         this.debug = global.debugger;
 
         this.createApp();
+        this.enrollDemoUsers();
         this.listen();
+        this.getUser();
+    }
+
+    private getUser(): void {
+
+        // the channels can get the users
+            // TWILIO before the welcome message, get the phone number, the phone number must match
+              // hello display-name
+                // we couldn't retrieve your g-mortgage account
+                // please use the same phone number as registered on the website
+            // GOOGLE ASSISTANT - on load fetch the google assistant data, the email must match
+              // hello display-name
+                // we couldn't link you to your user account
+                // please do account linking on the website
+            // Web, on load, ask to login.
+              // hello display-name
+                // please login
+
+        this.firebase.getUser({ email: global.employee['live_agent_email'] })
+        .then((userRecord) => {
+            this.debug.log('Found user with this email');
+            this.debug.log(userRecord);
+        })
+        .catch((error) => {
+            this.debug.error(error);
+        });
+    }
+
+    private enrollDemoUsers(): void {
+        // For demo usage of this system, we will add
+        // two user accounts to the system. One for the
+        // live agent, and one for the end user.
+        // Other users could use the flow on the demo website.
+
+        this.firebase.createUser({
+            email: global.employee['live_agent_email'],
+            phoneNumber: `+${global.employee['live_agent_phone_number']}`,
+            password: global.employee['live_agent_pass'],
+            displayName: global.employee['live_agent_display_name'],
+            disabled: false,
+            emailVerified: true
+        }).then((userRecord) => {
+            // See the UserRecord reference doc for the contents of userRecord.
+            this.debug.log('Successfully created new user:', userRecord.uid);
+        })
+        .catch((error) => {
+            // this.debug.error('Error creating new user:', error);
+        });
+        this.firebase.createUser({
+            email: global.profile['my_email'],
+            phoneNumber: `+${global.profile['my_phone_number']}`,
+            password: global.profile['my_pass'],
+            displayName: global.profile['my_display_name'],
+            disabled: false,
+            emailVerified: true
+        }).then((userRecord) => {
+            // See the UserRecord reference doc for the contents of userRecord.
+            this.debug.log('Successfully created new user:', userRecord.uid);
+        })
+        .catch((error) => {
+            // this.debug.error('Error creating new user:', error);
+        });
     }
 
     private createApp(): void {
@@ -82,7 +148,7 @@ export class App {
             res.json({
                 success: true,
                 vertical: global.vertical,
-                twilio: global.twilio['phone_number']
+                twilio: global.profile['my_phone_number']
             });
         });
         this.app.get('/api/', function(req, res) {

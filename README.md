@@ -150,6 +150,7 @@ The following steps will guide you to run all the various channels. These steps 
    - Upload an avatar
 4. For this demo we are integrating an iframe with the preview of the add in the external website interface. In a real world application, this will be provided through an ads platform.
 
+
 ### Node JS Backend Server
 
 1. In order to run this demo on your local machine. You will need to have Node installed.
@@ -185,6 +186,16 @@ You can start the Angular site with the below command. It will start your websit
 ```
 cd web && ng serve
 ```
+
+### Firebase
+
+Using the Admin SDK for Node.js
+
+1. `npm install firebase-admin --save`
+
+2. https://firebase.google.com/docs/auth/admin
+
+
 
 ### Flutter Mobile App
 
