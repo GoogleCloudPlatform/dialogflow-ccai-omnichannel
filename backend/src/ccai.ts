@@ -68,7 +68,7 @@ export class ContactCenterAi {
       // https://www.twilio.com/docs/sms/send-messages
       me.twilio.messages.create(
         {
-          to: user.phoneNr, // TODO Recipient's number
+          to: user.phoneNumber, // TODO Recipient's number
           from: me.config.twilio['bot_agent_phone_number'],
           body: botResponse.fulfillmentText // Message to Recipient
         }).then(function(message){
