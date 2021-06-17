@@ -53,19 +53,18 @@ export class App {
         this.createApp();
         this.enrollDemoUsers();
         this.listen();
-        this.getUser();
     }
 
     // testing purposes
     private getUser(): void {
-
+        var me = this;
         this.firebase.getUser({ email: global.employee['live_agent_email'] })
         .then((userRecord) => {
-            this.debug.log('Found user with this email');
-            this.debug.log(userRecord);
+            me.debug.log('Found user with this email');
+            me.debug.log(userRecord);
         })
         .catch((error) => {
-            this.debug.error(error);
+            me.debug.error(error);
         });
     }
 
@@ -74,7 +73,7 @@ export class App {
         // two user accounts to the system. One for the
         // live agent, and one for the end user.
         // Other users could use the flow on the demo website.
-
+        var me = this;
         this.firebase.createUser({
             email: global.employee['live_agent_email'],
             phoneNumber: `+${global.employee['live_agent_phone_number']}`,
@@ -84,10 +83,10 @@ export class App {
             emailVerified: true
         }).then((userRecord) => {
             // See the UserRecord reference doc for the contents of userRecord.
-            this.debug.log('Successfully created new user:', userRecord.uid);
+            me.debug.log('Successfully created new user:', userRecord.uid);
         })
         .catch((error) => {
-            // this.debug.error('Error creating new user:', error);
+            // me.debug.error('Error creating new user:', error);
         });
         this.firebase.createUser({
             email: global.profile['my_email'],
@@ -98,10 +97,10 @@ export class App {
             emailVerified: true
         }).then((userRecord) => {
             // See the UserRecord reference doc for the contents of userRecord.
-            this.debug.log('Successfully created new user:', userRecord.uid);
+            me.debug.log('Successfully created new user:', userRecord.uid);
         })
         .catch((error) => {
-            // this.debug.error('Error creating new user:', error);
+            // me.debug.error('Error creating new user:', error);
         });
     }
 
@@ -162,12 +161,11 @@ export class App {
             res.json({success: true, responses});
         });
         this.app.ws('/api/web-chat/', (ws, req) => {
-            me.debug.log('ws text connected');
+            // me.debug.log('ws text connected');
             var dialogflowResponses;
-
             ws.on('message', async (msg) => {
                 const clientObj = JSON.parse(msg);
-                this.debug.log(msg);
+                me.debug.log(msg);
 
                 switch(Object.keys(clientObj)[0]) {
                     case 'web-text-message':
@@ -184,18 +182,24 @@ export class App {
                         // TODO?
                         break;
                     default:
-                        this.debug.log('not a web-text-message or web-event');
+                        me.debug.log('not a web-text-message or web-event');
                 }
             });
         });
         this.app.ws('/api/web-audio/', (ws, req) => {
-            me.debug.log('ws audio connected');
+            // me.debug.log('ws audio connected');
             me.webStream.stream(ws);
         });
 
         // Twilio Start Routes
         var me = this;
         this.app.get('/api/sms/confirmation/', async function(req, res) {
+            // CAN THE CF POST THESE, THEN WE DONT NEED A SEPERATE URL
+            // We would need to send the UID
+            /*const body = req.body;
+            const query = body.Body;
+            const phoneNr = body.From;
+            const country = body.FromCountry;*/
 
             const phoneNr = global.profile['my_phone_number'];
             const query = 'CONFIRMATION';
@@ -211,10 +215,12 @@ export class App {
             const phoneNr = body.From;
             const country = body.FromCountry;
 
+            console.log(phoneNr);
+
             me.firebase.getUser({phoneNumber: phoneNr})
             .then(async (userRecord) => {
-                this.debug.log('Found user with this phone_nr: ');
-                this.debug.log(userRecord);
+                me.debug.log('Found user with this phone_nr: ');
+                me.debug.log(userRecord);
                 userRecord.country = country;
 
                 await me.ccai.sms(query, userRecord, function(data){
@@ -222,7 +228,7 @@ export class App {
                 });
             })
             .catch(async (error) => {
-                this.debug.error(error);
+                me.debug.error(error);
                 // const phoneNrCountry = body.FromCountry
                 await me.ccai.sms(query, {phoneNumber: phoneNr, country}, function(data){
                     res.json(data);
@@ -283,7 +289,7 @@ export class App {
 
         // Twilio Ws Media Stream Route
         this.app.ws('/api/phone/', (ws, req) => {
-            me.debug.log('ws phone connected');
+            // me.debug.log('ws phone connected');
             me.ccai.stream(ws);
         });
     }

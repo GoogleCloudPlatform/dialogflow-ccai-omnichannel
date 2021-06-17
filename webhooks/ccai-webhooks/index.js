@@ -5,6 +5,15 @@ const axios = require('axios');
 async function textMsg() {
     const path = '/api/sms/confirmation/';
 
+    // TODO is there a way to get the user.uid or user.phoneNr?
+    // would like to post this.
+    // you will need a phoneNr, in order to send this.
+    // IF I CAN DETECT IF THE match has a fulfillment
+    // ELSE IF INTENT IS FUNNEL STEP CONFIRMATION
+    // this is also the place where I want to check if the channel is already SMS
+    // to not send another message: "I am sending you a confirmation over SMS"
+    // IF WE CAN DETECT THAT, THEN CAN WE WRITE A PARAMETER OR CONTEXT?
+
     let results = await doRequest(path);
     return results;
 }
@@ -54,6 +63,6 @@ exports.sendConfirmation = async function sendConfirmation(request, response) {
     intentMap.set('callme-now', call);
     intentMap.set('confirm-appointment', textMsg);
     let webhookResponse = await handleRequest(intentMap, request);
-    console.log(webhookResponse);
+    console.log(request);
     response.json(webhookResponse);
 };

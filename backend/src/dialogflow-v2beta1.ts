@@ -165,6 +165,8 @@
                              intentDetectionConfidence: response.queryResult.intentDetectionConfidence,
                              isEndInteraction: response.queryResult.intent.endInteraction,
                              isLiveAgent: response.queryResult.intent.liveAgentHandoff,
+                             isWebhook: (response.queryResult.intent.webhookState !== 'WEBHOOK_STATE_UNSPECIFIED'),
+                             webhookState: response.queryResult.intent.webhookState,
                              inputContextNames: response.queryResult.intent.inputContextNames,
                              outputContexts: response.queryResult.intent.outputContexts,
                              resetContexts: response.queryResult.intent.resetContexts,

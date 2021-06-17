@@ -183,6 +183,10 @@ export class DialogflowCX extends EventEmitter {
                 dialogflowResponses['query'] = response.queryResult.text;
             }
 
+            // TODO
+            console.log(response.queryResult.webhookStatuses);
+            console.log(response.queryResult.webhookPayloads);
+
             if(response.queryResult.match){
                 const intentDetectionObj = {
                     intentDetection: {
@@ -192,6 +196,8 @@ export class DialogflowCX extends EventEmitter {
                             priority: response.queryResult.match.intent.priority,
                             trainingPhrases: response.queryResult.match.intent.trainingPhrases,
                             isFallback: response.queryResult.match.intent.isFallback,
+                            // TODO isWebhook: (response.queryResult.intent.webhookState !== 'WEBHOOK_STATE_UNSPECIFIED'),
+                            // TODO webhookState: response.queryResult.intent.webhookState,
                             intentDetectionConfidence: response.queryResult.match.confidence
                         }
                     }

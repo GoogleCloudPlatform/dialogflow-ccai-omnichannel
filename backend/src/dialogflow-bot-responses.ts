@@ -42,7 +42,9 @@ export interface BotResponse {
             trainingPhrases: Array<string>,
             isFallback: boolean,
             isEndInteraction?: boolean,
-            intentDetectionConfidence: number
+            isWebhook?: boolean,
+            webHookState?: string,
+            intentDetectionConfidence: number,
             events?: Array<string>,
             isLiveAgent?: boolean,
             inputContextNames?: any,

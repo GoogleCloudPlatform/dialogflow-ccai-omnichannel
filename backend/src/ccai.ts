@@ -217,7 +217,8 @@ export class ContactCenterAi {
           }
         });
 
-        // TODO
+        // TODO THE END OF INTERACTION SHOULD DO SOMETHING SIMILAR BUT IN A CLOUD FUNCTION
+        // SEE THE EXAMPLE https://github.com/twilio/media-streams/tree/master/node/dialogflow-integration
         this.dialogflow.on('isHandOver', () => {
           const response = new Twilio.twiml.VoiceResponse();
           return response.dial(this.config.employee['live_agent_phone_number']);
