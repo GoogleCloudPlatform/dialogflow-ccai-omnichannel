@@ -3,11 +3,15 @@
 # Reimagining Customer Experience 360
 Omnichannel Customer Service on Google Cloud
 
-**By Lee Boonstra, Developer Advocate @ Google Cloud.**
+Customers ask us all the time. What's the future of customer care?
+We think your contact center shouldn't be a cost center but a revenue center.
+It should meet your customers, where they are, 24/7 and be proactive, ubiquitous, and scalable. It should become a trusted partner in your day to day life.
 
-TODO description
+What you will see in the next minute, is an early demo, built by DevRel on how we can reimagine customer experience. A true omnichannel approach!
 
-TODO Architecture picture
+[Video Demo](https://sites.google.com/corp/google.com/rce/all-demos-in-one?authuser=0)
+
+![alt text](https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel/blob/master/images/architecture.png "Architecture")
 
 ## Google Cloud Setup
 
