@@ -11,7 +11,7 @@ What you will see in the next minute, is an early demo, built by DevRel on how w
 
 [Video Demo](https://sites.google.com/corp/google.com/rce/all-demos-in-one?authuser=0)
 
-![alt text](https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel/blob/master/images/architecture.png "Architecture")
+![alt text](https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel/blob/main/images/architecture.png | width=800)
 
 ## Google Cloud Setup
 
