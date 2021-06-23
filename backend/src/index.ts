@@ -204,13 +204,10 @@ export class App {
 
         // Twilio Start Routes
         var me = this;
-        this.app.get('/api/sms/', async function(req, res) {
-            // const body = req.body;
-            // const query = body.Body;
-            // const uid = body.Uid;
+        this.app.post('/api/sms/', async function(req, res){
             const body = req.body;
-            const query = req.query.Body;
-            const uid = req.query.Uid;
+            const query = body.Body;
+            const uid = body.Uid;
 
             var userRecord;
             if(body && body.From && body.FromCountry) {
@@ -230,64 +227,37 @@ export class App {
                     res.json(data);
                 });
             }
-
-            // TODO rewrite the cloud function to use POST instead of GET,
-            // Then we only need one endpoint.
         });
 
-        this.app.post('/api/sms/', async function(req, res){
-            const body = req.body;
-            const query = body.Body;
-            const phoneNr = body.From;
-            const country = body.FromCountry;
-
-            me.firebase.getUser({phoneNumber: phoneNr})
-            .then(async (userRecord) => {
-                me.debug.log('Found user with this phone_nr: ');
-                me.debug.log(userRecord);
-                userRecord.country = country;
-
-                await me.ccai.sms(query, userRecord, function(data){
-                    res.json(data);
-                });
-            })
-            .catch(async (error) => {
-                me.debug.error(error);
-                // const phoneNrCountry = body.FromCountry
-                await me.ccai.sms(query, {phoneNumber: phoneNr, country}, function(data){
-                    res.json(data);
-                });
-            });
-        });
         this.app.post('/api/callme/', async function(req, res){
             const body = req.body;
-            // const name = body.Name;
-            const phoneNr = body.From;
-            console.log(phoneNr);
+            const uid = body.Uid;
+
+            var userRecord;
+            if(body && body.From && body.FromCountry) {
+                // when you start the flow directly by contacting the phonenumber
+                // instead of the web interface
+                userRecord = {};
+                userRecord['phoneNumber'] = body.From;
+                userRecord['displayName'] = body.Name;
+            } else if(uid){
+                // the web interface has the user.uid stored in the DF conversation
+                userRecord = await me.firebase.getUser({uid});
+                me.debug.log(userRecord);
+            }
+            console.log(userRecord.phoneNumber);
             const protocol = req.secure? 'https://' : 'http://';
             const host = protocol + req.hostname;
             // get param phoneNr required
-            if(phoneNr){
-                await me.ccai.streamOutbound(phoneNr, host, function(data){
+            if(userRecord.phoneNumber){
+                await me.ccai.streamOutbound(userRecord.phoneNumber, host, function(data){
                     res.json(data);
                 });
             } else {
                 res.status(500);
             }
         });
-        this.app.get('/api/callme/', async function(req, res) {
-
-            // TODO this should come from a profile
-            const phoneNr = global.profile['my_phone_number'];
-            const protocol = req.secure? 'https://' : 'http://';
-            const host = protocol + req.hostname;
-
-            await me.ccai.streamOutbound(phoneNr, host, function(data){
-                res.json(data);
-            });
-        });
-        this.app.get('/api/call/transfer/', async function(req, res) {
-
+        this.app.post('/api/call/transfer/', async function(req, res) {
             // TODO this should come from a profile
             const phoneNr = global.profile['my_phone_number'];
             const protocol = req.secure? 'https://' : 'http://';

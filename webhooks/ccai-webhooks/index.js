@@ -4,37 +4,27 @@ const axios = require('axios');
 
 async function textMsg(user) {
     const path = '/api/sms/';
-    let results = await doRequest(path, user);
+    let results = await doRequest(path, user, 'CONFIRMATION');
     return results;
 }
 
 async function call(user) {
     const path = '/api/callme/';
-
-    let results = await doRequest(path, user);
+    let results = await doRequest(path, user, 'CALL ME');
     return results;
 }
 
-async function doRequest(path, user){
-    console.log(path, user);
+async function doRequest(path, user, query){
+    console.log(path, user, query);
+
     var resp;
     try {
-        resp = await axios.get(`https://www.conv.dev${path}?Uid=${user}&Body=CONFIRMATION`);
-        //console.log(resp);
-    } catch (err) {
-        // Handle Error Here
-        console.error(err);
-        resp = err;
-    }
-
-    /* // TODO use post to make use of only one endpoint
-    try {
         const options = {
-            method: 'post',
+            method: 'POST',
             url: `https://www.conv.dev${path}`,
             data: {
                 Uid: user,
-                Body: 'CONFIRMATION'
+                Body: query
             }
         }
         resp = axios(options);
@@ -43,7 +33,7 @@ async function doRequest(path, user){
         // Handle Error Here
         console.error(err);
         resp = err;
-    }*/
+    }
 
     return resp;
 }
@@ -56,7 +46,6 @@ async function handleRequest(map, request, response){
     // Dialogflow ES get user from Context
     if(request.body && request.body.queryResult && request.body.queryResult.outputContexts){
         request.body.queryResult.outputContexts.forEach(ctx => {
-            console.log(ctx.name);
             if(ctx.name.indexOf('/contexts/user') != -1){
                 user = ctx.parameters.user;
             }
@@ -78,6 +67,7 @@ exports.sendConfirmation = async function sendConfirmation(request, response) {
     let intentMap = new Map();
     intentMap.set('callme-now', call);
     intentMap.set('confirm-appointment', textMsg);
-    let webhookResponse = await handleRequest(intentMap, request);
-    response.json(webhookResponse);
+    let webhookResponse = await handleRequest(intentMap, request); 
+    console.log(webhookResponse);
+    response.json('OK');
 };
