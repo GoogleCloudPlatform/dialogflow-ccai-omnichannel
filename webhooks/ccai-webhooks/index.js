@@ -3,7 +3,7 @@
 const axios = require('axios');
 
 async function textMsg(user) {
-    const path = '/api/sms/flow/'; // TODO rename /api/sms/
+    const path = '/api/sms/';
     let results = await doRequest(path, user);
     return results;
 }

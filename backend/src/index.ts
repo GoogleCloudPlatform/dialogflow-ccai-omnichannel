@@ -172,7 +172,7 @@ export class App {
                         var text = clientObj['web-text-message'];
 
                         // TODO get the email when the user is logged in
-                        var user = await me.firebase.getUser({email: 'leeboonstra@google.com'});
+                        var user = await me.firebase.getUser({phoneNumber: '+31651536814'});
                         var userId = user.uid;
 
                         var contexts = [];
@@ -202,9 +202,7 @@ export class App {
 
         // Twilio Start Routes
         var me = this;
-        this.app.get('/api/sms/flow/', async function(req, res) {
-            // CAN THE CF POST THESE, THEN WE DONT NEED A SEPERATE URL
-            // We would need to send the UID
+        this.app.get('/api/sms/', async function(req, res) {
             // const body = req.body;
             // const query = body.Body;
             // const uid = body.Uid;
@@ -214,25 +212,25 @@ export class App {
 
             var userRecord;
             if(body && body.From && body.FromCountry) {
+                // when you start the flow directly by contacting the phonenumber
+                // instead of the web interface
                 userRecord = {};
                 userRecord['phoneNumber'] = body.From;
                 userRecord['country'] = body.FromCountry;
             } else if(uid){
-                userRecord = await me.firebase.getUser({uid: body.Uid});
+                // the web interface has the user.uid stored in the DF conversation
+                userRecord = await me.firebase.getUser({uid});
+                this.debug.log(userRecord);
             }
 
-            console.log(uid, query);
-            console.log(userRecord);
+            if(userRecord){
+                await me.ccai.sms(query, userRecord, function(data){
+                    res.json(data);
+                });
+            }
 
-            // const phoneNr = global.profile['my_phone_number'];
-            // const query = 'CONFIRMATION';
-
-            await me.ccai.sms(query, userRecord, function(data){
-                res.json(data);
-            });
-
-            // TODO when this works use the post URL as below,
-            // and remove that funciton. It should work through one entrypoint.
+            // TODO rewrite the cloud function to use POST instead of GET,
+            // Then we only need one endpoint.
         });
 
         this.app.post('/api/sms/', async function(req, res){
@@ -241,9 +239,6 @@ export class App {
             const phoneNr = body.From;
             const country = body.FromCountry;
 
-            // TODO rewrite with awaits
-            // me.debug.log(phoneNr);
-            // TODO this part will need to be in every route
             me.firebase.getUser({phoneNumber: phoneNr})
             .then(async (userRecord) => {
                 me.debug.log('Found user with this phone_nr: ');

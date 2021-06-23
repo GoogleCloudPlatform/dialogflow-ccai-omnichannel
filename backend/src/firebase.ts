@@ -46,6 +46,7 @@ export class Firebase {
 // https://firebase.google.com/docs/auth/admin/manage-users
 export class FirebaseUsers extends Firebase {
     async getUser(u: User):Promise<User> {
+        console.log('user object: ');
         console.log(u);
         var userPromise:Promise<User>;
         if(u.phoneNumber){
