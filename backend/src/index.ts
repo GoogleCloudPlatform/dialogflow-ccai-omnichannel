@@ -170,16 +170,23 @@ export class App {
                 switch(Object.keys(clientObj)[0]) {
                     case 'web-text-message':
                         var text = clientObj['web-text-message'];
-                        dialogflowResponses = await this.web.detectIntentText(text);
-                        ws.send(JSON.stringify(dialogflowResponses)); // TODO THIS NEEDS TO BE FIXED
+
+                        // TODO get the email when the user is logged in
+                        var userId = await me.firebase.getUser({email: 'leeboonstra@google.com'});
+
+                        var contexts = [];
+                        var queryParameters = {};
+                        queryParameters['user'] = userId;
+                        contexts.push(queryParameters);
+                        dialogflowResponses = await this.web.detectIntentText(text, contexts);
+                        ws.send(JSON.stringify(dialogflowResponses));
                       break;
                     case 'web-event':
                         var eventName = clientObj['web-event'];
-                        dialogflowResponses = await this.web.detectIntentEvent(eventName);
+                        dialogflowResponses = await this.web.detectIntentEvent(eventName, queryParameters);
                         ws.send(JSON.stringify(dialogflowResponses));
                       break;
                     case 'disconnect':
-                        // TODO?
                         break;
                     default:
                         me.debug.log('not a web-text-message or web-event');
@@ -215,8 +222,9 @@ export class App {
             const phoneNr = body.From;
             const country = body.FromCountry;
 
-            console.log(phoneNr);
-
+            // TODO rewrite with awaits
+            // me.debug.log(phoneNr);
+            // TODO this part will need to be in every route
             me.firebase.getUser({phoneNumber: phoneNr})
             .then(async (userRecord) => {
                 me.debug.log('Found user with this phone_nr: ');
