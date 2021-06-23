@@ -86,7 +86,8 @@ export class App {
             me.debug.log('Successfully created new user:', userRecord.uid);
         })
         .catch((error) => {
-            // me.debug.error('Error creating new user:', error);
+            me.debug.error('employee:');
+            me.debug.error(error);
         });
         this.firebase.createUser({
             email: global.profile['my_email'],
@@ -100,7 +101,8 @@ export class App {
             me.debug.log('Successfully created new user:', userRecord.uid);
         })
         .catch((error) => {
-            // me.debug.error('Error creating new user:', error);
+            me.debug.error('user:');
+            me.debug.error(error);
         });
     }
 
@@ -220,7 +222,7 @@ export class App {
             } else if(uid){
                 // the web interface has the user.uid stored in the DF conversation
                 userRecord = await me.firebase.getUser({uid});
-                this.debug.log(userRecord);
+                me.debug.log(userRecord);
             }
 
             if(userRecord){
