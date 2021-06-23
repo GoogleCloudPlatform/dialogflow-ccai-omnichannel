@@ -164,7 +164,7 @@ import { User } from 'actions-on-google/dist/service/actionssdk/conversation/use
           var ctx = await this.getContext('user');
           var uid = 'unknown';
           if(ctx.user) {
-              uid = ctx.user.uid;
+              uid = ctx.user;
           }
          } catch(e){
           console.log('no contexts set');
