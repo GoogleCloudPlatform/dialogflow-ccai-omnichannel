@@ -89,7 +89,8 @@ export class App {
             me.debug.log('Successfully created new user:', userRecord.uid);
         })
         .catch((error) => {
-            // me.debug.error('Error creating new user:', error);
+            me.debug.error('employee:');
+            me.debug.error(error);
         });
         this.firebase.createUser({
             email: global.profile['my_email'],
@@ -103,7 +104,8 @@ export class App {
             me.debug.log('Successfully created new user:', userRecord.uid);
         })
         .catch((error) => {
-            // me.debug.error('Error creating new user:', error);
+            me.debug.error('user:');
+            me.debug.error(error);
         });
     }
 
@@ -173,16 +175,25 @@ export class App {
                 switch(Object.keys(clientObj)[0]) {
                     case 'web-text-message':
                         var text = clientObj['web-text-message'];
-                        dialogflowResponses = await this.web.detectIntentText(text);
-                        ws.send(JSON.stringify(dialogflowResponses)); // TODO THIS NEEDS TO BE FIXED
+
+                        // TODO get the email when the user is logged in
+                        var user = await me.firebase.getUser({phoneNumber: '+31651536814'});
+                        var userId = user.uid;
+
+                        var contexts = [];
+                        var queryParameters = {};
+                        queryParameters['user'] = userId;
+                        console.log(userId);
+                        contexts.push(queryParameters);
+                        dialogflowResponses = await this.web.detectIntentText(text, contexts);
+                        ws.send(JSON.stringify(dialogflowResponses));
                       break;
                     case 'web-event':
                         var eventName = clientObj['web-event'];
-                        dialogflowResponses = await this.web.detectIntentEvent(eventName);
+                        dialogflowResponses = await this.web.detectIntentEvent(eventName, queryParameters);
                         ws.send(JSON.stringify(dialogflowResponses));
                       break;
                     case 'disconnect':
-                        // TODO?
                         break;
                     default:
                         me.debug.log('not a web-text-message or web-event');
@@ -239,62 +250,61 @@ export class App {
                 res.json(data);
             });
         });
-
+        
         this.app.post('/api/sms/', async function(req, res){
             const body = req.body;
             const query = body.Body;
-            const phoneNr = body.From;
-            const country = body.FromCountry;
+            const uid = body.Uid;
 
-            console.log(phoneNr);
-
-            me.firebase.getUser({phoneNumber: phoneNr})
-            .then(async (userRecord) => {
-                me.debug.log('Found user with this phone_nr: ');
+            var userRecord;
+            if(body && body.From && body.FromCountry) {
+                // when you start the flow directly by contacting the phonenumber
+                // instead of the web interface
+                userRecord = {};
+                userRecord['phoneNumber'] = body.From;
+                userRecord['country'] = body.FromCountry;
+            } else if(uid){
+                // the web interface has the user.uid stored in the DF conversation
+                userRecord = await me.firebase.getUser({uid});
                 me.debug.log(userRecord);
-                userRecord.country = country;
+            }
 
+            if(userRecord){
                 await me.ccai.sms(query, userRecord, function(data){
                     res.json(data);
                 });
-            })
-            .catch(async (error) => {
-                me.debug.error(error);
-                // const phoneNrCountry = body.FromCountry
-                await me.ccai.sms(query, {phoneNumber: phoneNr, country}, function(data){
-                    res.json(data);
-                });
-            });
+            }
         });
+
         this.app.post('/api/callme/', async function(req, res){
             const body = req.body;
-            // const name = body.Name;
-            const phoneNr = body.From;
-            console.log(phoneNr);
+            const uid = body.Uid;
+
+            var userRecord;
+            if(body && body.From && body.FromCountry) {
+                // when you start the flow directly by contacting the phonenumber
+                // instead of the web interface
+                userRecord = {};
+                userRecord['phoneNumber'] = body.From;
+                userRecord['displayName'] = body.Name;
+            } else if(uid){
+                // the web interface has the user.uid stored in the DF conversation
+                userRecord = await me.firebase.getUser({uid});
+                me.debug.log(userRecord);
+            }
+            console.log(userRecord.phoneNumber);
             const protocol = req.secure? 'https://' : 'http://';
             const host = protocol + req.hostname;
             // get param phoneNr required
-            if(phoneNr){
-                await me.ccai.streamOutbound(phoneNr, host, function(data){
+            if(userRecord.phoneNumber){
+                await me.ccai.streamOutbound(userRecord.phoneNumber, host, function(data){
                     res.json(data);
                 });
             } else {
                 res.status(500);
             }
         });
-        this.app.get('/api/callme/', async function(req, res) {
-
-            // TODO this should come from a profile
-            const phoneNr = global.profile['my_phone_number'];
-            const protocol = req.secure? 'https://' : 'http://';
-            const host = protocol + req.hostname;
-
-            await me.ccai.streamOutbound(phoneNr, host, function(data){
-                res.json(data);
-            });
-        });
-        this.app.get('/api/call/transfer/', async function(req, res) {
-
+        this.app.post('/api/call/transfer/', async function(req, res) {
             // TODO this should come from a profile
             const phoneNr = global.profile['my_phone_number'];
             const protocol = req.secure? 'https://' : 'http://';

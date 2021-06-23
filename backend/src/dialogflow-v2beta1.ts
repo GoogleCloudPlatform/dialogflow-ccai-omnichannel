@@ -23,6 +23,7 @@
  import { PassThrough, pipeline } from 'stream';
  import { Transform } from 'stream';
  import { WaveFile } from 'wavefile';
+import { User } from 'actions-on-google/dist/service/actionssdk/conversation/user';
  const struct = require('./structjson');
 
  export interface QueryInputV2Beta1 {
@@ -44,6 +45,7 @@
 
  export class DialogflowV2Beta1 extends EventEmitter {
      public sessionClient: df.v2beta1.SessionsClient;
+     public contextClient: df.v2beta1.ContextsClient;
      public projectId: string;
      public sessionId: string;
      public sessionPath: string;
@@ -58,28 +60,29 @@
          this.sessionId = uuid.v4();
          this.sessionClient = new df.v2beta1.SessionsClient();
          this.sessionPath = this.sessionClient.projectAgentSessionPath(this.projectId, this.sessionId);
+         this.contextClient = new df.v2beta1.ContextsClient();
      }
 
-     detectIntentText(query: string, lang = this.config.dialogflow['language_code'], contexts?: Array<string>) {
+     detectIntentText(query: string, contexts?: Array<any>) {
          const qInput:QueryInputV2Beta1 = {
              text: {
                text: query,
-               languageCode: lang
+               languageCode: this.config.dialogflow['language_code']
              }
          };
 
          return this.detectIntent(qInput, query, contexts);
      }
 
-     detectIntentEvent(eventName: string, lang = this.config.dialogflow['language_code'], params = null) {
+     detectIntentEvent(eventName: string, queryParams?: any) {
          const qInput:QueryInputV2Beta1 = {
              event: {
                  name: eventName,
-                 languageCode: lang
+                 languageCode: this.config.dialogflow['language_code']
                }
          };
 
-         if(params) qInput.event.parameters = struct.encode(params);
+         if(queryParams) qInput.event.parameters = queryParams;
 
          return this.detectIntent(qInput, eventName);
      }
@@ -96,16 +99,18 @@
          return this.detectIntent(qInput, 'audio');
      }
 
-     async detectIntent(qInput:QueryInputV2Beta1, input?: string, contexts?: Array<string>) {
-         const request = {
+     async detectIntent(qInput:QueryInputV2Beta1, input?: string, contexts?: Array<any>) {
+        const me = this;
+        const request = {
              session: this.sessionPath,
-             queryInput: qInput,
-             queryParams: null
-         };
+             queryInput: qInput
+        }
 
-         if (contexts && contexts.length > 0) {
-             request.queryParams.contexts = contexts;
-         }
+        if (contexts && contexts.length > 0) {
+          contexts.forEach(async function(contextObj) {
+            await me.createContext(Object.keys(contextObj)[0], contextObj);
+          });
+        }
 
          var botResponse;
          try {
@@ -120,7 +125,27 @@
          return botResponse;
      }
 
-     beautifyResponses(response: any, input: string, e?: any): BotResponse{
+     async createContext(contextId, parameters, lifespan = 333) {
+      const request = {
+          parent: this.sessionPath,
+          context: {
+              name: `${this.sessionPath}/contexts/${contextId}`,
+              parameters: struct.jsonToStructProto(parameters),
+              lifespanCount: lifespan
+          }
+      };
+      await this.contextClient.createContext(request)
+    }
+
+    async getContext(contextId) {
+      var ctx = await this.contextClient.getContext({
+        name: `${this.sessionPath}/contexts/${contextId}`
+      });
+      var jsonCtx = struct.structProtoToJson(ctx[0].parameters);
+      return jsonCtx;
+    }
+
+     async beautifyResponses(response: any, input: string, e?: any) {
          var botResponse: BotResponse;
          const dialogflowConfig = {
              sessionId: this.sessionId,
@@ -135,9 +160,19 @@
              dialogflowConfig['error'] = e.message;
          }
 
-         if(response && response.queryResult){
+         try {
+          var ctx = await this.getContext('user');
+          var uid = 'unknown';
+          if(ctx.user) {
+              uid = ctx.user;
+          }
+         } catch(e){
+          console.log('no contexts set');
+         }
 
+         if(response && response.queryResult){
              var dialogflowResponses = {
+                 uid,
                  languageCode: response.queryResult.languageCode, // override
                  query: response.queryResult.queryText,
                  responseMessages: response.queryResult.fulfillmentMessages,
@@ -309,11 +344,12 @@ export class DialogflowV2Beta1Stream extends DialogflowV2Beta1 {
           }
 
           if(data.queryResult && data.queryResult.intent){
-
             botResponse = this.beautifyResponses(data, 'audio');
             botResponse['recognitionResult'] = {};
-            botResponse['recognitionResult']['transcript'] = mergeObj['recognitionResult']['transcript'];
-            botResponse['recognitionResult']['confidence'] = mergeObj['recognitionResult']['confidence'];
+            if(mergeObj && mergeObj['recognitionResult']) {
+              botResponse['recognitionResult']['transcript'] = mergeObj['recognitionResult']['transcript'];
+              botResponse['recognitionResult']['confidence'] = mergeObj['recognitionResult']['confidence'];
+            }
             this.emit('botResponse', botResponse);
 
             // TODO for CX this will be different

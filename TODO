@@ -1,6 +1,8 @@
 ## TODOS
 
-* Test user management with firebase SMS
+* Dialogflow CX store user ID in form
+* ccaiWebhook should get the uid parameter for CX
+* Test call me, with logging UID
 * Build user management for Website
 * Build user management for phone
 * Build user management for flutter

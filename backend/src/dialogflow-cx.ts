@@ -81,23 +81,23 @@ export class DialogflowCX extends EventEmitter {
         );
     }
 
-    detectIntentText(query: string, lang = this.config.dialogflow['language_code'], contexts?: Array<string>) {
+    detectIntentText(query: string, queryParams?: any, contexts?: Array<string>) {
         const qInput:QueryInputCX = {
             text: {
                 text: query,
             },
-            languageCode: lang
+            languageCode: this.config.dialogflow['language_code']
         };
 
         return this.detectIntent(qInput, query, contexts);
     }
 
-    detectIntentEvent(eventName: string, lang = this.config.dialogflow['language_code']) {
+    detectIntentEvent(eventName: string) {
         const qInput:QueryInputCX = {
             event: {
                 event: eventName,
             },
-            languageCode: lang
+            languageCode: this.config.dialogflow['language_code']
         };
 
         return this.detectIntent(qInput, eventName);
@@ -117,11 +117,11 @@ export class DialogflowCX extends EventEmitter {
         return this.detectIntent(qInput, 'audio');
     }
 
-    async detectIntent(qInput:QueryInputCX, input?: string, contexts?: Array<string>) {
+    async detectIntent(qInput:QueryInputCX, input?: string, queryParams?: any, contexts?: Array<string>) {
         const request = {
             session: this.sessionPath,
             queryInput: qInput,
-            queryParams: null
+            queryParams
         };
 
         if (contexts && contexts.length > 0) {
@@ -160,6 +160,7 @@ export class DialogflowCX extends EventEmitter {
         if(response && response.queryResult){
 
             var dialogflowResponses = {
+                userId: 'TODO', // TODO get form param user?
                 languageCode: response.queryResult.languageCode, // override
                 sentiment: response.queryResult.sentimentAnalysisResult,
                 currentPage: response.queryResult.currentPage,

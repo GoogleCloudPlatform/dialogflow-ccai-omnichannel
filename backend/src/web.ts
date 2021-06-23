@@ -70,20 +70,20 @@ export class Web {
         return responses;
     }
 
-    async detectIntentText(query: string, lang?: string, contexts?: Array<string>) {
-        const webResponse = await this.dialogflow.detectIntentText(query, lang, contexts);
+    async detectIntentText(query: string, contexts?: Array<any>) {
+        const webResponse = await this.dialogflow.detectIntentText(query, contexts);
         webResponse.platform = 'web';
         this.pubsub.pushToChannel(webResponse);
         return this.createRichMessages(webResponse);
     }
-    async detectIntentEvent(eventName: string, lang?: string, params?: Array<string>) {
-        const webResponse = await this.dialogflow.detectIntentEvent(eventName, lang, params);
+    async detectIntentEvent(eventName: string, queryParams?: any) {
+        const webResponse = await this.dialogflow.detectIntentEvent(eventName, queryParams);
         webResponse.platform = 'web';
         this.pubsub.pushToChannel(webResponse);
         return this.createRichMessages(webResponse);
     }
-    async detectIntentAudioStream(stream: any, lang?: string) {
-        const webResponse = await this.dialogflow.detectIntentText(stream, lang);
+    async detectIntentAudioStream(stream: any) {
+        const webResponse = await this.dialogflow.detectIntentText(stream);
         webResponse.platform = 'web';
         this.pubsub.pushToChannel(webResponse);
         return this.createSSML(webResponse);
