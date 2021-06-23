@@ -154,7 +154,7 @@ You must specify your webhook URL in order to start receiving messages for the B
 1.  Open the [Business Communications Developer Console](https://business-communications.cloud.google.com) and sign in with your Business Messages Google account.
 1.  Click **Account settings**.
 1.  Make sure the correct partner account is selected.
-1.  Enter your **Business Messages webhook URL** as `https://YOUR_WEB_SEVER/api/business-messages` where `YOUR_WEB_SEVER` is the domain where you are hosting the backend of the `dialogflow-ccai-omnichannel` project.
+1.  Enter your **Business Messages webhook URL** as *https://YOUR_WEB_SEVER/api/business-messages* where `YOUR_WEB_SEVER` is the domain where you are hosting the backend of the `dialogflow-ccai-omnichannel` project.
 1.  Click **Save**.
 
 #### Create your Business Messages agent
