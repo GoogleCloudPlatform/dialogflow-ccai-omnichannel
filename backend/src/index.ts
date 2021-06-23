@@ -24,6 +24,7 @@ import * as cors from 'cors';
 
 import { global } from './config';
 import { Aog } from './aog';
+import { BusinessMessages } from './business-messages';
 import { Web, WebStream } from './web';
 import { ContactCenterAi } from './ccai';
 import * as fb from './firebase';
@@ -39,6 +40,7 @@ export class App {
     private webStream: WebStream;
     private ccai: ContactCenterAi;
     private aog: Aog;
+    private businessMessages: BusinessMessages;
     private firebase: fb.FirebaseUsers;
     public debug: any;
 
@@ -48,6 +50,7 @@ export class App {
         this.ccai = new ContactCenterAi(global);
         this.firebase = new fb.FirebaseUsers(global);
         this.aog = new Aog(global);
+        this.businessMessages = new BusinessMessages(global);
         this.debug = global.debugger;
 
         this.createApp();
@@ -191,8 +194,36 @@ export class App {
             me.webStream.stream(ws);
         });
 
-        // Twilio Start Routes
         var me = this;
+
+        // Business Messages Routes
+        this.app.post('/api/business-messages/', async function(req, res) {
+            const body = req.body;
+
+            // Extract the message payload parameters
+            let conversationId = body.conversationId;
+            let messageId = body.requestId;
+            let agentName = body.agent;
+            let displayName = body.context.userInfo.displayName;
+
+            // Log message parameters
+            console.log('conversationId: ' + conversationId);
+            console.log('displayName: ' + displayName);
+
+            // Parse the message or suggested response body
+            if ((body.message !== undefined
+                && body.message.text !== undefined) || body.suggestionResponse !== undefined) {
+                let text = body.message !== undefined ? body.message.text: body.suggestionResponse.text;
+
+                console.log('text: ' + text);
+
+                me.businessMessages.handleInboundMessage(text, conversationId);
+            }
+
+            res.sendStatus(200);
+        });
+
+        // Twilio Start Routes
         this.app.get('/api/sms/confirmation/', async function(req, res) {
             // CAN THE CF POST THESE, THEN WE DONT NEED A SEPERATE URL
             // We would need to send the UID

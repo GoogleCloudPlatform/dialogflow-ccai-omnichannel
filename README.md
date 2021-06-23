@@ -140,6 +140,44 @@ To deploy another deployment:
 
 The following steps will guide you to run all the various channels. These steps are optionally, in case you want to run it from your own machine.
 
+### Business Messages
+With Business Messages, you can place messaging buttons for brands within organic Google search results. When a user clicks on a messaging button, they start a conversation with an entity representing the brand—the brand's agent. See the [Business Messages](https://developers.google.com/business-communications/business-messages/guides) documentation for more information.
+
+#### Before you begin
+
+1.  [Register with Business Messages](https://developers.google.com/business-communications/business-messages/guides/set-up/register).
+1.  Once registered, follow the instructions to [enable the APIs for your project](https://developers.google.com/business-communications/business-messages/guides/set-up/register#enable-api).
+
+#### Configure your webhook
+You must specify your webhook URL in order to start receiving messages for the Business Messages agent you create.
+
+1.  Open the [Business Communications Developer Console](https://business-communications.cloud.google.com) and sign in with your Business Messages Google account.
+1.  Click **Account settings**.
+1.  Make sure the correct partner account is selected.
+1.  Enter your **Business Messages webhook URL** as `https://YOUR_WEB_SEVER/api/business-messages` where `YOUR_WEB_SEVER` is the domain where you are hosting the backend of the `dialogflow-ccai-omnichannel` project.
+1.  Click **Save**.
+
+#### Create your Business Messages agent
+Once you've registered, it's time to create your agent.
+
+1.  Open the [Business Communications Developer Console](https://business-communications.cloud.google.com) and sign in with your Business Messages Google account.
+1.  Click **Create agent**.
+1.  If you're prompted for **Agent type**, choose **Business Messages**.
+1.  Enter values for **Brand name** and **Agent name**.
+1.  Click **Create agent**.
+1.  When your agent is available, click your agent.
+
+#### Test your Business Messages agent
+Each agent has test URLs that let you see how a conversation with that agent
+appears to users. Use a test URL to verify that messages sent by users interacting with your agent are being received by your webhook and automatically responded to by the Dialogflow agent you've set up.
+
+To test an agent,
+
+1.  Open the [Business Communications Developer Console](https://business-communications.cloud.google.com) and sign in with your Business Messages Google account.
+1.  Choose your agent.
+1.  Under **Agent test URLs** on the **Overview** page, click the **Android** button or **iOS** button to copy the test URL to your device's clipboard and send to your mobile device or use the **Send** to email feature.
+1.  Open the test URL on your mobile device and send a message to the Business Messages agent.
+
 ### AdLingo
 
 [AdLingo Dialogflow Docs](https://docs.adlingo.com/adlingo-api/v2/dialogflow/)
