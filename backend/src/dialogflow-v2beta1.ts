@@ -172,7 +172,7 @@ import { User } from 'actions-on-google/dist/service/actionssdk/conversation/use
 
          if(response && response.queryResult){
              var dialogflowResponses = {
-                 userId: uid,
+                 uid,
                  languageCode: response.queryResult.languageCode, // override
                  query: response.queryResult.queryText,
                  responseMessages: response.queryResult.fulfillmentMessages,

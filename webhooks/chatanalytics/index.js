@@ -131,7 +131,6 @@ var getSentiment = function(text, callback){
     bqRow['USER_UID'] = buf.uid;
     bqRow['USER_COUNTRY'] = buf.country;
 
-    // TODO USER_UID:
     // TODO TOPIC_MINING:
     // TODO NPS:
     // TODO CSAT:
