@@ -65,23 +65,27 @@ export class ContactCenterAi {
       const me = this;
       const botResponse = await this.dialogflow.detectIntentText(query);
 
-      // https://www.twilio.com/docs/sms/send-messages
-      me.twilio.messages.create(
-        {
-          to: user.phoneNumber, // TODO Recipient's number
-          from: me.config.twilio['bot_agent_phone_number'],
-          body: botResponse.fulfillmentText // Message to Recipient
-        }).then(function(message){
-          botResponse.platform = 'sms';
-          var data = {...botResponse, ...user};
-          me.pubsub.pushToChannel(data);
-          me.debug.log(message);
-          cb({ success: true, message});
-        }).catch(function(error){
-          me.debug.error(error);
-          cb({ success: false, error });
-        });
-    }
+      console.log(user);
+
+      if(user){
+        // https://www.twilio.com/docs/sms/send-messages
+        me.twilio.messages.create(
+          {
+            to: user.phoneNumber, // TODO Recipient's number
+            from: me.config.twilio['bot_agent_phone_number'],
+            body: botResponse.fulfillmentText // Message to Recipient
+          }).then(function(message){
+            botResponse.platform = 'sms';
+            var data = {...botResponse, ...user};
+            me.pubsub.pushToChannel(data);
+            me.debug.log(message);
+            cb({ success: true, message});
+          }).catch(function(error){
+            me.debug.error(error);
+            cb({ success: false, error });
+          });
+      }
+   }
 
     async streamOutbound(phoneNr:string, host: string, cb){
       const me = this;

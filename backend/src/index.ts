@@ -172,11 +172,13 @@ export class App {
                         var text = clientObj['web-text-message'];
 
                         // TODO get the email when the user is logged in
-                        var userId = await me.firebase.getUser({email: 'leeboonstra@google.com'});
+                        var user = await me.firebase.getUser({email: 'leeboonstra@google.com'});
+                        var userId = user.uid;
 
                         var contexts = [];
                         var queryParameters = {};
                         queryParameters['user'] = userId;
+                        console.log(userId);
                         contexts.push(queryParameters);
                         dialogflowResponses = await this.web.detectIntentText(text, contexts);
                         ws.send(JSON.stringify(dialogflowResponses));
@@ -200,20 +202,37 @@ export class App {
 
         // Twilio Start Routes
         var me = this;
-        this.app.get('/api/sms/confirmation/', async function(req, res) {
+        this.app.get('/api/sms/flow/', async function(req, res) {
             // CAN THE CF POST THESE, THEN WE DONT NEED A SEPERATE URL
             // We would need to send the UID
-            /*const body = req.body;
-            const query = body.Body;
-            const phoneNr = body.From;
-            const country = body.FromCountry;*/
+            // const body = req.body;
+            // const query = body.Body;
+            // const uid = body.Uid;
+            const body = req.body;
+            const query = req.query.Body;
+            const uid = req.query.Uid;
 
-            const phoneNr = global.profile['my_phone_number'];
-            const query = 'CONFIRMATION';
+            var userRecord;
+            if(body && body.From && body.FromCountry) {
+                userRecord = {};
+                userRecord['phoneNumber'] = body.From;
+                userRecord['country'] = body.FromCountry;
+            } else if(uid){
+                userRecord = await me.firebase.getUser({uid: body.Uid});
+            }
 
-            await me.ccai.sms(query, phoneNr, function(data){
+            console.log(uid, query);
+            console.log(userRecord);
+
+            // const phoneNr = global.profile['my_phone_number'];
+            // const query = 'CONFIRMATION';
+
+            await me.ccai.sms(query, userRecord, function(data){
                 res.json(data);
             });
+
+            // TODO when this works use the post URL as below,
+            // and remove that funciton. It should work through one entrypoint.
         });
 
         this.app.post('/api/sms/', async function(req, res){

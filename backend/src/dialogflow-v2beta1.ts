@@ -160,10 +160,14 @@ import { User } from 'actions-on-google/dist/service/actionssdk/conversation/use
              dialogflowConfig['error'] = e.message;
          }
 
-         var ctx = await this.getContext('user');
-         var uid = 'unknown';
-         if(ctx.user) {
-            uid = ctx.user.uid;
+         try {
+          var ctx = await this.getContext('user');
+          var uid = 'unknown';
+          if(ctx.user) {
+              uid = ctx.user.uid;
+          }
+         } catch(e){
+          console.log('no contexts set');
          }
 
          if(response && response.queryResult){
