@@ -108,11 +108,21 @@ export class ContactCenterAi {
         });
     }
 
-    stream(ws){
+    stream(ws, req){
         // This will get populated on callStarted
         let callSid;
         let streamSid;
         var previousBotResponse = null;
+
+        // TODO can i get access top the phone number
+        // if so, then I can get acces to the UID
+        // I would move it to the index.ts and pass the userRecord to the stream.
+        console.log('!!!!!!!!!!!!!!!!');
+        console.log(req);
+        console.log('!!!!!!!!!!!!!!!!');
+        console.log(req.body);
+        console.log('!!!!!!!!!!!!!!!!');
+
 
         // MediaStream coming from Twilio
         const mediaStream = websocketStream(ws, {

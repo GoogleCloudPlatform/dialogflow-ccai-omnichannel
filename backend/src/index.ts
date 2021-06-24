@@ -163,8 +163,16 @@ export class App {
             res.json({success: true, responses});
         });
         this.app.ws('/api/web-chat/', (ws, req) => {
-            // me.debug.log('ws text connected');
+            me.debug.log('ws text connected');
             var dialogflowResponses;
+
+            ws.onclose = function(e) {
+                console.log('Socket is closed.');
+            };
+            ws.onerror = function(err) {
+                console.error('Socket encountered error: ', err.message, 'Closing socket');
+                ws.close();
+            };
             ws.on('message', async (msg) => {
                 const clientObj = JSON.parse(msg);
                 me.debug.log(msg);
@@ -245,7 +253,6 @@ export class App {
                 userRecord = await me.firebase.getUser({uid});
                 me.debug.log(userRecord);
             }
-            console.log(userRecord.phoneNumber);
             const protocol = req.secure? 'https://' : 'http://';
             const host = protocol + req.hostname;
             // get param phoneNr required
@@ -267,16 +274,21 @@ export class App {
                 res.json(data);
             });
         });
+        // The endpoint set in the Twilio console
         this.app.post('/api/twiml/', (req, res) => {
+            const body = req.body;
+            console.log(body);
             // this is the route you configure your HTTP POST webhook in the Twilio console to.
             res.setHeader('Content-Type', 'text/xml');
             // ngrok sets x-original-host header
             const host = req.headers['x-original-host'] || req.hostname;
             me.debug.log('Call started: ' + host);
-            // res.render('twiml', { host, layout: false });
             res.send(`<Response>
                 <Connect>
-                    <Stream url="wss://${host}/api/phone/"></Stream>
+                    <Stream url="wss://${host}/api/phone/">
+                        <Parameter name="From" value ="${body.From}"/>
+                        <Parameter name="FromCountry" value ="${body.FromCountry}" />
+                    </Stream>
                 </Connect>
             </Response>`);
         });
@@ -284,7 +296,8 @@ export class App {
         // Twilio Ws Media Stream Route
         this.app.ws('/api/phone/', (ws, req) => {
             // me.debug.log('ws phone connected');
-            me.ccai.stream(ws);
+            console.log(req.body);
+            me.ccai.stream(ws, req);
         });
     }
 
