@@ -54,7 +54,7 @@ export class App {
         this.debug = global.debugger;
 
         this.createApp();
-        this.enrollDemoUsers();
+        // this.enrollDemoUsers();
         this.listen();
     }
 

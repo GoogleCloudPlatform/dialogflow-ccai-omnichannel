@@ -317,7 +317,7 @@ export class DialogflowCXStream extends DialogflowCX {
                 console.log(data);
             });
 
-            responseStreamPassThrough.on('data', (data) => {
+            responseStreamPassThrough.on('data', async (data) => {
                 var botResponse;
                 var mergeObj = {};
 
@@ -347,7 +347,7 @@ export class DialogflowCXStream extends DialogflowCX {
                 }
 
                 if(data.queryResult && data.queryResult.intent){
-                  botResponse = this.beautifyResponses(data, 'audio');
+                  botResponse = await this.beautifyResponses(data, 'audio');
                   botResponse = {...botResponse, ...mergeObj};
                   this.emit('botResponse', botResponse);
 
