@@ -52,6 +52,7 @@ export class WebSocketService {
     }
 
     connectChat(): Observable<any> {
+      console.log('connect chat');
       return of(this.API_URL).pipe(
         filter(apiUrl => !!apiUrl),
         // https becomes wws, http becomes ws

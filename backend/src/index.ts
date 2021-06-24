@@ -127,6 +127,11 @@ export class App {
         }));
         this.app.use(express.json());
 
+        this.app.use('/robots.txt', function (req, res, next) {
+            res.type('text/plain')
+            res.send('User-agent: *\nDisallow: /');
+        });
+
         this.app.engine('hbs', hbs());
         this.app.set('view engine', 'hbs');
 
@@ -172,6 +177,10 @@ export class App {
             ws.onclose = function(e) {
                 console.log('Socket is closed.');
             };
+            ws.on('request', function(request) {
+                console.log('!!!!');
+                console.log(request.resourceURL.query);
+            });
             ws.onerror = function(err) {
                 console.error('Socket encountered error: ', err.message, 'Closing socket');
                 ws.close();
@@ -191,7 +200,6 @@ export class App {
                         var contexts = [];
                         var queryParameters = {};
                         queryParameters['user'] = userId;
-                        console.log(userId);
                         contexts.push(queryParameters);
                         dialogflowResponses = await this.web.detectIntentText(text, contexts);
                         ws.send(JSON.stringify(dialogflowResponses));
@@ -226,15 +234,15 @@ export class App {
             let displayName = body.context.userInfo.displayName;
 
             // Log message parameters
-            console.log('conversationId: ' + conversationId);
-            console.log('displayName: ' + displayName);
+            me.debug.log('conversationId: ' + conversationId);
+            me.debug.log('displayName: ' + displayName);
 
             // Parse the message or suggested response body
             if ((body.message !== undefined
                 && body.message.text !== undefined) || body.suggestionResponse !== undefined) {
                 let text = body.message !== undefined ? body.message.text: body.suggestionResponse.text;
 
-                console.log('text: ' + text);
+                me.debug.log('text: ' + text);
 
                 me.businessMessages.handleInboundMessage(text, conversationId);
             }
@@ -242,23 +250,6 @@ export class App {
             res.sendStatus(200);
         });
 
-        // Twilio Start Routes
-        this.app.get('/api/sms/confirmation/', async function(req, res) {
-            // CAN THE CF POST THESE, THEN WE DONT NEED A SEPERATE URL
-            // We would need to send the UID
-            /*const body = req.body;
-            const query = body.Body;
-            const phoneNr = body.From;
-            const country = body.FromCountry;*/
-
-            const phoneNr = global.profile['my_phone_number'];
-            const query = 'CONFIRMATION';
-
-            await me.ccai.sms(query, phoneNr, function(data){
-                res.json(data);
-            });
-        });
-        
         this.app.post('/api/sms/', async function(req, res){
             const body = req.body;
             const query = body.Body;
@@ -322,9 +313,16 @@ export class App {
             });
         });
         // The endpoint set in the Twilio console
-        this.app.post('/api/twiml/', (req, res) => {
+        this.app.post('/api/twiml/', async (req, res) => {
             const body = req.body;
-            console.log(body);
+            var userId;
+            if(`+${body.From}` !== global.employee['live_agent_phone_number']){
+                var user = await me.firebase.getUser({phoneNumber: body.From });
+                userId = user.uid;
+            } else {
+                userId = 'TWILIO';
+            }
+
             // this is the route you configure your HTTP POST webhook in the Twilio console to.
             res.setHeader('Content-Type', 'text/xml');
             // ngrok sets x-original-host header
@@ -333,7 +331,7 @@ export class App {
             res.send(`<Response>
                 <Connect>
                     <Stream url="wss://${host}/api/phone/">
-                        <Parameter name="From" value ="${body.From}"/>
+                        <Parameter name="userId" value ="${userId}"/>
                         <Parameter name="FromCountry" value ="${body.FromCountry}" />
                     </Stream>
                 </Connect>

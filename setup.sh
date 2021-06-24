@@ -103,7 +103,8 @@ gcloud services enable \
   containerregistry.googleapis.com \
   cloudbuild.googleapis.com \
   storage.googleapis.com \
-  run.googleapis.com
+  run.googleapis.com \
+  businesscommunications.googleapis.com
 
 ## ADD FIREBASE
 bold "Add firebase to your GC project"

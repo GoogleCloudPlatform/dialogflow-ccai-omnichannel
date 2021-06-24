@@ -146,7 +146,6 @@ With Business Messages, you can place messaging buttons for brands within organi
 #### Before you begin
 
 1.  [Register with Business Messages](https://developers.google.com/business-communications/business-messages/guides/set-up/register).
-1.  Once registered, follow the instructions to [enable the APIs for your project](https://developers.google.com/business-communications/business-messages/guides/set-up/register#enable-api).
 
 #### Configure your webhook
 You must specify your webhook URL in order to start receiving messages for the Business Messages agent you create.

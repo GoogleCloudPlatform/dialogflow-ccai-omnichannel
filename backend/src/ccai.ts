@@ -114,16 +114,6 @@ export class ContactCenterAi {
         let streamSid;
         var previousBotResponse = null;
 
-        // TODO can i get access top the phone number
-        // if so, then I can get acces to the UID
-        // I would move it to the index.ts and pass the userRecord to the stream.
-        console.log('!!!!!!!!!!!!!!!!');
-        console.log(req);
-        console.log('!!!!!!!!!!!!!!!!');
-        console.log(req.body);
-        console.log('!!!!!!!!!!!!!!!!');
-
-
         // MediaStream coming from Twilio
         const mediaStream = websocketStream(ws, {
           binary: false
@@ -173,14 +163,23 @@ export class ContactCenterAi {
 
         // EVENT LISTENERS
 
-        mediaStream.on('data', data => {
-          this.dialogflow.send(data, queryInputObj, welcomeEvent, outputAudioConfig);
-        });
-
         this.dialogflow.on('callStarted', data => {
           this.debug.log('call started');
           callSid = data.callSid;
           streamSid = data.streamSid;
+
+          var contexts = [];
+          var queryParameters = {};
+          queryParameters['user'] = data.userId;
+          queryParameters['userCountry'] = data.userCountry;
+          contexts.push(queryParameters);
+          console.log('-----------------------set context');
+          console.log(contexts);
+          this.dialogflow.createContext('user', contexts) // TODO DF ES only
+        });
+
+        mediaStream.on('data', data => {
+          this.dialogflow.send(data, queryInputObj, welcomeEvent, outputAudioConfig);
         });
 
         this.dialogflow.on('audio', audio => {
@@ -226,12 +225,14 @@ export class ContactCenterAi {
 
         this.dialogflow.on('botResponse', botResponse => {
           botResponse['platform'] = 'phone';
+          this.debug.log('--------------- LOG THE RESPONSE');
           this.debug.log(botResponse);
           // store first bot response
           if(previousBotResponse === null) previousBotResponse = botResponse;
           // only push to pubsub if there is a different timestamp
           // else we can assume it's the same
           if(previousBotResponse.dateTimeStamp !== botResponse.dateTimeStamp){
+            this.debug.log('--------------- PUSH THE RESPONSE');
             this.pubsub.pushToChannel(botResponse);
           }
         });
