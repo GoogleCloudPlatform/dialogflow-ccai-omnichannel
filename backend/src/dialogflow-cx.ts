@@ -157,10 +157,18 @@ export class DialogflowCX extends EventEmitter {
             dialogflowConfig['error'] = e.message;
         }
 
+        try {
+            // TODO
+            var uid = 'unknown';
+            var country;
+        } catch(e){
+            console.log('no contexts set');
+        }
+
         if(response && response.queryResult){
 
             var dialogflowResponses = {
-                userId: 'TODO', // TODO get form param user?
+                uid,
                 languageCode: response.queryResult.languageCode, // override
                 sentiment: response.queryResult.sentimentAnalysisResult,
                 currentPage: response.queryResult.currentPage,
@@ -184,10 +192,6 @@ export class DialogflowCX extends EventEmitter {
                 dialogflowResponses['query'] = response.queryResult.text;
             }
 
-            // TODO
-            console.log(response.queryResult.webhookStatuses);
-            console.log(response.queryResult.webhookPayloads);
-
             if(response.queryResult.match){
                 const intentDetectionObj = {
                     intentDetection: {
@@ -207,6 +211,9 @@ export class DialogflowCX extends EventEmitter {
                     intentDetectionObj.intentDetection.intent['parameters'] = struct.structProtoToJson(
                         response.queryResult.parameters
                     );
+                }
+                if(country){
+                    dialogflowResponses['country'] = country;
                 }
                 dialogflowResponses = {...dialogflowResponses, ...intentDetectionObj }
             }
@@ -294,7 +301,9 @@ export class DialogflowCXStream extends DialogflowCX {
                     this.debug.log(`Captured call ${msg.start.callSid}`);
                     this.emit('callStarted', {
                         callSid: msg.start.callSid,
-                        streamSid: msg.start.streamSid
+                        streamSid: msg.start.streamSid,
+                        userId: msg.start.customParameters.userId,
+                        userCountry: msg.start.customParameters.FromCountry
                     });
                 }
                 if (msg.event === 'mark') {
@@ -308,7 +317,7 @@ export class DialogflowCXStream extends DialogflowCX {
                 console.log(data);
             });
 
-            responseStreamPassThrough.on('data', (data) => {
+            responseStreamPassThrough.on('data', async (data) => {
                 var botResponse;
                 var mergeObj = {};
 
@@ -338,7 +347,7 @@ export class DialogflowCXStream extends DialogflowCX {
                 }
 
                 if(data.queryResult && data.queryResult.intent){
-                  botResponse = this.beautifyResponses(data, 'audio');
+                  botResponse = await this.beautifyResponses(data, 'audio');
                   botResponse = {...botResponse, ...mergeObj};
                   this.emit('botResponse', botResponse);
 

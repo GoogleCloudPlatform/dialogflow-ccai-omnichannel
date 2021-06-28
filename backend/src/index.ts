@@ -54,7 +54,7 @@ export class App {
         this.debug = global.debugger;
 
         this.createApp();
-        this.enrollDemoUsers();
+        // this.enrollDemoUsers();
         this.listen();
     }
 
@@ -127,6 +127,11 @@ export class App {
         }));
         this.app.use(express.json());
 
+        this.app.use('/robots.txt', function (req, res, next) {
+            res.type('text/plain')
+            res.send('User-agent: *\nDisallow: /');
+        });
+
         this.app.engine('hbs', hbs());
         this.app.set('view engine', 'hbs');
 
@@ -166,8 +171,20 @@ export class App {
             res.json({success: true, responses});
         });
         this.app.ws('/api/web-chat/', (ws, req) => {
-            // me.debug.log('ws text connected');
+            me.debug.log('ws text connected');
             var dialogflowResponses;
+
+            ws.onclose = function(e) {
+                console.log('Socket is closed.');
+            };
+            ws.on('request', function(request) {
+                console.log('!!!!');
+                console.log(request.resourceURL.query);
+            });
+            ws.onerror = function(err) {
+                console.error('Socket encountered error: ', err.message, 'Closing socket');
+                ws.close();
+            };
             ws.on('message', async (msg) => {
                 const clientObj = JSON.parse(msg);
                 me.debug.log(msg);
@@ -183,7 +200,6 @@ export class App {
                         var contexts = [];
                         var queryParameters = {};
                         queryParameters['user'] = userId;
-                        console.log(userId);
                         contexts.push(queryParameters);
                         dialogflowResponses = await this.web.detectIntentText(text, contexts);
                         ws.send(JSON.stringify(dialogflowResponses));
@@ -218,21 +234,22 @@ export class App {
             let displayName = body.context.userInfo.displayName;
 
             // Log message parameters
-            console.log('conversationId: ' + conversationId);
-            console.log('displayName: ' + displayName);
+            me.debug.log('conversationId: ' + conversationId);
+            me.debug.log('displayName: ' + displayName);
 
             // Parse the message or suggested response body
             if ((body.message !== undefined
                 && body.message.text !== undefined) || body.suggestionResponse !== undefined) {
                 let text = body.message !== undefined ? body.message.text: body.suggestionResponse.text;
 
-                console.log('text: ' + text);
+                me.debug.log('text: ' + text);
 
                 me.businessMessages.handleInboundMessage(text, conversationId);
             }
 
             res.sendStatus(200);
         });
+
 
         // Twilio Start Routes
         this.app.get('/api/sms/confirmation/', async function(req, res) {
@@ -250,7 +267,7 @@ export class App {
                 res.json(data);
             });
         });
-
+        
         this.app.post('/api/sms/', async function(req, res){
             const body = req.body;
             const query = body.Body;
@@ -292,7 +309,6 @@ export class App {
                 userRecord = await me.firebase.getUser({uid});
                 me.debug.log(userRecord);
             }
-            console.log(userRecord.phoneNumber);
             const protocol = req.secure? 'https://' : 'http://';
             const host = protocol + req.hostname;
             // get param phoneNr required
@@ -314,16 +330,28 @@ export class App {
                 res.json(data);
             });
         });
-        this.app.post('/api/twiml/', (req, res) => {
+        // The endpoint set in the Twilio console
+        this.app.post('/api/twiml/', async (req, res) => {
+            const body = req.body;
+            var userId;
+            if(`+${body.From}` !== global.employee['live_agent_phone_number']){
+                var user = await me.firebase.getUser({phoneNumber: body.From });
+                userId = user.uid;
+            } else {
+                userId = 'TWILIO';
+            }
+
             // this is the route you configure your HTTP POST webhook in the Twilio console to.
             res.setHeader('Content-Type', 'text/xml');
             // ngrok sets x-original-host header
             const host = req.headers['x-original-host'] || req.hostname;
             me.debug.log('Call started: ' + host);
-            // res.render('twiml', { host, layout: false });
             res.send(`<Response>
                 <Connect>
-                    <Stream url="wss://${host}/api/phone/"></Stream>
+                    <Stream url="wss://${host}/api/phone/">
+                        <Parameter name="userId" value ="${userId}"/>
+                        <Parameter name="FromCountry" value ="${body.FromCountry}" />
+                    </Stream>
                 </Connect>
             </Response>`);
         });
@@ -331,7 +359,8 @@ export class App {
         // Twilio Ws Media Stream Route
         this.app.ws('/api/phone/', (ws, req) => {
             // me.debug.log('ws phone connected');
-            me.ccai.stream(ws);
+            console.log(req.body);
+            me.ccai.stream(ws, req);
         });
     }
 

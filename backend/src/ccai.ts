@@ -108,7 +108,7 @@ export class ContactCenterAi {
         });
     }
 
-    stream(ws){
+    stream(ws, req){
         // This will get populated on callStarted
         let callSid;
         let streamSid;
@@ -163,14 +163,23 @@ export class ContactCenterAi {
 
         // EVENT LISTENERS
 
-        mediaStream.on('data', data => {
-          this.dialogflow.send(data, queryInputObj, welcomeEvent, outputAudioConfig);
-        });
-
         this.dialogflow.on('callStarted', data => {
           this.debug.log('call started');
           callSid = data.callSid;
           streamSid = data.streamSid;
+
+          var contexts = [];
+          var queryParameters = {};
+          queryParameters['user'] = data.userId;
+          queryParameters['userCountry'] = data.userCountry;
+          contexts.push(queryParameters);
+          console.log('-----------------------set context');
+          console.log(contexts);
+          this.dialogflow.createContext('user', contexts) // TODO DF ES only
+        });
+
+        mediaStream.on('data', data => {
+          this.dialogflow.send(data, queryInputObj, welcomeEvent, outputAudioConfig);
         });
 
         this.dialogflow.on('audio', audio => {
@@ -216,12 +225,14 @@ export class ContactCenterAi {
 
         this.dialogflow.on('botResponse', botResponse => {
           botResponse['platform'] = 'phone';
+          this.debug.log('--------------- LOG THE RESPONSE');
           this.debug.log(botResponse);
           // store first bot response
           if(previousBotResponse === null) previousBotResponse = botResponse;
           // only push to pubsub if there is a different timestamp
           // else we can assume it's the same
           if(previousBotResponse.dateTimeStamp !== botResponse.dateTimeStamp){
+            this.debug.log('--------------- PUSH THE RESPONSE');
             this.pubsub.pushToChannel(botResponse);
           }
         });

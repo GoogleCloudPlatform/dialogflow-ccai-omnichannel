@@ -134,7 +134,9 @@ import { User } from 'actions-on-google/dist/service/actionssdk/conversation/use
               lifespanCount: lifespan
           }
       };
-      await this.contextClient.createContext(request)
+      await this.contextClient.createContext(request);
+      console.log('create context');
+      console.log(request);
     }
 
     async getContext(contextId) {
@@ -162,11 +164,18 @@ import { User } from 'actions-on-google/dist/service/actionssdk/conversation/use
 
          try {
           var ctx = await this.getContext('user');
+          console.log(ctx);
           var uid = 'unknown';
+          var country;
+
           if(ctx.user) {
               uid = ctx.user;
           }
+          if(ctx.userCountry) {
+            country = ctx.userCountry
+          }
          } catch(e){
+          console.log(e);
           console.log('no contexts set');
          }
 
@@ -215,6 +224,9 @@ import { User } from 'actions-on-google/dist/service/actionssdk/conversation/use
                   intentDetectionObj.intentDetection.intent['parameters'] = struct.structProtoToJson(
                     response.queryResult.parameters
                   );
+                 }
+                 if(country){
+                  dialogflowResponses['country'] = country;
                  }
                  dialogflowResponses = {...dialogflowResponses, ...intentDetectionObj }
              }
@@ -304,7 +316,9 @@ export class DialogflowV2Beta1Stream extends DialogflowV2Beta1 {
             this.debug.log(`Captured call ${msg.start.callSid}`);
             this.emit('callStarted', {
               callSid: msg.start.callSid,
-              streamSid: msg.start.streamSid
+              streamSid: msg.start.streamSid,
+              userId: msg.start.customParameters.userId,
+              userCountry: msg.start.customParameters.FromCountry
             });
           }
           if (msg.event === 'mark') {
@@ -317,7 +331,7 @@ export class DialogflowV2Beta1Stream extends DialogflowV2Beta1 {
 
         // TODO
         // CHANGES FOR CX
-        responseStreamPassThrough.on('data', (data) => {
+        responseStreamPassThrough.on('data', async (data) => {
           var botResponse;
           var mergeObj = {};
 
@@ -344,7 +358,7 @@ export class DialogflowV2Beta1Stream extends DialogflowV2Beta1 {
           }
 
           if(data.queryResult && data.queryResult.intent){
-            botResponse = this.beautifyResponses(data, 'audio');
+            botResponse = await this.beautifyResponses(data, 'audio');
             botResponse['recognitionResult'] = {};
             if(mergeObj && mergeObj['recognitionResult']) {
               botResponse['recognitionResult']['transcript'] = mergeObj['recognitionResult']['transcript'];
