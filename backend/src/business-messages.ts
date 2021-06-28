@@ -23,6 +23,7 @@ import { DialogflowCXV3Beta1 } from './dialogflow-cxv3beta1';
 import { MyPubSub } from './pubsub';
 import * as uuid from 'uuid';
 
+const struct = require('./structjson');
 const { GoogleAuth } = require('google-auth-library');
 const businessmessages = require('businessmessages');
 
@@ -37,6 +38,7 @@ const auth = new GoogleAuth({
 export class BusinessMessages {
     private pubsub: MyPubSub;
     private dialogflow: any;
+    private intentMap: any;
     public config: any;
     public debug: any;
 
@@ -56,18 +58,51 @@ export class BusinessMessages {
     }
 
     async handleInboundMessage(query: string, conversationId: string, lang?: string, contexts?: Array<string>) {
-        const businessMessagesResponse = await this.dialogflow.detectIntentText(query, lang, contexts);
-        businessMessagesResponse.platform = 'business-messages';
-        this.pubsub.pushToChannel(businessMessagesResponse);
+        const dialogflowResponseObject = await this.dialogflow.detectIntentText(query, lang, contexts);
 
-        const msg = businessMessagesResponse.responseMessages[0].text.text[0];
+        dialogflowResponseObject.platform = 'business-messages';
+        this.pubsub.pushToChannel(dialogflowResponseObject);
 
-        // Respond with default fullfillment message
-        this.sendResponse({
+        // Convert Dialogflow response into Business Messages response
+        this.handleMessage(dialogflowResponseObject, conversationId);
+    }
+
+    async handleMessage(dialogflowResponseObject, conversationId) {
+        // Create the default response based on fulfillmentText
+        let botResponse = {
+            text: dialogflowResponseObject.fulfillmentText,
             messageId: uuid.v4(),
-            representative: this.getRepresentative(),
-            text: msg,
-          }, conversationId);
+            representative: this.getRepresentative()
+        };
+
+        let responseSatisifiedViaCustomPayload = false;
+
+        // Use the custom payloads if they exist
+        for (var responseMessage of dialogflowResponseObject.responseMessages) {
+            // Only process custom payload fulfillment messages
+            if (responseMessage.payload !== undefined) {
+                let payload = struct.structProtoToJson(responseMessage.payload);
+                let responseObject = payload.fulfillmentMessages[0].payload;
+
+                responseObject.messageId = uuid.v4();
+                responseObject.representative = botResponse.representative;
+
+                // No fallback text, use the default text from Dialogflow
+                if (responseObject.fallback === undefined) {
+                    responseObject.fallback = dialogflowResponseObject.fulfillmentText;
+                }
+
+                // Respond to the user
+                this.sendResponse(responseObject, conversationId);
+
+                responseSatisifiedViaCustomPayload = true;
+            }
+        }
+
+        // Send the default response if no custom payload was used
+        if (!responseSatisifiedViaCustomPayload) {
+            this.sendResponse(botResponse, conversationId);
+        }
     }
 
     async sendResponse(messageObject, conversationId) {

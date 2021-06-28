@@ -250,7 +250,7 @@ export class App {
                 res.json(data);
             });
         });
-        
+
         this.app.post('/api/sms/', async function(req, res){
             const body = req.body;
             const query = body.Body;
