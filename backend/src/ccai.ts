@@ -92,18 +92,45 @@ export class ContactCenterAi {
       }
    }
 
-    async streamOutbound(phoneNr:string, host: string, cb){
+    async streamOutbound(user:any, host: string, cb){
       const me = this;
       this.twilio.calls
         .create({
           // record: true,
           url: `${host}/api/twiml/`,
-          to: phoneNr,
+          to: user.phoneNumber,
           from: me.config.twilio['bot_agent_phone_number']
         })
         .then(function(call){
+          me.pubsub.pushToChannel({
+            uid: user.uid,
+            country: user.country,
+            dateTimeStamp: new Date().toISOString(),
+            platform: 'phone-outbound',
+            intentDetection: {
+              intent: {
+                parameters: {
+                  actions: 'CALLME'
+                }
+              }
+            }
+          });
           cb({ success: true, call});
         }).catch(function(error){
+          me.pubsub.pushToChannel({
+            uid: user.uid,
+            country: user.country,
+            dateTimeStamp: new Date().toISOString(),
+            platform: 'phone-outbound',
+            error,
+            intentDetection: {
+              intent: {
+                parameters: {
+                  actions: 'CALLME'
+                }
+              }
+            }
+          });
           cb({ success: false, error });
         });
     }
@@ -232,7 +259,6 @@ export class ContactCenterAi {
           // only push to pubsub if there is a different timestamp
           // else we can assume it's the same
           if(previousBotResponse.dateTimeStamp !== botResponse.dateTimeStamp){
-            this.debug.log('--------------- PUSH THE RESPONSE');
             this.pubsub.pushToChannel(botResponse);
           }
         });

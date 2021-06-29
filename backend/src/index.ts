@@ -296,7 +296,7 @@ export class App {
             const host = protocol + req.hostname;
             // get param phoneNr required
             if(userRecord && userRecord.phoneNumber){
-                await me.ccai.streamOutbound(userRecord.phoneNumber, host, function(data){
+                await me.ccai.streamOutbound(userRecord, host, function(data){
                     res.json(data);
                 });
             } else {
@@ -316,16 +316,26 @@ export class App {
         // The endpoint set in the Twilio console
         this.app.post('/api/twiml/', async (req, res) => {
             const body = req.body;
-            var userId;
+            var userId = 'unknown';
+            var userCountry = '';
             me.debug.log(body);
-            if(`+${body.From}` !== global.employee['live_agent_phone_number']){
-                var user = await me.firebase.getUser({phoneNumber: body.From });
-                userId = user.uid;
-                me.debug.log(user);
-            } else {
-                userId = 'TWILIO';
+            if(body.Direction === 'inbound'){
+                try {
+                    var user = await me.firebase.getUser({phoneNumber: body.From });
+                    userId = user.uid;
+                    userCountry = body.fromCountry;
+                } catch(e){
+                    me.debug.error(e);
+                }
+            } else if(body.Direction === 'outbound-api'){
+                try {
+                    var user = await me.firebase.getUser({phoneNumber: body.To });
+                    userId = user.uid;
+                    userCountry = body.toCountry;
+                } catch(e){
+                    me.debug.error(e);
+                }
             }
-
             me.debug.log(userId);
             // this is the route you configure your HTTP POST webhook in the Twilio console to.
             res.setHeader('Content-Type', 'text/xml');
@@ -336,7 +346,7 @@ export class App {
                 <Connect>
                     <Stream url="wss://${host}/api/phone/">
                         <Parameter name="userId" value ="${userId}"/>
-                        <Parameter name="FromCountry" value ="${body.FromCountry}" />
+                        <Parameter name="userCountry" value ="${userCountry}" />
                     </Stream>
                 </Connect>
             </Response>`);

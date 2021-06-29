@@ -190,7 +190,7 @@ import { User } from 'actions-on-google/dist/service/actionssdk/conversation/use
                  outputAudio: response.outputAudio,
                  responseId: response.responseId,
                  action: response.queryResult.action,
-                 tool: 'DF-ES'
+                 tool: this.config.dialogflow['version']
              }
              if(response.queryResult.sentimentAnalysisResult && response.queryResult.sentimentAnalysisResult.queryTextSentiment){
               dialogflowResponses['sentiment'] = response.queryResult.sentimentAnalysisResult.queryTextSentiment;

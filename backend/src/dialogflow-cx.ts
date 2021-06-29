@@ -178,7 +178,7 @@ export class DialogflowCX extends EventEmitter {
                 webhookStatuses: response.queryResult.webhookStatuses,
                 outputAudio: response.outputAudio,
                 responseId: response.responseId,
-                tool: 'DF-CX'
+                tool: this.config.dialogflow['version']
             }
 
             if (response.queryResult.transcript) {
@@ -304,7 +304,7 @@ export class DialogflowCXStream extends DialogflowCX {
                         callSid: msg.start.callSid,
                         streamSid: msg.start.streamSid,
                         userId: msg.start.customParameters.userId,
-                        userCountry: msg.start.customParameters.FromCountry
+                        userCountry: msg.start.customParameters.userCountry
                     });
                 }
                 if (msg.event === 'mark') {
