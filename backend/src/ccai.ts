@@ -102,13 +102,16 @@ export class ContactCenterAi {
           from: me.config.twilio['bot_agent_phone_number']
         })
         .then(function(call){
+          // current time + 0.5 second, so it will be logged right after the web request.
+          var timeNow = new Date();
+          timeNow.setSeconds(timeNow.getSeconds() + 0.5);
           me.pubsub.pushToChannel({
             sessionId: 'twilio-outbound',
             sessionPath: 'twilio-outbound',
             vertical: me.config.vertical,
             uid: user.uid,
             country: user.country,
-            dateTimeStamp: new Date().toISOString(),
+            dateTimeStamp: timeNow.toISOString(),
             platform: 'phone-outbound',
             languageCode: me.config.dialogflow['language_code'],
             intentDetection: {
@@ -208,8 +211,8 @@ export class ContactCenterAi {
           queryParameters['user'] = data.userId;
           queryParameters['userCountry'] = data.userCountry;
           contexts.push(queryParameters);
-          console.log('-----------------------set context');
-          console.log(contexts);
+          this.debug.log('----------------------- SET CONTEXT');
+          this.debug.log(contexts);
           this.dialogflow.createContext('user', contexts) // TODO DF ES only
         });
 
@@ -261,13 +264,18 @@ export class ContactCenterAi {
         this.dialogflow.on('botResponse', botResponse => {
           botResponse['platform'] = 'phone';
           this.debug.log('--------------- LOG THE RESPONSE');
-          this.debug.log(botResponse);
+          // this.debug.log(botResponse);
           // store first bot response
           if(previousBotResponse === null) previousBotResponse = botResponse;
           // only push to pubsub if there is a different timestamp
           // else we can assume it's the same
-          if(previousBotResponse.dateTimeStamp !== botResponse.dateTimeStamp){
+          // don't log messages that are the same
+          const oldTime = new Date(previousBotResponse.dateTimeStamp).getTime();
+          const newTime = new Date(botResponse.dateTimeStamp).getTime();
+          this.debug.log(newTime - oldTime);
+          if((newTime - oldTime) > 1500){
             this.pubsub.pushToChannel(botResponse);
+            previousBotResponse = null;
           }
         });
 

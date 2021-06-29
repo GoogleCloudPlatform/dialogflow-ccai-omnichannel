@@ -115,7 +115,6 @@ import { User } from 'actions-on-google/dist/service/actionssdk/conversation/use
          var botResponse;
          try {
              const [response] = await this.sessionClient.detectIntent(request);
-             this.debug.log(response);
              botResponse = this.beautifyResponses(response, input);
          } catch(e) {
              this.debug.error(e);
