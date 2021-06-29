@@ -331,7 +331,7 @@ export class App {
                 try {
                     var user = await me.firebase.getUser({phoneNumber: body.To });
                     userId = user.uid;
-                    userCountry = body.toCountry;
+                    userCountry = body.ToCountry;
                 } catch(e){
                     me.debug.error(e);
                 }

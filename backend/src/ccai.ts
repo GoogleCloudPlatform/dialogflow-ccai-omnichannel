@@ -103,10 +103,14 @@ export class ContactCenterAi {
         })
         .then(function(call){
           me.pubsub.pushToChannel({
+            sessionId: 'twilio-outbound',
+            sessionPath: 'twilio-outbound',
+            vertical: me.config.vertical,
             uid: user.uid,
             country: user.country,
             dateTimeStamp: new Date().toISOString(),
             platform: 'phone-outbound',
+            languageCode: me.config.dialogflow['language_code'],
             intentDetection: {
               intent: {
                 parameters: {
@@ -118,10 +122,14 @@ export class ContactCenterAi {
           cb({ success: true, call});
         }).catch(function(error){
           me.pubsub.pushToChannel({
+            sessionId: 'twilio-outbound',
+            sessionPath: 'twilio-outbound',
             uid: user.uid,
             country: user.country,
+            vertical: me.config.vertical,
             dateTimeStamp: new Date().toISOString(),
             platform: 'phone-outbound',
+            languageCode: me.config.dialogflow['language_code'],
             error,
             intentDetection: {
               intent: {

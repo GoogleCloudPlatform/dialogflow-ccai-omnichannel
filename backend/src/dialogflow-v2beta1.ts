@@ -190,7 +190,8 @@ import { User } from 'actions-on-google/dist/service/actionssdk/conversation/use
                  outputAudio: response.outputAudio,
                  responseId: response.responseId,
                  action: response.queryResult.action,
-                 tool: this.config.dialogflow['version']
+                 tool: this.config.dialogflow['version'],
+                 vertical: this.config.vertical
              }
              if(response.queryResult.sentimentAnalysisResult && response.queryResult.sentimentAnalysisResult.queryTextSentiment){
               dialogflowResponses['sentiment'] = response.queryResult.sentimentAnalysisResult.queryTextSentiment;
@@ -317,7 +318,7 @@ export class DialogflowV2Beta1Stream extends DialogflowV2Beta1 {
               callSid: msg.start.callSid,
               streamSid: msg.start.streamSid,
               userId: msg.start.customParameters.userId,
-              userCountry: msg.start.customParameters.FromCountry
+              userCountry: msg.start.customParameters.userCountry
             });
           }
           if (msg.event === 'mark') {

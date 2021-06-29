@@ -178,7 +178,8 @@ export class DialogflowCX extends EventEmitter {
                 webhookStatuses: response.queryResult.webhookStatuses,
                 outputAudio: response.outputAudio,
                 responseId: response.responseId,
-                tool: this.config.dialogflow['version']
+                tool: this.config.dialogflow['version'],
+                vertical: this.config.vertical
             }
 
             if (response.queryResult.transcript) {

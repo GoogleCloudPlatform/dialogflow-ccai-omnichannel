@@ -34,6 +34,7 @@ export class MyPubSub {
         const topic = this.pubsub.topic(`projects/${this.config['gc_project_id']}/topics/${topicName}`);
         const dataBuffer = Buffer.from(JSON.stringify(json), 'utf-8');
         const messageId = await topic.publish(dataBuffer);
+        this.debug.log(json);
         this.debug.log(`Message ${messageId} published to topic: ${topicName}`);
     }
 }

@@ -135,6 +135,10 @@
         "type": "STRING"
     },
     {
+        "name": "VERTICAL",
+        "type": "STRING"
+    },
+    {
         "name": "ERROR",
         "type": "STRING"
     }
