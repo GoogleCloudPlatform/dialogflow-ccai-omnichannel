@@ -177,7 +177,8 @@ export class DialogflowCX extends EventEmitter {
                 webhookPayloads: response.queryResult.webhookPayloads,
                 webhookStatuses: response.queryResult.webhookStatuses,
                 outputAudio: response.outputAudio,
-                responseId: response.responseId
+                responseId: response.responseId,
+                tool: 'DF-CX'
             }
 
             if (response.queryResult.transcript) {

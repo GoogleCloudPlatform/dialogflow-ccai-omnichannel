@@ -131,6 +131,10 @@
         "type": "FLOAT"
     },
     {
+        "name": "TOOL",
+        "type": "STRING"
+    },
+    {
         "name": "ERROR",
         "type": "STRING"
     }

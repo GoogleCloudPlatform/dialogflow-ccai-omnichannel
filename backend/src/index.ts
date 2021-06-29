@@ -78,11 +78,11 @@ export class App {
         // Other users could use the flow on the demo website.
         var me = this;
         this.firebase.createUser({
-            email: global.employee['live_agent_email'],
             phoneNumber: `+${global.employee['live_agent_phone_number']}`,
             password: global.employee['live_agent_pass'],
             displayName: global.employee['live_agent_display_name'],
             disabled: false,
+            email: global.employee['live_agent_email'],
             emailVerified: true
         }).then((userRecord) => {
             // See the UserRecord reference doc for the contents of userRecord.
@@ -93,11 +93,11 @@ export class App {
             me.debug.error(error);
         });
         this.firebase.createUser({
-            email: global.profile['my_email'],
             phoneNumber: `+${global.profile['my_phone_number']}`,
             password: global.profile['my_pass'],
             displayName: global.profile['my_display_name'],
             disabled: false,
+            email: global.profile['my_email'],
             emailVerified: true
         }).then((userRecord) => {
             // See the UserRecord reference doc for the contents of userRecord.
@@ -250,24 +250,6 @@ export class App {
             res.sendStatus(200);
         });
 
-
-        // Twilio Start Routes
-        this.app.get('/api/sms/confirmation/', async function(req, res) {
-            // CAN THE CF POST THESE, THEN WE DONT NEED A SEPERATE URL
-            // We would need to send the UID
-            /*const body = req.body;
-            const query = body.Body;
-            const phoneNr = body.From;
-            const country = body.FromCountry;*/
-
-            const phoneNr = global.profile['my_phone_number'];
-            const query = 'CONFIRMATION';
-
-            await me.ccai.sms(query, phoneNr, function(data){
-                res.json(data);
-            });
-        });
-        
         this.app.post('/api/sms/', async function(req, res){
             const body = req.body;
             const query = body.Body;
@@ -304,6 +286,7 @@ export class App {
                 userRecord = {};
                 userRecord['phoneNumber'] = body.From;
                 userRecord['displayName'] = body.Name;
+                me.debug.log(userRecord);
             } else if(uid){
                 // the web interface has the user.uid stored in the DF conversation
                 userRecord = await me.firebase.getUser({uid});
@@ -312,7 +295,7 @@ export class App {
             const protocol = req.secure? 'https://' : 'http://';
             const host = protocol + req.hostname;
             // get param phoneNr required
-            if(userRecord.phoneNumber){
+            if(userRecord && userRecord.phoneNumber){
                 await me.ccai.streamOutbound(userRecord.phoneNumber, host, function(data){
                     res.json(data);
                 });
@@ -320,7 +303,7 @@ export class App {
                 res.status(500);
             }
         });
-        this.app.post('/api/call/transfer/', async function(req, res) {
+        /*this.app.post('/api/call/transfer/', async function(req, res) {
             // TODO this should come from a profile
             const phoneNr = global.profile['my_phone_number'];
             const protocol = req.secure? 'https://' : 'http://';
@@ -329,18 +312,21 @@ export class App {
             await me.ccai.streamOutbound(phoneNr, host, function(data){
                 res.json(data);
             });
-        });
+        });*/
         // The endpoint set in the Twilio console
         this.app.post('/api/twiml/', async (req, res) => {
             const body = req.body;
             var userId;
+            me.debug.log(body);
             if(`+${body.From}` !== global.employee['live_agent_phone_number']){
                 var user = await me.firebase.getUser({phoneNumber: body.From });
                 userId = user.uid;
+                me.debug.log(user);
             } else {
                 userId = 'TWILIO';
             }
 
+            me.debug.log(userId);
             // this is the route you configure your HTTP POST webhook in the Twilio console to.
             res.setHeader('Content-Type', 'text/xml');
             // ngrok sets x-original-host header
