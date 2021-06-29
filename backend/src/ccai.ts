@@ -102,9 +102,9 @@ export class ContactCenterAi {
           from: me.config.twilio['bot_agent_phone_number']
         })
         .then(function(call){
-          // current time + 0.5 second, so it will be logged right after the web request.
+          // current time + 2 seconds, so it will be logged right after the web request.
           var timeNow = new Date();
-          timeNow.setSeconds(timeNow.getSeconds() + 0.5);
+          timeNow.setSeconds(timeNow.getSeconds() + 2);
           me.pubsub.pushToChannel({
             sessionId: 'twilio-outbound',
             sessionPath: 'twilio-outbound',
