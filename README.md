@@ -211,7 +211,7 @@ cp env.txt .env
 3. You can start the back-end server with the below command. It will start your app in development mode at http://localhost:8080
 
 ```
-cd backend && npm run start:dev
+cd backend && npm run watch
 ```
 
 ### Angular Website

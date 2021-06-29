@@ -1,14 +1,8 @@
 ## TODOS
 
-* Dialogflow CX store user ID in form
-* ccaiWebhook should get the uid parameter for CX
-* Test call me, with logging UID
 * Build user management for Website
 * Build user management for GA / Account linking
 * Test GA, with logging UID
-* Build user management for phone
-* Build user management for flutter
-* Can I rewrite the websockets observable in Angular, it seems to reconnect https://livebook.manning.com/book/angular-development-with-typescript-second-edition/chapter-13/86
 
         // the channels can get the users
             // TWILIO before the welcome message, get the phone number, the phone number must match
@@ -23,20 +17,18 @@
               // hello display-name
                 // please login
 
+* Dialogflow CX store user ID in form
+* ccaiWebhook should get the uid parameter for CX
 * Test BigQuery & PubSub & Funnel Step for CX
 * Build agent handover / Test it in ES and CX
+
 * Test the flutter app
 * A fallback, on the end (is there anything else you want me to help you with) - Sup: New Job - custom
 ended the call. - Which was an error in the MediaStream, we will log now.
 
-STEPS
-- ADVERTISING (AdLingo, we cant link to user)
-- APPOINTMENT_SCHEDULING (On the website, link to user)
-- APPOINTMENT_CONFIRMED (SMS confirmation)
-- SUPPLEMENTAL
-- OVERVIEW
-- CALLME
-- END
+* Build user management for phone
+* Build user management for flutter
+* Can I rewrite the websockets observable in Angular, it seems to reconnect https://livebook.manning.com/book/angular-development-with-typescript-second-edition/chapter-13/86
 
 
 -- WEB
