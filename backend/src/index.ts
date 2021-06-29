@@ -71,6 +71,18 @@ export class App {
         });
     }
 
+    private getFunnelStep(step: number): string {
+        var funnelMap = new Map();
+        funnelMap.set(1, 'WELCOME'); // ADVERTISING
+        funnelMap.set(2, 'APPOINTMENT_SCHEDULING');
+        funnelMap.set(3, 'APPOINTMENT_CONFIRMED');
+        funnelMap.set(4, 'SUPPLEMENTAL');
+        funnelMap.set(5, 'OVERVIEW');
+        funnelMap.set(6, 'CALLME');
+        funnelMap.set(7, 'END');
+        return funnelMap.get(step);
+    }
+
     private enrollDemoUsers(): void {
         // For demo usage of this system, we will add
         // two user accounts to the system. One for the
@@ -206,7 +218,12 @@ export class App {
                       break;
                     case 'web-event':
                         var eventName = clientObj['web-event'];
-                        dialogflowResponses = await this.web.detectIntentEvent(eventName, queryParameters);
+                        var e = '';
+                        if (eventName === 'INIT') {
+                            // TODO set the event name based on the FUNNEL STEP
+                            e = me.getFunnelStep(2);
+                        }
+                        dialogflowResponses = await this.web.detectIntentEvent(e, queryParameters);
                         ws.send(JSON.stringify(dialogflowResponses));
                       break;
                     case 'disconnect':

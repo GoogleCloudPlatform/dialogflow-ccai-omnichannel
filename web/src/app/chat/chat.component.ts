@@ -56,7 +56,7 @@ export class ChatComponent implements OnInit {
           console.log(`server error: ${agentResponse.error}`);
         }
       });
-      me.webSocket.sendChat({'web-event' : 'WELCOME-WEB' });
+      me.webSocket.sendChat({'web-event' : 'INIT' });
     }
 
     async task(i: number, m: string){
