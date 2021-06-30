@@ -375,6 +375,63 @@ export class App {
             console.log(req.body);
             me.ccai.stream(ws, req);
         });
+
+
+        this.app.post('/api/auth/register/', async function(req, res) {
+            const body = req.body;
+            const displayName = body.username;
+            const email = body.email;
+            const password = body.password;
+            const phoneNumber = body.phoneNr;
+
+            var userRecord = await me.firebase.createUser({
+                email,
+                password,
+                phoneNumber,
+                displayName,
+                emailVerified: true,
+                disabled: false
+            }).then((u) => {
+                // See the UserRecord reference doc for the contents of userRecord.
+                me.debug.log('Successfully created new user:', u);
+                res.json({
+                    success: true,
+                    msg: 'User has been created:' + u.uid
+                });
+            })
+            .catch((error) => {
+                me.debug.error(error);
+                res.json({
+                    success: false,
+                    msg: error
+                });
+            });
+        });
+        this.app.post('/api/auth/login/', async function(req, res) {
+            const body = req.body;
+            const email = body.email;
+            const password = body.password;
+
+            // TODO test against password and work with JWT
+            var userRecord = await me.firebase.getUser({
+                email
+            }).then((u) => {
+                me.debug.log(u);
+            })
+            .catch((error) => {
+                me.debug.error(error);
+            });
+
+            res.send('OK');
+        });
+        this.app.post('/api/auth/reset/', async function(req, res) {
+            const body = req.body;
+            const email = body.email;
+
+            // Password reset email
+
+            res.send('OK');
+        });
     }
 
     private listen(): void {

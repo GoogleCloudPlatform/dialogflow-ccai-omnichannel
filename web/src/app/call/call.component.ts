@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { WebSocketService } from '../websocket.service';
+import { HttpsService } from '../https.service';
 
 @Component({
   selector: 'app-call',
   templateUrl: './call.component.html',
   styleUrls: ['./call.component.scss'],
-  providers:  [ WebSocketService ]
+  providers:  [ HttpsService ]
 })
 export class CallComponent {
   public phone: string;
@@ -15,7 +15,7 @@ export class CallComponent {
   public isValidFormSubmitted: boolean;
 
   constructor(
-    private webSocket: WebSocketService
+    private https: HttpsService
   ) {
     this.name = '';
     this.phone = '';
@@ -32,9 +32,9 @@ export class CallComponent {
     }
     if (this.phone.length > 0) {
       this.isValidFormSubmitted = true;
-      this.webSocket.callMe(this.phone, this.name).pipe().subscribe(data => {
+      this.https.callMe(this.phone, this.name).pipe().subscribe(data => {
         console.log(data);
-    });
+      });
     }
     f.reset();
   }

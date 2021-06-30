@@ -25,38 +25,40 @@
         </mat-card-header>
         <mat-card-content class="profile-content">
 
-            <form #f="ngForm" (ngSubmit)="onSubmit(f)" id="profile">
+            <form #f="ngForm" (ngSubmit)="onSubmit(f)" id="profile" [hidden]="f.submitted">
                 <div class="fields">
                     <mat-form-field class="example-full-width">
                         <mat-label>
                             <mat-icon aria-hidden="false">perm_identity</mat-icon> Username</mat-label>
-                        <input matInput id="username" name="username" type="text" autocomplete="on" required />
+                        <input ngModel matInput id="username" name="username" type="text" autocomplete="on" required />
                     </mat-form-field>
                     <mat-form-field class="example-full-width" >
                         <mat-label><mat-icon aria-hidden="false">mail</mat-icon> Email address</mat-label>
-                        <input matInput id="email" name="email" type="email" autocomplete="on" required  />
+                        <input ngModel matInput id="email" name="email" type="email" autocomplete="on" required  />
                     </mat-form-field>
-                    <mat-form-field class="example-full-width">
-                        <mat-label>
-                        <mat-icon aria-hidden="false">lock</mat-icon> Password</mat-label>
-                        <input matInput id="password" name="password" type="password" autocomplete="off" required />
-                    </mat-form-field>
-                    <mat-form-field class="example-full-width">
-                        <mat-label><mat-icon aria-hidden="false">lock</mat-icon> Re-type password</mat-label>
-                        <input matInput id="p2" name="p2" type="password" autocomplete="off" required />
-                    </mat-form-field>
+                    <div ngModelGroup="passwordsGroup">
+                        <mat-form-field class="example-full-width">
+                            <mat-label>
+                            <mat-icon aria-hidden="false">lock</mat-icon> Password</mat-label>
+                            <input ngModel matInput [pattern]="passwordMatch" id="password" name="password" type="password" autocomplete="off" required />
+                        </mat-form-field>
+                        <mat-form-field class="example-full-width">
+                            <mat-label><mat-icon aria-hidden="false">lock</mat-icon> Re-type password</mat-label>
+                            <input ngModel matInput id="pconfirm" name="pconfirm" type="password" autocomplete="off" required />
+                        </mat-form-field>
+                    </div>
                     <mat-form-field class="example-full-width">
                         <mat-label><mat-icon aria-hidden="false">phone</mat-icon> PhoneNr</mat-label>
                         <input matInput id="phoneNr" ngModel [pattern]="mobNumberPattern" #m="ngModel" name="phoneNr" type="tel" maxlength="15" required>
                     </mat-form-field>
-                    <mat-form-field class="example-full-width">
+                    <!--<mat-form-field class="example-full-width">
                         <mat-label><mat-icon aria-hidden="false">insert_photo</mat-icon> Photo</mat-label>
                         <input matInput id="photo" name="photo" type="photo" autocomplete="off" />
-                    </mat-form-field>
+                    </mat-form-field>-->
                 </div>
                 <button class="green" [disabled]="f.invalid" mat-raised-button type="submit">Save</button>
-                <div class="thanks" [hidden]="!f.submitted">Thank you for registering with us. You can now login.</div>
             </form>
+            <div class="thanks" [hidden]="!f.submitted">Thank you for registering with us.<br/> You can now <a href="/login">login</a>.</div>
         </mat-card-content>
     </mat-card>
 

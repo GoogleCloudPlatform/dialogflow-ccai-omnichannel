@@ -47,9 +47,6 @@ export class WebSocketService {
     connect() {
       return this.http.get(`${this.API_URL}/api/web/`);
     }
-    callMe(phoneNr: string, name: string) {
-      return this.http.post<any>(`${this.API_URL}/api/callme/`, { From: phoneNr, Name: name });
-    }
 
     connectChat(): Observable<any> {
       console.log('connect chat');

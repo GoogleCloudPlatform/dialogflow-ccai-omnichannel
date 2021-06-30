@@ -17,41 +17,53 @@
  */
 import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
+import { HttpsService } from '../https.service';
 import * as $ from 'jquery';
 
 @Component({
   selector: 'app-profile',
   templateUrl: './profile.component.html',
-  styleUrls: ['./profile.component.scss']
+  styleUrls: ['./profile.component.scss'],
+  providers:  [ HttpsService ]
 })
 export class ProfileComponent implements OnInit {
   public mobNumberPattern;
+  public passwordMatch;
   private username;
   private phoneNr;
   private password;
   private email;
-  private photo;
   private isValidFormSubmitted;
 
   constructor(
+    private https: HttpsService
   ) {
     this.username = '';
     this.phoneNr = '';
     this.password = '';
     this.email = '';
-    this.photo = '';
     this.isValidFormSubmitted = false;
     this.mobNumberPattern = '^[0-9\-]*$';
+    this.passwordMatch = false;
   }
 
   ngOnInit(): void {
   }
 
   onSubmit(f: NgForm): void {
-    const m = f.value.m;
-    if (m.length > 0) {
-      console.log(m);
-    }
+    this.username = f.value.username;
+    this.phoneNr = f.value.phoneNr;
+    this.email = f.value.email;
+    this.password = f.value.password;
+
+    // TODO check if passwords are similar
+
+    this.https.createUser(this.email, this.password, this.username, `+${this.phoneNr}`).pipe().subscribe(data => {
+      console.log(data);
+    });
+
+    // if user is logged in, prefill the fields
+
     f.reset();
   }
 

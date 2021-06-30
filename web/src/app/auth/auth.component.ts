@@ -17,6 +17,7 @@
  */
 import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
+import { HttpsService } from '../https.service';
 import * as $ from 'jquery';
 
 @Component({
@@ -26,7 +27,9 @@ import * as $ from 'jquery';
 })
 export class AuthComponent implements OnInit {
 
-  constructor() { }
+  constructor(
+    private httpsService: HttpsService
+  ) { }
 
   ngOnInit(): void {
   }
