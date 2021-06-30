@@ -15,16 +15,20 @@
 -->
 <!-- Toolbar -->
 <div class="toolbar {{class}}" role="banner">
-    <span class="logo"></span>
+    <span (click)="home()" class="logo"></span>
 
     <div class="spacer"></div>
 
     <a href="tel:{{phoneNr}}" class="phone">
       <span>Call us: </span>{{phoneNr}}
     </a>
-</div>
 
-<router-outlet></router-outlet>
+    <button mat-raised-button class="green" (click)="login()">Login</button>
+
+    <div class="circle" (click)="profile()">
+      <span class="initials">L</span>
+    </div>
+</div>
 
 <div class="banner {{class}}">
   <div class="img"></div>
@@ -34,7 +38,9 @@
   </div>
 </div>
 <div class="content" role="main" class="flex-container">
-  <app-chat></app-chat>
+  
+  <router-outlet></router-outlet>
+
   <app-call></app-call>
 </div>
  

@@ -64,6 +64,8 @@ import { AppComponent } from './app.component';
 import { ChatComponent } from './chat/chat.component';
 import { MicrophoneComponent } from './chat.microphone/chat.microphone.component';
 import { CallComponent } from './call/call.component';
+import { AuthComponent } from './auth/auth.component';
+import { ProfileComponent } from './profile/profile.component';
 
 @NgModule({
   declarations: [
@@ -71,6 +73,8 @@ import { CallComponent } from './call/call.component';
     ChatComponent,
     MicrophoneComponent,
     CallComponent,
+    AuthComponent,
+    ProfileComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({appId: 'front-end'}),

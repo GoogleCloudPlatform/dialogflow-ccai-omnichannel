@@ -16,44 +16,43 @@
  * =============================================================================
  */
 import { Component, OnInit } from '@angular/core';
-import { WebSocketService } from './websocket.service';
+import { NgForm } from '@angular/forms';
+import * as $ from 'jquery';
 
 @Component({
-  selector: 'front-end',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  selector: 'app-profile',
+  templateUrl: './profile.component.html',
+  styleUrls: ['./profile.component.scss']
 })
-export class AppComponent {
-  public class: string;
-  public phoneNr: string;
-  title = 'ccai360';
+export class ProfileComponent implements OnInit {
+  public mobNumberPattern;
+  private username;
+  private phoneNr;
+  private password;
+  private email;
+  private photo;
+  private isValidFormSubmitted;
 
   constructor(
-    private webSocket: WebSocketService
   ) {
-    this.class = '';
+    this.username = '';
     this.phoneNr = '';
-  }
-
-  home(): void {
-    document.location.href = '/chat'
-  }
-
-  profile(): void {
-    document.location.href = '/profile'
-  }
-
-  login(): void {
-    document.location.href = '/login'
+    this.password = '';
+    this.email = '';
+    this.photo = '';
+    this.isValidFormSubmitted = false;
+    this.mobNumberPattern = '^[0-9\-]*$';
   }
 
   ngOnInit(): void {
-    const me = this;
-    this.webSocket.connect()
-      .subscribe(function(data: any) {
-        me.class = data['vertical'];
-        me.phoneNr = data['twilio'];
-      });
+  }
+
+  onSubmit(f: NgForm): void {
+    const m = f.value.m;
+    if (m.length > 0) {
+      console.log(m);
+    }
+    f.reset();
   }
 
 }

@@ -1,0 +1,39 @@
+$primary: rgba(96, 125, 139);
+$alternative: #29434e;
+
+:host {
+    width: 68%;
+    margin-top: -30px;
+}
+
+mat-card {
+    margin: 12px;
+    padding: 20px;
+    min-width: 280px;
+}
+
+mat-form-field {
+    width: 100%;
+}
+
+mat-card-title {
+    margin: 25px 0;
+}
+
+button.green {
+    background: #43a047;
+    color: #fff;
+}
+
+.thanks {
+    margin: 20px 0;
+}
+
+.hidden {
+    display: none;
+}
+
+::ng-deep .mat-focused .mat-form-field-underline,
+::ng-deep .mat-focused .mat-form-field-ripple {
+    background-color: #43a047 !important;
+  }
