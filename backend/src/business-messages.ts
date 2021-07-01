@@ -22,6 +22,8 @@ import { DialogflowCX } from './dialogflow-cx';
 import { DialogflowCXV3Beta1 } from './dialogflow-cxv3beta1';
 import { MyPubSub } from './pubsub';
 import * as uuid from 'uuid';
+import * as fb from './firebase';
+import * as admin from 'firebase-admin';
 
 const struct = require('./structjson');
 const { GoogleAuth } = require('google-auth-library');
@@ -35,6 +37,9 @@ const auth = new GoogleAuth({
     scopes: 'https://www.googleapis.com/auth/businessmessages',
 });
 
+const BM_EMAIL_PROMPT_EVENT = 'BM_EMAIL_PROMPT';
+const WELCOME_EVENT = 'APPOINTMENT_SCHEDULING';
+
 export class BusinessMessages {
     private pubsub: MyPubSub;
     private dialogflow: any;
@@ -45,6 +50,7 @@ export class BusinessMessages {
     constructor(global) {
         this.config = global;
         this.debug = global.debugger;
+
         const df = global.dialogflow['version'] || 'v2beta1';
         if(df === 'cx') {
             this.dialogflow = new DialogflowCX(global);
@@ -57,17 +63,127 @@ export class BusinessMessages {
         this.pubsub = new MyPubSub(global);
     }
 
-    async handleInboundMessage(query: string, conversationId: string, lang?: string, contexts?: Array<string>) {
-        const dialogflowResponseObject = await this.dialogflow.detectIntentText(query, lang, contexts);
+    async handleInboundMessage(query: string, conversationId: string, displayName: string,
+        firebase: fb.FirebaseUsers, lang?: string) {
+        let userObject = null;
+        let dialogflowResponseObject = null;
 
-        dialogflowResponseObject.platform = 'business-messages';
-        this.pubsub.pushToChannel(dialogflowResponseObject);
+        const snapshot = await this.getChannelMapping(conversationId);
+
+        // User doesn't exist, create channel mapping and prompt for email
+        if (snapshot.empty) {
+            this.createChannelMapping(conversationId);
+
+            // No user record existed, trigger the email prompt event
+            dialogflowResponseObject = await this.dialogflow.detectIntentEvent(BM_EMAIL_PROMPT_EVENT,
+                lang);
+        }
+        else { // Channel mapping exists
+            userObject = await this.getUserFromSnapshot(snapshot, firebase);
+
+            // No matching user, trigger email capture flow
+            if(userObject == null || userObject.email === undefined) {
+                dialogflowResponseObject = await this.handleEmailResponse(conversationId,
+                    displayName, firebase, query, lang);
+            }
+            else {
+                let contexts = [{user: userObject.uid}];
+                dialogflowResponseObject = await this.dialogflow.detectIntentText(query, lang,
+                    contexts);
+            }
+        }
 
         // Convert Dialogflow response into Business Messages response
-        this.handleMessage(dialogflowResponseObject, conversationId);
+        this.handleMessage(userObject, dialogflowResponseObject, conversationId);
     }
 
-    async handleMessage(dialogflowResponseObject, conversationId) {
+    async handleEmailResponse(conversationId: string, displayName: string,
+        firebase: fb.FirebaseUsers, query: string, lang: string):Promise<any> {
+        // Check query to see if the user provided their email address
+        let dialogflowResponseObject = await this.dialogflow.detectIntentText(query, lang);
+
+        // Check whether the current user query is an email address
+        if(dialogflowResponseObject.intentDetection.intent.displayName === 'BM Email Prompt'
+            && dialogflowResponseObject.intentDetection.intent.parameters.email) {
+            // Extract the email from the Dialogflow parameters
+            let userEmail = dialogflowResponseObject.intentDetection.intent.parameters.email;
+
+            let userObject = null;
+             try {
+                userObject = await firebase.getUser({email: userEmail});
+            } catch(e) {}
+
+            if(userObject === null) {
+                // Create user record
+                userObject = await firebase.createUser({
+                    email: userEmail, displayName
+                });
+            }
+
+            this.updateChannelMapping(conversationId, userObject.uid);
+
+            // Send thank you for providing an email
+            this.handleMessage(userObject, dialogflowResponseObject, conversationId);
+
+            // Trigger the welcome message to start the user journey
+            return await this.dialogflow.detectIntentEvent(WELCOME_EVENT, lang);
+        }
+        else {
+            // User does not have an email and didn't respond with one, so prompt for an email
+            return await this.dialogflow.detectIntentEvent(BM_EMAIL_PROMPT_EVENT, lang);
+        }
+    }
+
+    async getUserFromSnapshot(snapshot:any, firebase:fb.FirebaseUsers):Promise<any> {
+        let userId = null;
+        snapshot.forEach(doc => {
+          userId = doc.data().uid;
+        });
+
+        let userObject = null;
+        try {
+            userObject = await firebase.getUser({uid: userId});
+        } catch(e) {}
+
+        return userObject;
+    }
+
+    async getChannelMapping(conversationId: string):Promise<any> {
+        const db = admin.firestore();
+        const ref = db.collection('channel_mappings');
+        const snapshot = await ref.where('channelId', '==', conversationId).get();
+
+        return snapshot;
+    }
+
+    async updateChannelMapping(conversationId: string, uid: string) {
+        const db = admin.firestore();
+
+        const snapshot = await this.getChannelMapping(conversationId);
+        snapshot.forEach(doc => {
+          doc.ref.update({
+              uid
+          })
+        });
+    }
+
+    async createChannelMapping(conversationId: string) {
+        const db = admin.firestore();
+
+        // Create mapping fron conversationId to the Firebase user unique ID
+        const docRef = db.collection('channel_mappings').doc('channel_mapping');
+        await db.collection('channel_mappings').add({
+          channelId: conversationId,
+          channelType: 'business-messages'
+        });
+    }
+
+    async handleMessage(userObject, dialogflowResponseObject, conversationId) {
+        dialogflowResponseObject.platform = 'business-messages';
+
+        var data = {...dialogflowResponseObject, ...userObject};
+        this.pubsub.pushToChannel(data);
+
         // Create the default response based on fulfillmentText
         let botResponse = {
             text: dialogflowResponseObject.fulfillmentText,

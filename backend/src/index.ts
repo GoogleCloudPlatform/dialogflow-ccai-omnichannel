@@ -233,18 +233,17 @@ export class App {
             let agentName = body.agent;
             let displayName = body.context.userInfo.displayName;
 
-            // Log message parameters
-            me.debug.log('conversationId: ' + conversationId);
-            me.debug.log('displayName: ' + displayName);
-
             // Parse the message or suggested response body
             if ((body.message !== undefined
                 && body.message.text !== undefined) || body.suggestionResponse !== undefined) {
                 let text = body.message !== undefined ? body.message.text: body.suggestionResponse.text;
 
+                 // Log message parameters
+                me.debug.log('conversationId: ' + conversationId);
+                me.debug.log('displayName: ' + displayName);
                 me.debug.log('text: ' + text);
 
-                me.businessMessages.handleInboundMessage(text, conversationId);
+                me.businessMessages.handleInboundMessage(text, conversationId, displayName, me.firebase);
             }
 
             res.sendStatus(200);
@@ -267,7 +266,7 @@ export class App {
                 res.json(data);
             });
         });
-        
+
         this.app.post('/api/sms/', async function(req, res){
             const body = req.body;
             const query = body.Body;
