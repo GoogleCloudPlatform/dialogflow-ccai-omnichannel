@@ -27,12 +27,21 @@ import { ValidationManager } from 'ng2-validation-manager';
   providers:  [ HttpsService ]
 })
 export class ProfileComponent implements OnInit {
+
+  username: string;
+  phoneNr: string;
+  email: string;
+  password: string;
+
   form: any;
 
   constructor(
     private https: HttpsService
   ) {
-    // this.form.setErrorMessage('username', 'pattern', 'Pattern must be part of this family: [A-Za-z0-9.-_]');
+    this.username =  '';
+    this.phoneNr =  '';
+    this.email = '';
+    this.password = '';
   }
 
   ngOnInit(): void {
@@ -43,24 +52,23 @@ export class ProfileComponent implements OnInit {
       password    : 'required|rangeLength:8,50',
       repassword  : 'required|equalTo:password'
     });
+    this.form.setErrorMessage('phoneNr', 'pattern', 'The phonenumber can only contain numbers and needs the country code.');
+ 
   }
 
   onSubmit(f: NgForm): void {
     console.log(f.value);
-    // this.username = f.value.username;
-    // this.phoneNr = f.value.phoneNr;
-    // this.email = f.value.email;
-    // this.password = f.value.password;
+    this.username = f.value.username;
+    this.phoneNr = f.value.phoneNr;
+    this.email = f.value.email;
+    this.password = f.value.password;
 
-    // TODO check if passwords are similar
+    this.https.createUser(this.email, this.password, this.username, `+${this.phoneNr}`).pipe().subscribe(data => {
+     console.log(data);
+     // TODO don't reset on errors
+     f.reset();
+    });
 
-    // this.https.createUser(this.email, this.password, this.username, `+${this.phoneNr}`).pipe().subscribe(data => {
-    //  console.log(data);
-    // });
-
-    // if user is logged in, prefill the fields
-
-    f.reset();
   }
 
 }
