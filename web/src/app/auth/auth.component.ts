@@ -16,44 +16,30 @@
  * =============================================================================
  */
 import { Component, OnInit } from '@angular/core';
-import { WebSocketService } from './websocket.service';
+import { NgForm } from '@angular/forms';
+import { HttpsService } from '../https.service';
+import * as $ from 'jquery';
 
 @Component({
-  selector: 'front-end',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  selector: 'app-auth',
+  templateUrl: './auth.component.html',
+  styleUrls: ['./auth.component.scss']
 })
-export class AppComponent {
-  public class: string;
-  public phoneNr: string;
-  title = 'ccai360';
+export class AuthComponent implements OnInit {
 
   constructor(
-    private webSocket: WebSocketService
-  ) {
-    this.class = '';
-    this.phoneNr = '';
-  }
-
-  home(): void {
-    document.location.href = '/chat'
-  }
-
-  profile(): void {
-    document.location.href = '/profile'
-  }
-
-  login(): void {
-    document.location.href = '/login'
-  }
+    private httpsService: HttpsService
+  ) { }
 
   ngOnInit(): void {
-    const me = this;
-    this.webSocket.connect()
-      .subscribe(function(data: any) {
-        me.class = data['vertical'];
-        me.phoneNr = data['twilio'];
-      });
+  }
+
+  onSubmit(f: NgForm): void {
+    const m = f.value.m;
+    if (m.length > 0) {
+      console.log(m);
+    }
+    f.reset();
   }
 
 }

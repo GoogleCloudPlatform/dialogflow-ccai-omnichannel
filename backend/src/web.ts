@@ -35,6 +35,7 @@ export class Web {
         this.config = global;
         this.debug = global.debugger;
         const df = global.dialogflow['version'] || 'v2beta1';
+
         if(df === 'cx') {
             this.dialogflow = new DialogflowCX(global);
         } else if(df === 'cxv3beta1') {
@@ -82,12 +83,12 @@ export class Web {
         this.pubsub.pushToChannel(webResponse);
         return this.createRichMessages(webResponse);
     }
-    async detectIntentAudioStream(stream: any) {
+    /*async detectIntentAudioStream(stream: any) {
         const webResponse = await this.dialogflow.detectIntentText(stream);
         webResponse.platform = 'web';
         this.pubsub.pushToChannel(webResponse);
         return this.createSSML(webResponse);
-    }
+    }*/
 }
 
 export class WebStream extends Web {

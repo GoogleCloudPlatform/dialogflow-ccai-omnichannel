@@ -71,6 +71,18 @@ export class App {
         });
     }
 
+    private getFunnelStep(step: number): string {
+        var funnelMap = new Map();
+        funnelMap.set(1, 'WELCOME'); // ADVERTISING
+        funnelMap.set(2, 'APPOINTMENT_SCHEDULING');
+        funnelMap.set(3, 'APPOINTMENT_CONFIRMED');
+        funnelMap.set(4, 'SUPPLEMENTAL');
+        funnelMap.set(5, 'OVERVIEW');
+        funnelMap.set(6, 'OUTBOUND_SUPPORT');
+        funnelMap.set(7, 'END');
+        return funnelMap.get(step);
+    }
+
     private enrollDemoUsers(): void {
         // For demo usage of this system, we will add
         // two user accounts to the system. One for the
@@ -78,11 +90,11 @@ export class App {
         // Other users could use the flow on the demo website.
         var me = this;
         this.firebase.createUser({
-            email: global.employee['live_agent_email'],
             phoneNumber: `+${global.employee['live_agent_phone_number']}`,
             password: global.employee['live_agent_pass'],
             displayName: global.employee['live_agent_display_name'],
             disabled: false,
+            email: global.employee['live_agent_email'],
             emailVerified: true
         }).then((userRecord) => {
             // See the UserRecord reference doc for the contents of userRecord.
@@ -93,11 +105,11 @@ export class App {
             me.debug.error(error);
         });
         this.firebase.createUser({
-            email: global.profile['my_email'],
             phoneNumber: `+${global.profile['my_phone_number']}`,
             password: global.profile['my_pass'],
             displayName: global.profile['my_display_name'],
             disabled: false,
+            email: global.profile['my_email'],
             emailVerified: true
         }).then((userRecord) => {
             // See the UserRecord reference doc for the contents of userRecord.
@@ -206,7 +218,13 @@ export class App {
                       break;
                     case 'web-event':
                         var eventName = clientObj['web-event'];
-                        dialogflowResponses = await this.web.detectIntentEvent(eventName, queryParameters);
+                        var e = '';
+                        if (eventName === 'INIT') {
+                            // TODO set the event name based on the FUNNEL STEP
+                            e = me.getFunnelStep(2); /// flows/714e1bfd-b510-40ea-817d-a6b76029089b/
+                        }
+                        console.log(e);
+                        dialogflowResponses = await this.web.detectIntentEvent(e, queryParameters);
                         ws.send(JSON.stringify(dialogflowResponses));
                       break;
                     case 'disconnect':
@@ -248,7 +266,6 @@ export class App {
 
             res.sendStatus(200);
         });
-
 
         // Twilio Start Routes
         this.app.get('/api/sms/confirmation/', async function(req, res) {
@@ -303,6 +320,7 @@ export class App {
                 userRecord = {};
                 userRecord['phoneNumber'] = body.From;
                 userRecord['displayName'] = body.Name;
+                me.debug.log(userRecord);
             } else if(uid){
                 // the web interface has the user.uid stored in the DF conversation
                 userRecord = await me.firebase.getUser({uid});
@@ -311,15 +329,15 @@ export class App {
             const protocol = req.secure? 'https://' : 'http://';
             const host = protocol + req.hostname;
             // get param phoneNr required
-            if(userRecord.phoneNumber){
-                await me.ccai.streamOutbound(userRecord.phoneNumber, host, function(data){
+            if(userRecord && userRecord.phoneNumber){
+                await me.ccai.streamOutbound(userRecord, host, function(data){
                     res.json(data);
                 });
             } else {
                 res.status(500);
             }
         });
-        this.app.post('/api/call/transfer/', async function(req, res) {
+        /*this.app.post('/api/call/transfer/', async function(req, res) {
             // TODO this should come from a profile
             const phoneNr = global.profile['my_phone_number'];
             const protocol = req.secure? 'https://' : 'http://';
@@ -328,18 +346,31 @@ export class App {
             await me.ccai.streamOutbound(phoneNr, host, function(data){
                 res.json(data);
             });
-        });
+        });*/
         // The endpoint set in the Twilio console
         this.app.post('/api/twiml/', async (req, res) => {
             const body = req.body;
-            var userId;
-            if(`+${body.From}` !== global.employee['live_agent_phone_number']){
-                var user = await me.firebase.getUser({phoneNumber: body.From });
-                userId = user.uid;
-            } else {
-                userId = 'TWILIO';
+            var userId = 'unknown';
+            var userCountry = '';
+            me.debug.log(body);
+            if(body.Direction === 'inbound'){
+                try {
+                    var user = await me.firebase.getUser({phoneNumber: body.From });
+                    userId = user.uid;
+                    userCountry = body.fromCountry;
+                } catch(e){
+                    me.debug.error(e);
+                }
+            } else if(body.Direction === 'outbound-api'){
+                try {
+                    var user = await me.firebase.getUser({phoneNumber: body.To });
+                    userId = user.uid;
+                    userCountry = body.ToCountry;
+                } catch(e){
+                    me.debug.error(e);
+                }
             }
-
+            me.debug.log(userId);
             // this is the route you configure your HTTP POST webhook in the Twilio console to.
             res.setHeader('Content-Type', 'text/xml');
             // ngrok sets x-original-host header
@@ -349,7 +380,7 @@ export class App {
                 <Connect>
                     <Stream url="wss://${host}/api/phone/">
                         <Parameter name="userId" value ="${userId}"/>
-                        <Parameter name="FromCountry" value ="${body.FromCountry}" />
+                        <Parameter name="userCountry" value ="${userCountry}" />
                     </Stream>
                 </Connect>
             </Response>`);
@@ -360,6 +391,63 @@ export class App {
             // me.debug.log('ws phone connected');
             console.log(req.body);
             me.ccai.stream(ws, req);
+        });
+
+
+        this.app.post('/api/auth/register/', async function(req, res) {
+            const body = req.body;
+            const displayName = body.username;
+            const email = body.email;
+            const password = body.password;
+            const phoneNumber = body.phoneNr;
+
+            var userRecord = await me.firebase.createUser({
+                email,
+                password,
+                phoneNumber,
+                displayName,
+                emailVerified: true,
+                disabled: false
+            }).then((u) => {
+                // See the UserRecord reference doc for the contents of userRecord.
+                me.debug.log('Successfully created new user:', u);
+                res.json({
+                    success: true,
+                    msg: 'User has been created:' + u.uid
+                });
+            })
+            .catch((error) => {
+                me.debug.error(error);
+                res.json({
+                    success: false,
+                    msg: error
+                });
+            });
+        });
+        this.app.post('/api/auth/login/', async function(req, res) {
+            const body = req.body;
+            const email = body.email;
+            const password = body.password;
+
+            // TODO test against password and work with JWT
+            var userRecord = await me.firebase.getUser({
+                email
+            }).then((u) => {
+                me.debug.log(u);
+            })
+            .catch((error) => {
+                me.debug.error(error);
+            });
+
+            res.send('OK');
+        });
+        this.app.post('/api/auth/reset/', async function(req, res) {
+            const body = req.body;
+            const email = body.email;
+
+            // Password reset email
+
+            res.send('OK');
         });
     }
 

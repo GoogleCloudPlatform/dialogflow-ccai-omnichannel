@@ -130,6 +130,8 @@ var getSentiment = function(text, callback){
 
     bqRow['USER_UID'] = buf.uid;
     bqRow['USER_COUNTRY'] = buf.country;
+    bqRow['TOOL'] = buf.tool;
+    bqRow['VERTICAL'] = buf.vertical;
 
     // TODO TOPIC_MINING:
     // TODO NPS:

@@ -115,7 +115,6 @@ import { User } from 'actions-on-google/dist/service/actionssdk/conversation/use
          var botResponse;
          try {
              const [response] = await this.sessionClient.detectIntent(request);
-             this.debug.log(response);
              botResponse = this.beautifyResponses(response, input);
          } catch(e) {
              this.debug.error(e);
@@ -135,16 +134,16 @@ import { User } from 'actions-on-google/dist/service/actionssdk/conversation/use
           }
       };
       await this.contextClient.createContext(request);
-      console.log('create context');
-      console.log(request);
     }
 
     async getContext(contextId) {
+      // this.debug.log('------- GET CONTEXT');
       var ctx = await this.contextClient.getContext({
         name: `${this.sessionPath}/contexts/${contextId}`
       });
       var jsonCtx = struct.structProtoToJson(ctx[0].parameters);
-      return jsonCtx;
+      this.debug.log(jsonCtx[Object.keys(jsonCtx)[0]]);
+      return jsonCtx[Object.keys(jsonCtx)[0]];
     }
 
      async beautifyResponses(response: any, input: string, e?: any) {
@@ -164,10 +163,8 @@ import { User } from 'actions-on-google/dist/service/actionssdk/conversation/use
 
          try {
           var ctx = await this.getContext('user');
-          console.log(ctx);
           var uid = 'unknown';
           var country;
-
           if(ctx.user) {
               uid = ctx.user;
           }
@@ -175,8 +172,8 @@ import { User } from 'actions-on-google/dist/service/actionssdk/conversation/use
             country = ctx.userCountry
           }
          } catch(e){
-          console.log(e);
-          console.log('no contexts set');
+          this.debug.log(e);
+          this.debug.log('no contexts set');
          }
 
          if(response && response.queryResult){
@@ -192,6 +189,8 @@ import { User } from 'actions-on-google/dist/service/actionssdk/conversation/use
                  outputAudio: response.outputAudio,
                  responseId: response.responseId,
                  action: response.queryResult.action,
+                 tool: this.config.dialogflow['version'],
+                 vertical: this.config.vertical
              }
              if(response.queryResult.sentimentAnalysisResult && response.queryResult.sentimentAnalysisResult.queryTextSentiment){
               dialogflowResponses['sentiment'] = response.queryResult.sentimentAnalysisResult.queryTextSentiment;
@@ -318,7 +317,7 @@ export class DialogflowV2Beta1Stream extends DialogflowV2Beta1 {
               callSid: msg.start.callSid,
               streamSid: msg.start.streamSid,
               userId: msg.start.customParameters.userId,
-              userCountry: msg.start.customParameters.FromCountry
+              userCountry: msg.start.customParameters.userCountry
             });
           }
           if (msg.event === 'mark') {

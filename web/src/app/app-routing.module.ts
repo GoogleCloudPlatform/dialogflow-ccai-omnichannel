@@ -18,11 +18,16 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { CommonModule } from '@angular/common';
-//import { HomeComponent } from '../home/home.component';
+import { ProfileComponent } from './profile/profile.component';
+import { AuthComponent } from './auth/auth.component';
+import { ChatComponent } from './chat/chat.component';
+
 
 const routes: Routes = [
-  //{ path: 'home', component: HomeComponent},
-  //{ path: '', redirectTo: '/home', pathMatch: 'full' }
+  { path: 'chat', component: ChatComponent},
+  { path: 'profile', component: ProfileComponent},
+  { path: 'login', component: AuthComponent},
+  { path: '', redirectTo: '/chat', pathMatch: 'full' }
 ];
 
 @NgModule({
@@ -35,4 +40,5 @@ const routes: Routes = [
   ],
   declarations: []
 })
-export class RoutingModule { }
+export class RoutingModule {
+}

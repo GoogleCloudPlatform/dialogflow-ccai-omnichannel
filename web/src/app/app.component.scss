@@ -63,3 +63,30 @@
     }
 
   }
+
+.logo {
+  cursor: pointer;
+}
+
+button.green {
+    background: #43a047;
+    color: #fff;
+}
+
+.circle {
+  background-color: #43a047;
+  border-radius: 50%;
+  height: 35px;
+  text-align: center;
+  width: 35px;
+  margin: 10px;
+  cursor: pointer;
+}
+
+.initials {
+  color: #fff;
+  font-size: calc(35px / 2); /* 50% of parent */
+  line-height: 1;
+  position: relative;
+  top: calc(35px / 4); /* 25% of parent */
+}

@@ -100,7 +100,7 @@ export class DialogflowCX extends EventEmitter {
             languageCode: this.config.dialogflow['language_code']
         };
 
-        return this.detectIntent(qInput, eventName);
+        return this.detectIntent(qInput, eventName,{timeZone: 'Europe/Madrid'});
     }
 
     detectIntentAudioStream(stream, lang = this.config.dialogflow['language_code']){
@@ -120,13 +120,17 @@ export class DialogflowCX extends EventEmitter {
     async detectIntent(qInput:QueryInputCX, input?: string, queryParams?: any, contexts?: Array<string>) {
         const request = {
             session: this.sessionPath,
-            queryInput: qInput,
-            queryParams
+            queryInput: qInput
         };
 
-        if (contexts && contexts.length > 0) {
-            request.queryParams.contexts = contexts;
+        if(queryParams) {
+            // if (contexts && contexts.length > 0) {
+            //    request.queryParams.contexts = contexts;
+            // }
+            request['queryParams'] = queryParams;
         }
+
+        console.log(request);
 
         var botResponse;
         try {
@@ -177,7 +181,9 @@ export class DialogflowCX extends EventEmitter {
                 webhookPayloads: response.queryResult.webhookPayloads,
                 webhookStatuses: response.queryResult.webhookStatuses,
                 outputAudio: response.outputAudio,
-                responseId: response.responseId
+                responseId: response.responseId,
+                tool: this.config.dialogflow['version'],
+                vertical: this.config.vertical
             }
 
             if (response.queryResult.transcript) {
@@ -192,12 +198,12 @@ export class DialogflowCX extends EventEmitter {
                 dialogflowResponses['query'] = response.queryResult.text;
             }
 
-            if(response.queryResult.match){
+            if(response.queryResult.match && response.queryResult.match.intent){
                 const intentDetectionObj = {
                     intentDetection: {
                         intent: {
                             displayName: response.queryResult.match.intent.displayName,
-                            name: response.queryResult.intent.match.name,
+                            name: response.queryResult.match.intent.name,
                             priority: response.queryResult.match.intent.priority,
                             trainingPhrases: response.queryResult.match.intent.trainingPhrases,
                             isFallback: response.queryResult.match.intent.isFallback,
@@ -223,7 +229,7 @@ export class DialogflowCX extends EventEmitter {
             botResponse = dialogflowConfig;
         }
 
-        console.log(botResponse);
+        this.debug.log(botResponse);
         return botResponse;
     }
 }
@@ -303,7 +309,7 @@ export class DialogflowCXStream extends DialogflowCX {
                         callSid: msg.start.callSid,
                         streamSid: msg.start.streamSid,
                         userId: msg.start.customParameters.userId,
-                        userCountry: msg.start.customParameters.FromCountry
+                        userCountry: msg.start.customParameters.userCountry
                     });
                 }
                 if (msg.event === 'mark') {

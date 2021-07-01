@@ -25,7 +25,8 @@ import * as $ from 'jquery';
 @Component({
   selector: 'app-chat',
   templateUrl: './chat.component.html',
-  styleUrls: ['./chat.component.scss']
+  styleUrls: ['./chat.component.scss'],
+  providers:  [ WebSocketService ]
 })
 export class ChatComponent implements OnInit {
     server: any;
@@ -39,12 +40,14 @@ export class ChatComponent implements OnInit {
     }
 
     ngOnInit(): void {
+      console.log('on init - chat');
+
       const me = this;
       me.webSocket.connectChat().pipe(
         takeUntil(this.destroyed$)
       ).subscribe(async agentResponse => {
 
-        // console.log(agentResponse);
+        console.log(agentResponse);
 
         if(!agentResponse.error){
           const messages = agentResponse.responseMessages; var i = 0;
@@ -56,7 +59,7 @@ export class ChatComponent implements OnInit {
           console.log(`server error: ${agentResponse.error}`);
         }
       });
-      me.webSocket.sendChat({'web-event' : 'WELCOME-WEB' });
+      me.webSocket.sendChat({'web-event' : 'INIT' });
     }
 
     async task(i: number, m: string){

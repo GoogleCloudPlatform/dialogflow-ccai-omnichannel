@@ -25,11 +25,13 @@
 
         <form #f="ngForm" (ngSubmit)="onSubmit(f)" id="callbox" [hidden]="f.submitted">
             <mat-form-field class="example-full-width" appearance="fill">
-                <mat-label>Name</mat-label>
+                <mat-label><mat-icon aria-hidden="false">contact_phone</mat-icon>
+                    Name</mat-label>
                 <input matInput id="name" ngModel #m="ngModel" name="name" type="text" maxlength="50">
             </mat-form-field> 
             <mat-form-field class="example-full-width" appearance="fill">
-                <mat-label>Phone</mat-label>
+                <mat-label><mat-icon aria-hidden="false">phone</mat-icon>
+                    Phone</mat-label>
                 <input matInput id="phone" ngModel [pattern]="mobNumberPattern" #m="ngModel" name="phone" type="tel" maxlength="15">
             </mat-form-field>
             <button [disabled]="f.invalid" mat-raised-button type="submit">Call now</button>
