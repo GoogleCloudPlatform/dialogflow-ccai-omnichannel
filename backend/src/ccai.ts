@@ -117,7 +117,7 @@ export class ContactCenterAi {
             intentDetection: {
               intent: {
                 parameters: {
-                  actions: 'CALLME'
+                  actions: 'OUTBOUND_SUPPORT'
                 }
               }
             }
@@ -137,7 +137,7 @@ export class ContactCenterAi {
             intentDetection: {
               intent: {
                 parameters: {
-                  actions: 'CALLME'
+                  actions: 'OUTBOUND_SUPPORT'
                 }
               }
             }

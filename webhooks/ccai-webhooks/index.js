@@ -4,7 +4,10 @@ const axios = require('axios');
 
 async function textMsg(user) {
     const path = '/api/sms/';
-    let results = await doRequest(path, user, 'CONFIRMATION');
+    let results = await doRequest(path, user, 'APPOINTMENT_CONFIRMED');
+
+    //event APPOINTMENT_CONFIRMED
+    //timeslot appt_time
     return results;
 }
 

@@ -22,6 +22,7 @@
     "@angular/platform-browser-dynamic": "~11.2.9",
     "@angular/router": "~11.2.9",
     "jquery": "^3.6.0",
+    "ng2-validation-manager": "^0.5.3",
     "recordrtc": "^5.6.2",
     "rxjs": "~6.6.0",
     "rxjs-compat": "^6.6.7",

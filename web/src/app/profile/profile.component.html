@@ -25,40 +25,90 @@
         </mat-card-header>
         <mat-card-content class="profile-content">
 
+            <!---
             <form #f="ngForm" (ngSubmit)="onSubmit(f)" id="profile" [hidden]="f.submitted">
                 <div class="fields">
                     <mat-form-field class="example-full-width">
-                        <mat-label>
-                            <mat-icon aria-hidden="false">perm_identity</mat-icon> Username</mat-label>
+                        <mat-label><mat-icon aria-hidden="false">perm_identity</mat-icon> Username</mat-label>
                         <input ngModel matInput id="username" name="username" type="text" autocomplete="on" required />
                     </mat-form-field>
                     <mat-form-field class="example-full-width" >
                         <mat-label><mat-icon aria-hidden="false">mail</mat-icon> Email address</mat-label>
                         <input ngModel matInput id="email" name="email" type="email" autocomplete="on" required  />
                     </mat-form-field>
+
                     <div ngModelGroup="passwordsGroup">
                         <mat-form-field class="example-full-width">
-                            <mat-label>
-                            <mat-icon aria-hidden="false">lock</mat-icon> Password</mat-label>
-                            <input ngModel matInput [pattern]="passwordMatch" id="password" name="password" type="password" autocomplete="off" required />
+                            <mat-label><mat-icon aria-hidden="false">lock</mat-icon> Password!</mat-label>
+                            <input ngModel matInput [(ngModel)]="password" placeholder="Password" name="password" type="password" autocomplete="off"  pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" required />
+                            {{f.getError('password')}} <mat-error *ngIf="form.hasError('password')">
+                                {{form.getError('password')}}
+                            </mat-error>
                         </mat-form-field>
                         <mat-form-field class="example-full-width">
                             <mat-label><mat-icon aria-hidden="false">lock</mat-icon> Re-type password</mat-label>
-                            <input ngModel matInput id="pconfirm" name="pconfirm" type="password" autocomplete="off" required />
+                            <input ngModel matInput [(ngModel)]="repassword" name="repassword" type="password" placeholder="Confirm Password" autocomplete="off" required  />
+                            <mat-error *ngIf="form.hasError('repassword')">
+                                {{form.getError('repassword')}}
+                            </mat-error>
                         </mat-form-field>
                     </div>
+
                     <mat-form-field class="example-full-width">
                         <mat-label><mat-icon aria-hidden="false">phone</mat-icon> PhoneNr</mat-label>
                         <input matInput id="phoneNr" ngModel [pattern]="mobNumberPattern" #m="ngModel" name="phoneNr" type="tel" maxlength="15" required>
                     </mat-form-field>
-                    <!--<mat-form-field class="example-full-width">
-                        <mat-label><mat-icon aria-hidden="false">insert_photo</mat-icon> Photo</mat-label>
-                        <input matInput id="photo" name="photo" type="photo" autocomplete="off" />
-                    </mat-form-field>-->
-                </div>
-                <button class="green" [disabled]="f.invalid" mat-raised-button type="submit">Save</button>
-            </form>
-            <div class="thanks" [hidden]="!f.submitted">Thank you for registering with us.<br/> You can now <a href="/login">login</a>.</div>
+                -->
+
+                <form [formGroup]="form.getForm()" (ngSubmit)="onSubmit(form.formGroup)">
+                    <mat-form-field class="example-full-width">
+                        <mat-label><mat-icon aria-hidden="false">perm_identity</mat-icon> Username</mat-label>
+                        <input matInput type="text" class="form-control" formControlName="username" placeholder="username" autocomplete="on" required>
+                        <mat-error *ngIf="form.hasError('username')">
+                            {{form.getError('username')}}
+                        </mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field class="example-full-width">
+                      <mat-label><mat-icon aria-hidden="false">mail</mat-icon> Email address</mat-label>
+                      <input matInput type="email" class="form-control" formControlName="email" placeholder="example@gmail.com" autocomplete="on" required>
+                      <mat-error *ngIf="form.hasError('email')">
+                        {{form.getError('email')}}
+                        </mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field class="example-full-width">
+                      <mat-label><mat-icon aria-hidden="false">phone</mat-icon> Phonenumber</mat-label>
+                      <input matInput type="tel" class="form-control" formControlName="phoneNr" placeholder="31612345678" autocomplete="off" required>
+                      <mat-error *ngIf="form.hasError('phoneNr')">
+                        {{form.getError('phoneNr')}}
+                      </mat-error>
+                    </mat-form-field>
+                  
+                    <mat-form-field class="example-full-width">
+                        <mat-label><mat-icon aria-hidden="false">lock</mat-icon> Password</mat-label>
+                      <input matInput type="password" class="form-control" formControlName="password" placeholder="Password" autocomplete="off" required>
+                      <mat-error *ngIf="form.hasError('password')">
+                        {{form.getError('password')}}
+                      </mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field class="example-full-width">
+                      <mat-label><mat-icon aria-hidden="false">lock</mat-icon> Re-type password</mat-label>
+                      <input matInput type="password" class="form-control" formControlName="repassword" placeholder="Confirm Password" autocomplete="off" required>
+                      <mat-error *ngIf="form.hasError('repassword')">
+                        {{form.getError('repassword')}}
+                      </mat-error>
+                    </mat-form-field>
+
+                    <br />
+
+                    <button class="green" [disabled]="form.invalid" mat-raised-button type="submit">Save</button>
+                  </form>
+
+    
+        <div class="thanks" [hidden]="!form.submitted">Thank you for registering with us.<br/> You can now <a href="/login">login</a>.</div>
+        
         </mat-card-content>
     </mat-card>
 

@@ -78,7 +78,7 @@ export class App {
         funnelMap.set(3, 'APPOINTMENT_CONFIRMED');
         funnelMap.set(4, 'SUPPLEMENTAL');
         funnelMap.set(5, 'OVERVIEW');
-        funnelMap.set(6, 'CALLME');
+        funnelMap.set(6, 'OUTBOUND_SUPPORT');
         funnelMap.set(7, 'END');
         return funnelMap.get(step);
     }
@@ -221,8 +221,9 @@ export class App {
                         var e = '';
                         if (eventName === 'INIT') {
                             // TODO set the event name based on the FUNNEL STEP
-                            e = me.getFunnelStep(2);
+                            e = me.getFunnelStep(2); /// flows/714e1bfd-b510-40ea-817d-a6b76029089b/
                         }
+                        console.log(e);
                         dialogflowResponses = await this.web.detectIntentEvent(e, queryParameters);
                         ws.send(JSON.stringify(dialogflowResponses));
                       break;

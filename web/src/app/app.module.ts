@@ -74,7 +74,7 @@ import { ProfileComponent } from './profile/profile.component';
     MicrophoneComponent,
     CallComponent,
     AuthComponent,
-    ProfileComponent,
+    ProfileComponent
   ],
   imports: [
     BrowserModule.withServerTransition({appId: 'front-end'}),
