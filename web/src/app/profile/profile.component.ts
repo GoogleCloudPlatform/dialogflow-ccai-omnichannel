@@ -32,6 +32,7 @@ export class ProfileComponent implements OnInit {
   phoneNr: string;
   email: string;
   password: string;
+  public serverError: string;
 
   form: any;
 
@@ -42,6 +43,7 @@ export class ProfileComponent implements OnInit {
     this.phoneNr =  '';
     this.email = '';
     this.password = '';
+    this.serverError = '';
   }
 
   ngOnInit(): void {
@@ -53,7 +55,6 @@ export class ProfileComponent implements OnInit {
       repassword  : 'required|equalTo:password'
     });
     this.form.setErrorMessage('phoneNr', 'pattern', 'The phonenumber can only contain numbers and needs the country code.');
- 
   }
 
   onSubmit(f: NgForm): void {
@@ -65,8 +66,12 @@ export class ProfileComponent implements OnInit {
 
     this.https.createUser(this.email, this.password, this.username, `+${this.phoneNr}`).pipe().subscribe(data => {
      console.log(data);
-     // TODO don't reset on errors
-     f.reset();
+     if(data.success) {
+      f.reset();
+     } else {
+       if(data.msg && data.msg.message) this.serverError = data.msg.message;
+       console.log(this.serverError);
+     }
     });
 
   }
