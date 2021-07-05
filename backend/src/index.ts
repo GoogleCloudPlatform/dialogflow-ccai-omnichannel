@@ -251,21 +251,37 @@ export class App {
             let agentName = body.agent;
             let displayName = body.context.userInfo.displayName;
 
-            // Log message parameters
-            me.debug.log('conversationId: ' + conversationId);
-            me.debug.log('displayName: ' + displayName);
-
             // Parse the message or suggested response body
             if ((body.message !== undefined
                 && body.message.text !== undefined) || body.suggestionResponse !== undefined) {
                 let text = body.message !== undefined ? body.message.text: body.suggestionResponse.text;
 
+                 // Log message parameters
+                me.debug.log('conversationId: ' + conversationId);
+                me.debug.log('displayName: ' + displayName);
                 me.debug.log('text: ' + text);
 
-                me.businessMessages.handleInboundMessage(text, conversationId);
+                me.businessMessages.handleInboundMessage(text, conversationId, displayName, me.firebase);
             }
 
             res.sendStatus(200);
+        });
+
+        // Twilio Start Routes
+        this.app.get('/api/sms/confirmation/', async function(req, res) {
+            // CAN THE CF POST THESE, THEN WE DONT NEED A SEPERATE URL
+            // We would need to send the UID
+            /*const body = req.body;
+            const query = body.Body;
+            const phoneNr = body.From;
+            const country = body.FromCountry;*/
+
+            const phoneNr = global.profile['my_phone_number'];
+            const query = 'CONFIRMATION';
+
+            await me.ccai.sms(query, phoneNr, function(data){
+                res.json(data);
+            });
         });
 
         this.app.post('/api/sms/', async function(req, res){
