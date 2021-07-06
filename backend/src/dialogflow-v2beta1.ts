@@ -107,6 +107,8 @@ import { User } from 'actions-on-google/dist/service/actionssdk/conversation/use
         }
 
         if (contexts && contexts.length > 0) {
+          console.log('!@13()&()&&()*&)(*)(*(');
+          console.log(contexts);
           contexts.forEach(async function(contextObj) {
             await me.createContext(Object.keys(contextObj)[0], contextObj);
           });
@@ -137,13 +139,13 @@ import { User } from 'actions-on-google/dist/service/actionssdk/conversation/use
     }
 
     async getContext(contextId) {
-      // this.debug.log('------- GET CONTEXT');
+      this.debug.log('------- GET CONTEXT');
       var ctx = await this.contextClient.getContext({
         name: `${this.sessionPath}/contexts/${contextId}`
       });
       var jsonCtx = struct.structProtoToJson(ctx[0].parameters);
-      this.debug.log(jsonCtx[Object.keys(jsonCtx)[0]]);
-      return jsonCtx[Object.keys(jsonCtx)[0]];
+      this.debug.log(jsonCtx[contextId]);
+      return jsonCtx[contextId];
     }
 
      async beautifyResponses(response: any, input: string, e?: any) {
@@ -160,21 +162,20 @@ import { User } from 'actions-on-google/dist/service/actionssdk/conversation/use
              this.debug.error(e);
              dialogflowConfig['error'] = e.message;
          }
-
-         try {
-          var ctx = await this.getContext('user');
           var uid = 'unknown';
-          var country;
-          if(ctx.user) {
-              uid = ctx.user;
+          var country = 'unknown';
+
+          try {
+            uid = await this.getContext('user');
+          }catch(e) {
+            console.log(e);
           }
-          if(ctx.userCountry) {
-            country = ctx.userCountry
+          try {
+            country = await this.getContext('country');
+          }catch(e) {
+            console.log(e);
           }
-         } catch(e){
-          this.debug.log(e);
-          this.debug.log('no contexts set');
-         }
+          console.log(uid, country);
 
          if(response && response.queryResult){
              var dialogflowResponses = {

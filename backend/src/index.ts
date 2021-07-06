@@ -204,17 +204,22 @@ export class App {
                 switch(Object.keys(clientObj)[0]) {
                     case 'web-text-message':
                         var webObjectTextMsg = clientObj['web-text-message'];
-                        var userId = webObjectTextMsg.user;
+                        var userId = clientObj['user'];
+
+                        // TODO can't store userId into context, while I do get it from the web
+                        // TODO I can't receive the event user from the web
 
                         var contexts = [];
                         var queryParameters = {};
                         queryParameters['user'] = userId;
                         contexts.push(queryParameters);
+
                         dialogflowResponses = await this.web.detectIntentText(webObjectTextMsg, contexts);
                         ws.send(JSON.stringify(dialogflowResponses));
                       break;
                     case 'web-event':
                         var eventName = clientObj['web-event'];
+                        console.log(clientObj);
                         var e = '';
                         if (eventName === 'INIT') {
                             // TODO set the event name based on the FUNNEL STEP
