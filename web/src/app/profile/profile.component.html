@@ -101,16 +101,14 @@
                       </mat-error>
                     </mat-form-field>
 
-                    <mat-error *ngIf="serverError != ''">
-                        <p>{{serverError}}</p>
+                    <mat-error *ngIf="serverMsg != '' && serverMsg != 'ok'">
+                        <p>{{serverMsg}}</p>
                     </mat-error>
 
                     <button class="green" [disabled]="!form.isValid()" mat-raised-button type="submit">Save</button>
                   </form>
 
-    TODO clear serverError when form is valid, and show message when msg = true
-    
-        <div class="thanks" [hidden]="form.submitted || form.isValid()">Thank you for registering with us.<br/> You can now <a href="/login">login</a>.</div>
+            <div class="thanks" [hidden]="serverMsg != 'ok'">Thank you for registering with us.<br/> You can now <a href="/login">login</a>.</div>
         
         </mat-card-content>
     </mat-card>
