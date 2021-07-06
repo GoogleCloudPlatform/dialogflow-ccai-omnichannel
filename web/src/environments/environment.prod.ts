@@ -17,5 +17,10 @@
  */
 export const environment = {
   production: true,
-  serverUrl: 'https://www.conv.dev'
+  serverUrl: 'https://www.conv.dev',
+  firebase: {
+    apiKey: 'AIzaSyADr694XNk2hnVrCv5r4ZjQZ5f90LEvdyI',
+    authDomain: 'ccai-360.firebaseapp.com',
+    projectId: 'ccai-360'
+  }
 };

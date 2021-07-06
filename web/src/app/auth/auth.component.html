@@ -13,31 +13,25 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<mat-card class="support-card flex-item">
-    <mat-card-header>
-        <mat-card-title>
-            <span>Login</span>
-        </mat-card-title>
-    </mat-card-header>
-    <mat-card-content class="login-content">
-        <form #f="ngForm" (ngSubmit)="onSubmit(f)" id="login">
-            <div class="fields">
-                <mat-form-field class="example-full-width">
-                    <mat-label><mat-icon aria-hidden="false">mail</mat-icon> Email address</mat-label>
-                    <input matInput id="email" name="email" type="email" autocomplete="on" required />
-                </mat-form-field>
-                <mat-form-field class="example-full-width">
-                    <mat-label>
-                    <mat-icon aria-hidden="false">lock</mat-icon> Password</mat-label>
-                    <input matInput id="password" name="password" type="password" autocomplete="off" required />
-                </mat-form-field>
+
+<div *ngIf="auth.user | async as user; else showLogin">
+    
+    <ul>
+        <li><button mat-raised-button class="green" (click)="logout()">Logout</button></li>
+        <li>
+            <div class="circle" (click)="edit()">
+                <span class="initials">{{ user.displayName?.substr(0,1) }}</span>
             </div>
-            <button mat-raised-button class="green" type="submit">Login</button>
-            <ul>
-                <li><a href="/profile">Register</a></li>
-                <li class="hidden"><a href="/api/auth/reset">Forgot password?</a></li>
-            </ul>
-            
-        </form>
-    </mat-card-content>
-</mat-card>
+        </li>
+    </ul>
+</div>
+<ng-template #showLogin>
+    <ul>
+        <li><button mat-raised-button class="green" (click)="loginGoogle()">Login</button></li>
+        <li><a class="register" href="/profile">Register</a></li>
+    </ul>
+</ng-template>
+
+
+
+

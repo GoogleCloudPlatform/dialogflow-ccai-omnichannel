@@ -190,8 +190,8 @@ export class App {
                 console.log('Socket is closed.');
             };
             ws.on('request', function(request) {
-                console.log('!!!!');
-                console.log(request.resourceURL.query);
+                // console.log('!!!!');
+                // console.log(request.resourceURL.query);
             });
             ws.onerror = function(err) {
                 console.error('Socket encountered error: ', err.message, 'Closing socket');
@@ -203,17 +203,14 @@ export class App {
 
                 switch(Object.keys(clientObj)[0]) {
                     case 'web-text-message':
-                        var text = clientObj['web-text-message'];
-
-                        // TODO get the email when the user is logged in
-                        var user = await me.firebase.getUser({phoneNumber: '+31651536814'});
-                        var userId = user.uid;
+                        var webObjectTextMsg = clientObj['web-text-message'];
+                        var userId = webObjectTextMsg.user;
 
                         var contexts = [];
                         var queryParameters = {};
                         queryParameters['user'] = userId;
                         contexts.push(queryParameters);
-                        dialogflowResponses = await this.web.detectIntentText(text, contexts);
+                        dialogflowResponses = await this.web.detectIntentText(webObjectTextMsg, contexts);
                         ws.send(JSON.stringify(dialogflowResponses));
                       break;
                     case 'web-event':
@@ -261,7 +258,8 @@ export class App {
                 me.debug.log('displayName: ' + displayName);
                 me.debug.log('text: ' + text);
 
-                me.businessMessages.handleInboundMessage(text, conversationId, displayName, me.firebase);
+                // error in ms.firebase should be of type string[]
+                // me.businessMessages.handleInboundMessage(text, conversationId, displayName, me.firebase);
             }
 
             res.sendStatus(200);

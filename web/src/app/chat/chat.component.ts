@@ -20,6 +20,7 @@ import { NgForm } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { WebSocketService } from '../websocket.service';
+import { AngularFireAuth } from '@angular/fire/auth';
 import * as $ from 'jquery';
 
 @Component({
@@ -34,12 +35,13 @@ export class ChatComponent implements OnInit {
     destroyed$ = new Subject();
 
     constructor(
+      public auth: AngularFireAuth,
       private webSocket: WebSocketService
     ) {
       this.messages = [];
     }
 
-    ngOnInit(): void {
+    async ngOnInit() {
       console.log('on init - chat');
 
       const me = this;
@@ -59,7 +61,8 @@ export class ChatComponent implements OnInit {
           console.log(`server error: ${agentResponse.error}`);
         }
       });
-      me.webSocket.sendChat({'web-event' : 'INIT' });
+      const user = await this.auth.currentUser;
+      me.webSocket.sendChat({'web-event' : 'INIT', user: user?.uid });
     }
 
     async task(i: number, m: string){
@@ -87,8 +90,10 @@ export class ChatComponent implements OnInit {
       return new Promise(res => setTimeout(res, ms));
     }
 
-    intentMatching(query: any): void {
-      this.webSocket.sendChat({'web-text-message' : query });
+    async intentMatching(query: any) {
+      const user = await this.auth.currentUser;
+      this.webSocket.sendChat({'web-text-message' : query,
+      user: user?.uid });
       this.messages.push({
         text: query,
         class: 'user balloon'

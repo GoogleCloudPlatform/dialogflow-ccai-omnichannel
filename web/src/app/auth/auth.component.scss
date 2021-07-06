@@ -1,38 +1,59 @@
-$primary: rgba(96, 125, 139);
-$alternative: #29434e;
-
-:host {
-    width: 68%;
-    margin-top: -30px;
-}
-
-mat-card {
-    margin: 12px;
-    padding: 20px;
-    min-width: 280px;
-}
-
-mat-form-field {
-    width: 100%;
-}
-
-mat-card-title {
-    margin: 25px 0;
-}
 
 button.green {
     background: #43a047;
     color: #fff;
 }
 
+.thanks {
+    margin: 20px 0;
+}
+
 .hidden {
     display: none;
 }
 
-ul {
-    float: right;
-
-    li {
-        list-style: none;
-    }
+button.green {
+    background: #43a047;
+    color: #fff;
+    position: absolute;
+    top: -25px;
+    right: 70px;
 }
+
+ul li {
+    display: inline-block;
+    position: relative;
+}
+
+.register {
+    position: absolute;
+    top: -15px;
+    right: 10px;
+    text-decoration: underline; 
+}
+
+.circle {
+  background-color: #43a047;
+  border-radius: 50%;
+  height: 35px;
+  text-align: center;
+  width: 35px;
+  margin: 10px;
+  cursor: pointer;
+  position: absolute;
+  top: -33px;
+  right: 10px;
+}
+
+.initials {
+  color: #fff;
+  font-size: calc(35px / 2); /* 50% of parent */
+  line-height: 1;
+  position: relative;
+  top: calc(35px / 4); /* 25% of parent */
+}
+
+::ng-deep .mat-focused .mat-form-field-underline,
+::ng-deep .mat-focused .mat-form-field-ripple {
+    background-color: #43a047 !important;
+  }

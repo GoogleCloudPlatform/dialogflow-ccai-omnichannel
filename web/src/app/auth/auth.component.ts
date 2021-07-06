@@ -15,31 +15,38 @@
  * limitations under the License.
  * =============================================================================
  */
-import { Component, OnInit } from '@angular/core';
-import { NgForm } from '@angular/forms';
-import { HttpsService } from '../https.service';
-import * as $ from 'jquery';
+ import { Component, AfterViewInit } from '@angular/core';
+ import { HttpsService } from '../https.service';
+ import { AngularFireAuth } from '@angular/fire/auth';
+ import firebase from 'firebase/app';
 
 @Component({
   selector: 'app-auth',
   templateUrl: './auth.component.html',
-  styleUrls: ['./auth.component.scss']
+  styleUrls: ['./auth.component.scss'],
+  providers:  [ HttpsService ]
 })
-export class AuthComponent implements OnInit {
+export class AuthComponent {
 
-  constructor(
-    private httpsService: HttpsService
-  ) { }
-
-  ngOnInit(): void {
+  constructor(public auth: AngularFireAuth) {
   }
 
-  onSubmit(f: NgForm): void {
-    const m = f.value.m;
-    if (m.length > 0) {
-      console.log(m);
-    }
-    f.reset();
+  loginGoogle() {
+    this.auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
+  }
+
+  login() {
+    const email = 'lee.boonstra@gmail.com';
+    const password = 'g00gle12';
+    this.auth.signInWithEmailAndPassword(email, password);
+  }
+
+  edit() {
+    location.href = '/profile';
+  }
+
+  logout() {
+    this.auth.signOut();
   }
 
 }

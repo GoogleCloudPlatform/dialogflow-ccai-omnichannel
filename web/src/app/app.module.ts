@@ -27,6 +27,10 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './auth/tokeninterceptor';
 import { LayoutModule } from '@angular/cdk/layout';
 
+import { AngularFireModule } from '@angular/fire';
+import { AngularFireAuth } from '@angular/fire/auth';
+import { PERSISTENCE } from '@angular/fire/auth';
+
 // Angular Material Components
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatButtonModule} from '@angular/material/button';
@@ -66,6 +70,9 @@ import { MicrophoneComponent } from './chat.microphone/chat.microphone.component
 import { CallComponent } from './call/call.component';
 import { AuthComponent } from './auth/auth.component';
 import { ProfileComponent } from './profile/profile.component';
+import { environment } from '../environments/environment';
+
+import firebase from 'firebase/app';
 
 @NgModule({
   declarations: [
@@ -78,6 +85,7 @@ import { ProfileComponent } from './profile/profile.component';
   ],
   imports: [
     BrowserModule.withServerTransition({appId: 'front-end'}),
+    AngularFireModule.initializeApp(environment.firebase),
     RoutingModule,
     LayoutModule,
 
@@ -123,7 +131,8 @@ import { ProfileComponent } from './profile/profile.component';
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
       multi: true
-    }
+    },
+    { provide: PERSISTENCE, useValue: 'session' },
   ],
   bootstrap: [AppComponent]
 })

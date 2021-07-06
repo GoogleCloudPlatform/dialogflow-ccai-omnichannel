@@ -1,0 +1,11 @@
+{
+  "targets": {
+    "ccai-360": {
+      "hosting": {
+        "ccai360": [
+          "ccai-360"
+        ]
+      }
+    }
+  }
+}

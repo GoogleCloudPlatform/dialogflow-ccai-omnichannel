@@ -15,7 +15,7 @@
  * limitations under the License.
  * =============================================================================
  */
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { WebSocketService } from './websocket.service';
 
 @Component({
