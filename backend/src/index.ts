@@ -263,8 +263,7 @@ export class App {
                 me.debug.log('displayName: ' + displayName);
                 me.debug.log('text: ' + text);
 
-                // error in ms.firebase should be of type string[]
-                // me.businessMessages.handleInboundMessage(text, conversationId, displayName, me.firebase);
+                me.businessMessages.handleInboundMessage(text, conversationId, displayName, me.firebase);
             }
 
             res.sendStatus(200);

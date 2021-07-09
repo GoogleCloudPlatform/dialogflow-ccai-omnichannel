@@ -64,7 +64,7 @@ export class BusinessMessages {
     }
 
     async handleInboundMessage(query: string, conversationId: string, displayName: string,
-        firebase: fb.FirebaseUsers, lang?: string) {
+        firebase: any, lang?: string) {
         let userObject = null;
         let dialogflowResponseObject = null;
 
@@ -98,7 +98,7 @@ export class BusinessMessages {
     }
 
     async handleEmailResponse(conversationId: string, displayName: string,
-        firebase: fb.FirebaseUsers, query: string, lang: string):Promise<any> {
+        firebase: any, query: string, lang: string):Promise<any> {
         // Check query to see if the user provided their email address
         let dialogflowResponseObject = await this.dialogflow.detectIntentText(query, lang);
 
@@ -134,7 +134,7 @@ export class BusinessMessages {
         }
     }
 
-    async getUserFromSnapshot(snapshot:any, firebase:fb.FirebaseUsers):Promise<any> {
+    async getUserFromSnapshot(snapshot:any, firebase:any):Promise<any> {
         let userId = null;
         snapshot.forEach(doc => {
           userId = doc.data().uid;
