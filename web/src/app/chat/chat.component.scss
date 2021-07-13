@@ -6,55 +6,14 @@ $alternative: #29434e;
     margin-top: -30px;
 }
 
+:host ::ng-deep a {
+	color: #fff;
+}
+
 .support-card {
     margin: 12px;
     padding: 22px 12px 12px 12px;
     background: lighten($primary, 52%);  
-}
-
-#chatbox { 
-    margin: 0 auto;
-}
-
-.chatarea{
-    height: 300px;
-    overflow-x: hidden;
-    position: relative;
-}
-
-
-.chatfooter{
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    justify-content: space-between;
-    align-items: flex-end;
-    align-content: stretch;
-}
-
-#chatbox .chatinput {
-    display: block;
-    flex-grow: 0;
-    flex-shrink: 1;
-    flex-basis: auto;
-    align-self: auto;
-    order: 0;
-    width: 80%;
-    mat-form-field {
-        display: block;
-        height: 38px;
-        padding: 5px;
-        margin-right: 10px;
-    }
-}
-#chatbox button { 
-    display: block;
-    flex-grow: 0;
-    flex-shrink: 1;
-    flex-basis: auto;
-    align-self: flex-end;
-    order: 0;
-    width: 20%;
 }
 
 #messages { 
@@ -62,10 +21,6 @@ $alternative: #29434e;
     margin: 0 0 0 30px;
     padding: 0;
     display: block;
-}
-
-:host ::ng-deep a {
-	color: #fff;
 }
 
 :host ::ng-deep .balloon {
@@ -144,15 +99,3 @@ $alternative: #29434e;
 }
 
 #messages li { padding: 5px 10px; }
-
-.ng-valid[required], .ng-valid.required  {
-    border-bottom: 1px solid #0F9D58; /* green */
-}
-
-.ng-invalid:not(form)  {
-    border-bottom: 1px solid #DB4437; /* red */
-}
-
-.systemerrors {
-    color: #a94442;
-}
