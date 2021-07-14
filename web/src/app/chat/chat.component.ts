@@ -15,13 +15,14 @@
  * limitations under the License.
  * =============================================================================
  */
-import { Component, OnInit } from '@angular/core';
+import { Component, AfterContentInit, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { WebSocketService } from '../websocket.service';
 import { AngularFireAuth } from '@angular/fire/auth';
 import * as $ from 'jquery';
+import { FirebaseApp } from '@angular/fire';
 
 @Component({
   selector: 'app-chat',
@@ -29,27 +30,25 @@ import * as $ from 'jquery';
   styleUrls: ['./chat.component.scss'],
   providers:  [ WebSocketService ]
 })
-export class ChatComponent implements OnInit {
+export class ChatComponent implements OnInit, AfterContentInit {
     server: any;
     messages: any;
     destroyed$ = new Subject();
+    authState: any;
 
     constructor(
       public auth: AngularFireAuth,
       private webSocket: WebSocketService
     ) {
       this.messages = [];
+      this.authState = this.auth.authState;
     }
 
     async ngOnInit() {
-      console.log('on init - chat');
-
       const me = this;
       me.webSocket.connectChat().pipe(
         takeUntil(this.destroyed$)
       ).subscribe(async agentResponse => {
-
-        console.log(agentResponse);
 
         if(!agentResponse.error){
           const messages = agentResponse.responseMessages; var i = 0;
@@ -61,8 +60,20 @@ export class ChatComponent implements OnInit {
           console.log(`server error: ${agentResponse.error}`);
         }
       });
-      const user = await this.auth.currentUser;
-      me.webSocket.sendChat({'web-event' : 'INIT', user: user?.uid });
+    }
+
+    async ngAfterContentInit() {
+      const me = this;
+      me.authState.subscribe((user: any) => {
+        if(user){
+          me.webSocket.sendChat({'web-event' : 'INIT', user: user?.uid });
+        } else {
+          me.messages[0] = {
+            text: 'Hi there, in order to help you better, please login.',
+            class: 'agent balloon'
+          };
+        }
+      });
     }
 
     async task(i: number, m: string){
@@ -92,6 +103,7 @@ export class ChatComponent implements OnInit {
 
     async intentMatching(query: any) {
       const user = await this.auth.currentUser;
+      console.log(user);
       this.webSocket.sendChat({'web-text-message' : query,
       user: user?.uid });
       this.messages.push({
