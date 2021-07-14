@@ -74,7 +74,7 @@ import { User } from 'actions-on-google/dist/service/actionssdk/conversation/use
          return this.detectIntent(qInput, query, contexts);
      }
 
-     detectIntentEvent(eventName: string, queryParams?: any) {
+     detectIntentEvent(eventName: string, contexts?: Array<any>) {
          const qInput:QueryInputV2Beta1 = {
              event: {
                  name: eventName,
@@ -82,9 +82,7 @@ import { User } from 'actions-on-google/dist/service/actionssdk/conversation/use
                }
          };
 
-         if(queryParams) qInput.event.parameters = queryParams;
-
-         return this.detectIntent(qInput, eventName);
+         return this.detectIntent(qInput, eventName, contexts);
      }
 
      detectIntentAudioStream(stream:any, lang = this.config.dialogflow['lang_code']){
@@ -107,11 +105,11 @@ import { User } from 'actions-on-google/dist/service/actionssdk/conversation/use
         }
 
         if (contexts && contexts.length > 0) {
-          console.log('!@13()&()&&()*&)(*)(*(');
-          console.log(contexts);
-          contexts.forEach(async function(contextObj) {
-            await me.createContext(Object.keys(contextObj)[0], contextObj);
-          });
+          for (const property in contexts[0]) {
+            var obj = {};
+            obj[property] = contexts[0][property];
+            await me.createContext(property, obj);
+          };
         }
 
          var botResponse;
@@ -122,28 +120,30 @@ import { User } from 'actions-on-google/dist/service/actionssdk/conversation/use
              this.debug.error(e);
              botResponse = this.beautifyResponses(null, input, e);
          }
-         this.debug.log(botResponse);
+         // this.debug.log(botResponse);
          return botResponse;
      }
 
-     async createContext(contextId, parameters, lifespan = 333) {
+     async createContext(contextId, parameters, lifespanCount = 333) {
       const request = {
           parent: this.sessionPath,
           context: {
               name: `${this.sessionPath}/contexts/${contextId}`,
               parameters: struct.jsonToStructProto(parameters),
-              lifespanCount: lifespan
+              lifespanCount
           }
       };
       await this.contextClient.createContext(request);
     }
 
     async getContext(contextId) {
+      console.log(contextId);
       this.debug.log('------- GET CONTEXT');
       var ctx = await this.contextClient.getContext({
         name: `${this.sessionPath}/contexts/${contextId}`
       });
       var jsonCtx = struct.structProtoToJson(ctx[0].parameters);
+      console.log(jsonCtx);
       this.debug.log(jsonCtx[contextId]);
       return jsonCtx[contextId];
     }
@@ -168,14 +168,14 @@ import { User } from 'actions-on-google/dist/service/actionssdk/conversation/use
           try {
             uid = await this.getContext('user');
           }catch(e) {
-            console.log(e);
+            this.debug.log(e);
           }
           try {
             country = await this.getContext('country');
           }catch(e) {
-            console.log(e);
+            this.debug.log(e);
           }
-          console.log(uid, country);
+          this.debug.log(uid, country);
 
          if(response && response.queryResult){
              var dialogflowResponses = {
@@ -236,7 +236,7 @@ import { User } from 'actions-on-google/dist/service/actionssdk/conversation/use
              botResponse = dialogflowConfig;
          }
 
-         this.debug.log(botResponse);
+         // this.debug.log(botResponse);
          return botResponse;
      }
  }

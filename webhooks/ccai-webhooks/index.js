@@ -13,7 +13,12 @@ async function textMsg(user) {
 
 async function call(user) {
     const path = '/api/callme/';
-    let results = await doRequest(path, user, 'CALL ME');
+    var results;
+    if(user){
+        results = await doRequest(path, user, 'CALL ME');
+    } else {
+        console.error('no user, can not call');
+    }
     return results;
 }
 
@@ -31,7 +36,7 @@ async function doRequest(path, user, query){
             }
         }
         resp = axios(options);
-        console.log(resp);
+        // console.log(resp);
     } catch (err) {
         // Handle Error Here
         console.error(err);

@@ -33,6 +33,7 @@ import { FirebaseApp } from '@angular/fire';
 export class ChatComponent implements OnInit, AfterContentInit {
     server: any;
     messages: any;
+    userCountry: string;
     destroyed$ = new Subject();
     authState: any;
 
@@ -42,19 +43,26 @@ export class ChatComponent implements OnInit, AfterContentInit {
     ) {
       this.messages = [];
       this.authState = this.auth.authState;
+      this.userCountry = '';
     }
 
     async ngOnInit() {
       const me = this;
+
+      this.setUserLocation();
+
       me.webSocket.connectChat().pipe(
         takeUntil(this.destroyed$)
       ).subscribe(async agentResponse => {
 
         if(!agentResponse.error){
-          const messages = agentResponse.responseMessages; var i = 0;
+          const messages = agentResponse.responseMessages;
+          var i = 0;
           for(i; i<messages.length; i++) {
-            const m = messages[i].text.text;
-            await this.task(i, m);
+            if(messages[i].text){
+              const m = messages[i].text.text;
+              await this.task(i, m);
+            }
           }
         } else {
           console.log(`server error: ${agentResponse.error}`);
@@ -66,7 +74,10 @@ export class ChatComponent implements OnInit, AfterContentInit {
       const me = this;
       me.authState.subscribe((user: any) => {
         if(user){
-          me.webSocket.sendChat({'web-event' : 'INIT', user: user?.uid });
+          me.webSocket.sendChat({'web-event' : 'INIT',
+          user: user?.uid,
+          country: this.userCountry
+        });
         } else {
           me.messages[0] = {
             text: 'Hi there, in order to help you better, please login.',
@@ -103,9 +114,9 @@ export class ChatComponent implements OnInit, AfterContentInit {
 
     async intentMatching(query: any) {
       const user = await this.auth.currentUser;
-      console.log(user);
       this.webSocket.sendChat({'web-text-message' : query,
-      user: user?.uid });
+      user: user?.uid,
+      country: this.userCountry });
       this.messages.push({
         text: query,
         class: 'user balloon'
@@ -129,5 +140,16 @@ export class ChatComponent implements OnInit, AfterContentInit {
 
     ngOnDestroy() {
       this.destroyed$.next();
+    }
+
+    async setUserLocation() {
+      fetch('https://extreme-ip-lookup.com/json/')
+      .then( res => res.json())
+      .then(response => {
+          this.userCountry = response.country;
+       })
+       .catch(e => {
+        this.userCountry = 'N/A';
+       })
     }
 }
