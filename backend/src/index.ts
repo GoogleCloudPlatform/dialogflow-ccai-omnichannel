@@ -323,8 +323,14 @@ export class App {
                 userRecord = await me.firebase.getUser({uid});
                 me.debug.log(userRecord);
             }
+
             const protocol = req.secure? 'https://' : 'http://';
             const host = protocol + req.hostname;
+
+            console.log('------------callme-now');
+            console.log(userRecord);
+            console.log(userRecord.phoneNumber);
+
             // get param phoneNr required
             if(userRecord && userRecord.phoneNumber){
                 await me.ccai.streamOutbound(userRecord, host, function(data){
