@@ -2,7 +2,7 @@
 
 const axios = require('axios');
 
-async function textMsg(user) {
+async function textMsg(user, country) {
     const path = '/api/sms/';
     let results = await doRequest(path, user, 'APPOINTMENT_CONFIRMED');
 
@@ -11,7 +11,7 @@ async function textMsg(user) {
     return results;
 }
 
-async function call(user) {
+async function call(user, country) {
     const path = '/api/callme/';
     var results;
     if(user){
@@ -22,7 +22,7 @@ async function call(user) {
     return results;
 }
 
-async function doRequest(path, user, query){
+async function doRequest(path, user, country, query){
     console.log(path, user, query);
 
     var resp;
@@ -47,7 +47,7 @@ async function doRequest(path, user, query){
 }
 
 async function handleRequest(map, request, response){
-    let intent, user;  
+    let intent, user, country;  
     if(request.body && request.body.queryResult && request.body.queryResult.intent){
       intent = request.body.queryResult.intent.displayName;
     }
@@ -57,12 +57,15 @@ async function handleRequest(map, request, response){
             if(ctx.name.indexOf('/contexts/user') != -1){
                 user = ctx.parameters.user;
             }
+            if(ctx.name.indexOf('/contexts/country') != -1){
+                country = ctx.parameters.country;
+            }
         });
     }
 
     let results;	
     if (map.has(intent)){
-        results = await map.get(intent)(user);
+        results = await map.get(intent)(user, country);
     } else {
       results = {
           success: false

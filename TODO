@@ -64,9 +64,3 @@ so I can proactively call these users to confirm appointments
 
 5) TOPIC MINING
 * TODO Find a transcript based on a certain topic mined keyword
-
-
-
-// TODO problems with calls beeing repeated.
-// I've been playing with detectIntentEvent so that could cause it
-// Although it looks like the CALL ME webhook fires multiple times

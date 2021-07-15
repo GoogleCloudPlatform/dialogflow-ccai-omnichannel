@@ -201,19 +201,11 @@ export class ContactCenterAi {
 
         // EVENT LISTENERS
 
-        this.dialogflow.on('callStarted', data => {
-          this.debug.log('call started');
+        this.dialogflow.on('callStarted', function(data){
+          var me = this;
+          me.debug.log('call started');
           callSid = data.callSid;
           streamSid = data.streamSid;
-
-          var contexts = [];
-          var queryParameters = {};
-          queryParameters['user'] = data.userId;
-          queryParameters['userCountry'] = data.userCountry;
-          contexts.push(queryParameters);
-          this.debug.log('----------------------- SET CONTEXT');
-          this.debug.log(contexts);
-          this.dialogflow.createContext('user', contexts) // TODO DF ES only
         });
 
         mediaStream.on('data', data => {
@@ -263,7 +255,7 @@ export class ContactCenterAi {
 
         this.dialogflow.on('botResponse', botResponse => {
           botResponse['platform'] = 'phone';
-          this.debug.log('--------------- LOG THE RESPONSE');
+          // this.debug.log('--------------- LOG THE RESPONSE');
           // this.debug.log(botResponse);
           // store first bot response
           if(previousBotResponse === null) previousBotResponse = botResponse;
@@ -272,7 +264,7 @@ export class ContactCenterAi {
           // don't log messages that are the same
           const oldTime = new Date(previousBotResponse.dateTimeStamp).getTime();
           const newTime = new Date(botResponse.dateTimeStamp).getTime();
-          this.debug.log(newTime - oldTime);
+          // this.debug.log(newTime - oldTime);
           if((newTime - oldTime) > 1500){
             this.pubsub.pushToChannel(botResponse);
             previousBotResponse = null;

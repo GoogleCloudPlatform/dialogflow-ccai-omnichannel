@@ -124,7 +124,7 @@ import { User } from 'actions-on-google/dist/service/actionssdk/conversation/use
          return botResponse;
      }
 
-     async createContext(contextId, parameters, lifespanCount = 333) {
+     public async createContext(contextId, parameters, lifespanCount = 333) {
       const request = {
           parent: this.sessionPath,
           context: {
@@ -133,7 +133,8 @@ import { User } from 'actions-on-google/dist/service/actionssdk/conversation/use
               lifespanCount
           }
       };
-      await this.contextClient.createContext(request);
+      console.log(request);
+      return this.contextClient.createContext(request);
     }
 
     async getContext(contextId) {
@@ -143,6 +144,7 @@ import { User } from 'actions-on-google/dist/service/actionssdk/conversation/use
         name: `${this.sessionPath}/contexts/${contextId}`
       });
       var jsonCtx = struct.structProtoToJson(ctx[0].parameters);
+      console.log('!!!! CONTEXT IS:')
       console.log(jsonCtx);
       this.debug.log(jsonCtx[contextId]);
       return jsonCtx[contextId];
@@ -310,7 +312,10 @@ export class DialogflowV2Beta1Stream extends DialogflowV2Beta1 {
           }
         );
 
-        this._requestStreamPassThrough.on('data', (data) => {
+        this._requestStreamPassThrough.on('data', async (data) => {
+          // At the start of the call, we can capture
+          // the call ID, and the USER INFO
+          // We will store this in the DF2 context.
           const msg = JSON.parse(data.toString('utf8'));
           if (msg.event === 'start') {
             this.debug.log(`Captured call ${msg.start.callSid}`);
@@ -320,6 +325,22 @@ export class DialogflowV2Beta1Stream extends DialogflowV2Beta1 {
               userId: msg.start.customParameters.userId,
               userCountry: msg.start.customParameters.userCountry
             });
+
+            // TODO DF2 - Need logic for CX
+            var me = this;
+            me.debug.log('----------------------- SET CONTEXT');
+            var user = {};
+            var country = {};
+            var streamId = {};
+            var callSid = {};
+            user['user'] = msg.start.customParameters.userId;
+            country['country'] = msg.start.customParameters.userCountry;
+            streamId['streamId'] = msg.start.streamSid;
+            callSid['callId'] = msg.start.callSid;
+            var u = await me.createContext('user', user);
+            var c = await me.createContext('country', country);
+            var s = await me.createContext('streamId', streamId);
+            var ci = await me.createContext('callId', callSid);
           }
           if (msg.event === 'mark') {
             this.debug.log(`Mark received ${msg.mark.name}`);
@@ -372,6 +393,7 @@ export class DialogflowV2Beta1Stream extends DialogflowV2Beta1 {
               data.queryResult.intent.parameters.action &&
               data.queryResult.intent.parameters.action === 'HANDOVER'
               ){
+              console.log('!!!!!!! HANDOVER !!!!!!!!');
               botResponse['intentDetection']['isLiveAgent'] = true;
               this.emit('isHandOver', botResponse);
             }
