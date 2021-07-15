@@ -146,7 +146,7 @@ export class ChatComponent implements OnInit, AfterContentInit {
       fetch('https://extreme-ip-lookup.com/json/')
       .then( res => res.json())
       .then(response => {
-          this.userCountry = response.country;
+          this.userCountry = response.countryCode;
        })
        .catch(e => {
         this.userCountry = 'N/A';
