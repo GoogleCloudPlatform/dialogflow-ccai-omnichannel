@@ -316,12 +316,12 @@ export class App {
             console.log(body.FromCountry);
 
             var userRecord;
-            if(body && body.From && body.FromCountry) {
+            if(body && body.From) {
                 // when you start the flow directly by contacting the phonenumber
                 // instead of the web interface
                 userRecord = {};
                 userRecord['phoneNumber'] = body.From;
-                userRecord['displayName'] = body.Name;
+                if(body.Name) userRecord['displayName'] = body.Name;
                 me.debug.log(userRecord);
             } else if(uid){
                 // the web interface has the user.uid stored in the DF conversation
