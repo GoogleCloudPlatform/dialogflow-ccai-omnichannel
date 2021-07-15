@@ -310,6 +310,11 @@ export class App {
             const body = req.body;
             const uid = body.Uid;
 
+            console.log('------------callme-now');
+            console.log(uid);
+            console.log(body.From);
+            console.log(body.FromCountry);
+
             var userRecord;
             if(body && body.From && body.FromCountry) {
                 // when you start the flow directly by contacting the phonenumber
@@ -326,8 +331,6 @@ export class App {
 
             const protocol = req.secure? 'https://' : 'http://';
             const host = protocol + req.hostname;
-
-            console.log('------------callme-now');
             console.log(userRecord);
             console.log(userRecord.phoneNumber);
 
