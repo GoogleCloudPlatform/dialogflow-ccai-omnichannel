@@ -348,8 +348,6 @@ export class ContactCenterAi {
         },
       };
 
-      console.log(options);
-
       // Register the call, this will error if you have not registered with Verified Calls
       // or the userPhoneNumber does not support Verified Calls
       try {
