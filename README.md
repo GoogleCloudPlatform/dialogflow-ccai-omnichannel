@@ -191,6 +191,38 @@ To test an agent,
    - Upload an avatar
 4. For this demo we are integrating an iframe with the preview of the add in the external website interface. In a real world application, this will be provided through an ads platform.
 
+### Verified Calls
+With Verified Calls, you can upgraade a regular phone call from a business to a consumer. When a user receives a call from a business, the user sees who is calling, the logo of the business, that the business has been verified, and the reason for the call. See the [Verified Calls](https://developers.google.com/business-communications/verified-calls/guides/learn) documentation for more information.
+
+#### Before you begin
+
+1.  [Register with Verified Calls](https://developers.google.com/business-communications/verified-calls/guides/set-up/partner).
+
+#### Configure your webhook
+You must specify your webhook URL in order to start receiving messages for the Business Messages agent you create.
+
+1.  Open the [Business Communications Developer Console](https://business-communications.cloud.google.com) and sign in with your Business Messages Google account.
+1.  Click **Account settings**.
+1.  Make sure the correct partner account is selected.
+1.  Enter your **Business Messages webhook URL** as *https://YOUR_WEB_SEVER/api/business-messages* where `YOUR_WEB_SEVER` is the domain where you are hosting the backend of the `dialogflow-ccai-omnichannel` project.
+1.  Click **Save**.
+
+#### Create your Verified Calls agent
+Once you've registered, it's time to create your agent.
+
+1.  Open the [Business Communications Developer Console](https://business-communications.cloud.google.com) and sign in with your Verified Calls Google account.
+1.  Click **Create agent**.
+1.  If you're prompted for **Agent type**, choose **Verified Calls**.
+1.  Enter values for **Brand name**, **Agent name**, and **Agent logo**.
+1.  Click **Next**.
+1.  Enter the phone number of the business.
+1.  Click **Next**.
+1.  Enter the call reasons.
+1.  Click **Next**.
+1.  Enter values for the brand contact, brand website, and yourself.
+1.  Click **Finish setup**.
+
+Once your agent has been verified by Google, when your business makes a call to a user, the user will see the business information. Note that this only works for Android users.
 
 ### Node JS Backend Server
 

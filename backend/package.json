@@ -34,7 +34,8 @@
     "websocket-stream": "^5.5.2",
     "businessmessages": "~1.0.3",
     "google-auth-library": "^7.1.1",
-    "googleapis": "^78.0.0"
+    "googleapis": "^78.0.0",
+    "got": "11.8.2"
   },
   "devDependencies": {
     "@types/cors": "^2.8.10",
