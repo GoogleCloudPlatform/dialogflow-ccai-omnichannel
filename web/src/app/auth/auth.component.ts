@@ -31,22 +31,29 @@ export class AuthComponent {
   constructor(public auth: AngularFireAuth) {
   }
 
-  loginGoogle() {
-    this.auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
+  async loginGoogle() {
+    const signInObj = await this.auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
+    if(signInObj.user) {
+      location.href = '/';
+    }
   }
 
-  login() {
+  async login() {
     const email = 'lee.boonstra@gmail.com';
     const password = 'g00gle12';
-    this.auth.signInWithEmailAndPassword(email, password);
+    const signInObj = await this.auth.signInWithEmailAndPassword(email, password);
+    if(signInObj.user) {
+      location.href = '/';
+    }
   }
 
   edit() {
     location.href = '/profile';
   }
 
-  logout() {
-    this.auth.signOut();
+  async logout() {
+    await this.auth.signOut();
+    location.href = '/';
   }
 
 }

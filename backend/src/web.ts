@@ -74,11 +74,12 @@ export class Web {
     async detectIntentText(query: string, contexts?: Array<any>) {
         const webResponse = await this.dialogflow.detectIntentText(query, contexts);
         webResponse.platform = 'web';
+
         this.pubsub.pushToChannel(webResponse);
         return this.createRichMessages(webResponse);
     }
-    async detectIntentEvent(eventName: string, queryParams?: any) {
-        const webResponse = await this.dialogflow.detectIntentEvent(eventName, queryParams);
+    async detectIntentEvent(eventName: string, contexts?: Array<any>) {
+        const webResponse = await this.dialogflow.detectIntentEvent(eventName, contexts);
         webResponse.platform = 'web';
         this.pubsub.pushToChannel(webResponse);
         return this.createRichMessages(webResponse);

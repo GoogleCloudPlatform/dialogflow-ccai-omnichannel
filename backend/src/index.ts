@@ -199,34 +199,29 @@ export class App {
             };
             ws.on('message', async (msg) => {
                 const clientObj = JSON.parse(msg);
+                const userId = clientObj['user'];
+                const country = clientObj['country'];
                 me.debug.log(msg);
+                const contexts = [];
+                const queryParameters = {};
+                queryParameters['user'] = userId;
+                queryParameters['country'] = country;
+                contexts.push(queryParameters);
 
                 switch(Object.keys(clientObj)[0]) {
                     case 'web-text-message':
                         var webObjectTextMsg = clientObj['web-text-message'];
-                        var userId = clientObj['user'];
-
-                        // TODO can't store userId into context, while I do get it from the web
-                        // TODO I can't receive the event user from the web
-
-                        var contexts = [];
-                        var queryParameters = {};
-                        queryParameters['user'] = userId;
-                        contexts.push(queryParameters);
-
                         dialogflowResponses = await this.web.detectIntentText(webObjectTextMsg, contexts);
                         ws.send(JSON.stringify(dialogflowResponses));
                       break;
                     case 'web-event':
                         var eventName = clientObj['web-event'];
-                        console.log(clientObj);
                         var e = '';
                         if (eventName === 'INIT') {
-                            // TODO set the event name based on the FUNNEL STEP
+                            // Set the event name based on the FUNNEL STEP
                             e = me.getFunnelStep(2); /// flows/714e1bfd-b510-40ea-817d-a6b76029089b/
                         }
-                        console.log(e);
-                        dialogflowResponses = await this.web.detectIntentEvent(e, queryParameters);
+                        dialogflowResponses = await this.web.detectIntentEvent(e, contexts);
                         ws.send(JSON.stringify(dialogflowResponses));
                       break;
                     case 'disconnect':
@@ -315,21 +310,30 @@ export class App {
             const body = req.body;
             const uid = body.Uid;
 
+            console.log('------------callme-now');
+            console.log(uid);
+            console.log(body.From);
+            console.log(body.FromCountry);
+
             var userRecord;
-            if(body && body.From && body.FromCountry) {
+            if(body && body.From) {
                 // when you start the flow directly by contacting the phonenumber
                 // instead of the web interface
                 userRecord = {};
                 userRecord['phoneNumber'] = body.From;
-                userRecord['displayName'] = body.Name;
+                if(body.Name) userRecord['displayName'] = body.Name;
                 me.debug.log(userRecord);
             } else if(uid){
                 // the web interface has the user.uid stored in the DF conversation
                 userRecord = await me.firebase.getUser({uid});
                 me.debug.log(userRecord);
             }
+
             const protocol = req.secure? 'https://' : 'http://';
             const host = protocol + req.hostname;
+            console.log(userRecord);
+            console.log(userRecord.phoneNumber);
+
             // get param phoneNr required
             if(userRecord && userRecord.phoneNumber){
                 await me.ccai.streamOutbound(userRecord, host, function(data){

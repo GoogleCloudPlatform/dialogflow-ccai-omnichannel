@@ -67,3 +67,14 @@
   cursor: pointer;
 }
 
+.ng-valid[required], .ng-valid.required  {
+  border-bottom: 1px solid #0F9D58; /* green */
+}
+
+.ng-invalid:not(form)  {
+  border-bottom: 1px solid #DB4437; /* red */
+}
+
+.systemerrors {
+  color: #a94442;
+}
