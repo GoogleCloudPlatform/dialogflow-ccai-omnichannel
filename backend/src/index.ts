@@ -325,11 +325,7 @@ export class App {
                     var user = await me.firebase.getUser({phoneNumber: body.From });
                     userId = user.uid;
                     userCountry = body.fromCountry;
-                    // TODO remove this log, I am assuming that the first character in the
-                    // phone number is the +.
-                    console.log('---------- TODO remove logs index.ts');
-                    console.log(body.From[0], body.From[1], userCountry);
-                    me.botPhoneRouter(userCountry, body.From[1]);
+                    me.botPhoneRouter(userCountry, body.From[0]);
                 } catch(e){
                     me.debug.error(e);
                 }
@@ -339,9 +335,7 @@ export class App {
                     userId = user.uid;
                     userCountry = body.ToCountry;
 
-                    console.log('---------- TODO remove logs index.ts');
-                    console.log(body.To[0], body.To[1], userCountry);
-                    me.botPhoneRouter(userCountry, body.To[1]);
+                    me.botPhoneRouter(userCountry, body.To[0]);
                 } catch(e){
                     me.debug.error(e);
                 }
