@@ -1,6 +1,5 @@
 ## TODOS
 
-* Build user management for Website
 * Build user management for GA / Account linking
 * Test GA, with logging UID
 
@@ -64,3 +63,15 @@ so I can proactively call these users to confirm appointments
 
 5) TOPIC MINING
 * TODO Find a transcript based on a certain topic mined keyword
+
+
+More suggestions
+
+1) First idea, entity sentiment. (for example low interest rate)
+2) Most frequents intents that the user talks about, (see CCAI Insights)
+3) Topic Modeling in Insights API
+
+Look into the other Insights 
+
+
+

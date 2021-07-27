@@ -90,11 +90,11 @@ export class App {
         // Other users could use the flow on the demo website.
         var me = this;
         this.firebase.createUser({
-            phoneNumber: `+${global.employee['live_agent_phone_number']}`,
-            password: global.employee['live_agent_pass'],
-            displayName: global.employee['live_agent_display_name'],
+            phoneNumber: `+${global.employee['phone_number']}`,
+            password: global.employee['pass'],
+            displayName: global.employee['display_name'],
             disabled: false,
-            email: global.employee['live_agent_email'],
+            email: global.employee['email'],
             emailVerified: true
         }).then((userRecord) => {
             // See the UserRecord reference doc for the contents of userRecord.
@@ -102,21 +102,6 @@ export class App {
         })
         .catch((error) => {
             me.debug.error('employee:');
-            me.debug.error(error);
-        });
-        this.firebase.createUser({
-            phoneNumber: `+${global.profile['my_phone_number']}`,
-            password: global.profile['my_pass'],
-            displayName: global.profile['my_display_name'],
-            disabled: false,
-            email: global.profile['my_email'],
-            emailVerified: true
-        }).then((userRecord) => {
-            // See the UserRecord reference doc for the contents of userRecord.
-            me.debug.log('Successfully created new user:', userRecord.uid);
-        })
-        .catch((error) => {
-            me.debug.error('user:');
             me.debug.error(error);
         });
     }
@@ -157,7 +142,7 @@ export class App {
             res.json({
                 success: true,
                 vertical: global.vertical,
-                twilio: global.twilio['bot_agent_phone_number']
+                twilio: global.employee['phone_number']
             });
         });
         this.app.get('/api/', function(req, res) {
@@ -265,22 +250,6 @@ export class App {
         });
 
         // Twilio Start Routes
-        this.app.get('/api/sms/confirmation/', async function(req, res) {
-            // CAN THE CF POST THESE, THEN WE DONT NEED A SEPERATE URL
-            // We would need to send the UID
-            /*const body = req.body;
-            const query = body.Body;
-            const phoneNr = body.From;
-            const country = body.FromCountry;*/
-
-            const phoneNr = global.profile['my_phone_number'];
-            const query = 'CONFIRMATION';
-
-            await me.ccai.sms(query, phoneNr, function(data){
-                res.json(data);
-            });
-        });
-
         this.app.post('/api/sms/', async function(req, res){
             const body = req.body;
             const query = body.Body;
@@ -299,6 +268,7 @@ export class App {
                 me.debug.log(userRecord);
             }
 
+            me.botPhoneRouter(userRecord['country'], userRecord.phoneNumber[0]);
             if(userRecord){
                 await me.ccai.sms(query, userRecord, function(data){
                     res.json(data);
@@ -321,6 +291,7 @@ export class App {
                 // instead of the web interface
                 userRecord = {};
                 userRecord['phoneNumber'] = body.From;
+                userRecord['country'] = body.FromCountry;
                 if(body.Name) userRecord['displayName'] = body.Name;
                 me.debug.log(userRecord);
             } else if(uid){
@@ -331,11 +302,10 @@ export class App {
 
             const protocol = req.secure? 'https://' : 'http://';
             const host = protocol + req.hostname;
-            console.log(userRecord);
-            console.log(userRecord.phoneNumber);
 
             // get param phoneNr required
             if(userRecord && userRecord.phoneNumber){
+                me.botPhoneRouter(userRecord['country'], userRecord.phoneNumber[0]);
                 await me.ccai.streamOutbound(userRecord, host, function(data){
                     res.json(data);
                 });
@@ -343,16 +313,7 @@ export class App {
                 res.status(500);
             }
         });
-        /*this.app.post('/api/call/transfer/', async function(req, res) {
-            // TODO this should come from a profile
-            const phoneNr = global.profile['my_phone_number'];
-            const protocol = req.secure? 'https://' : 'http://';
-            const host = protocol + req.hostname;
 
-            await me.ccai.streamOutbound(phoneNr, host, function(data){
-                res.json(data);
-            });
-        });*/
         // The endpoint set in the Twilio console
         this.app.post('/api/twiml/', async (req, res) => {
             const body = req.body;
@@ -364,6 +325,11 @@ export class App {
                     var user = await me.firebase.getUser({phoneNumber: body.From });
                     userId = user.uid;
                     userCountry = body.fromCountry;
+                    // TODO remove this log, I am assuming that the first character in the
+                    // phone number is the +.
+                    console.log('---------- TODO remove logs index.ts');
+                    console.log(body.From[0], body.From[1], userCountry);
+                    me.botPhoneRouter(userCountry, body.From[1]);
                 } catch(e){
                     me.debug.error(e);
                 }
@@ -372,6 +338,10 @@ export class App {
                     var user = await me.firebase.getUser({phoneNumber: body.To });
                     userId = user.uid;
                     userCountry = body.ToCountry;
+
+                    console.log('---------- TODO remove logs index.ts');
+                    console.log(body.To[0], body.To[1], userCountry);
+                    me.botPhoneRouter(userCountry, body.To[1]);
                 } catch(e){
                     me.debug.error(e);
                 }
@@ -455,6 +425,20 @@ export class App {
 
             res.send('OK');
         });
+    }
+
+    private botPhoneRouter(userCountry, userCountryCode?): void {
+        // if the end user is located in the US
+        // an US employee (US Twilio number)
+        // should handle the call / SMS
+        // because Twilio blocks international
+        // robocalls for American users
+        // defaults to international employee
+        if(userCountry === 'US' || userCountryCode === '1'){
+            global.bot['phone_number'] = global.bot['bot_phone_number_us'];
+        } else {
+            global.bot['phone_number'] = global.bot['bot_phone_number'];
+        }
     }
 
     private listen(): void {

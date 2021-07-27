@@ -63,7 +63,6 @@ export interface GlobalConfig {
             // normal native volume supported by the specific voice, in the range [-96.0, 16.0].
             voice_name: string, // 'en-US-Standard-H', ////https://cloud.google.com/text-to-speech/docs/voices
             ssml_gender: string // 'SSML_VOICE_GENDER_FEMALE',
-            bot_agent_phone_number: string
         },
         pubsub?: {
             topic_name: string
@@ -72,18 +71,25 @@ export interface GlobalConfig {
             database_name: string
             table_name: string
             columns: string
-        }
-        profile: {
-            my_phone_number?: string,
-            my_email?: string,
-            my_pass?: string,
-            my_display_name?: string,
         },
         employee: {
             live_agent_phone_number?: string,
             live_agent_email?: string,
             live_agent_pass?: string,
             live_agent_display_name?: string
+            live_agent_phone_number_us?: string,
+            live_agent_email_us?: string,
+            live_agent_pass_us?: string,
+            live_agent_display_name_us?: string,
+            phone_number?: string, // active phone number, can be live agent vs. live agent us
+            email?: string,
+            pass?: string,
+            display_name?: string,
+        },
+        bot: {
+            bot_phone_number?: string,
+            bot_phone_number_us?: string,
+            phone_number?: string
         }
     }
     production?: {
@@ -131,22 +137,23 @@ const globalConfig: GlobalConfig = {
             ssml_gender: 'SSML_VOICE_GENDER_FEMALE',
             model: 'phone_call',
             model_variant: 'USE_ENHANCED',
-            bot_agent_phone_number: '.ENV',
         },
         angular: {
             angular_port: 4200
-        },
-        profile: {
-            my_phone_number: '.ENV',
-            my_email: '.ENV',
-            my_pass: '.ENV',
-            my_display_name: '.ENV'
         },
         employee: {
             live_agent_phone_number: '.ENV',
             live_agent_email: '.ENV',
             live_agent_pass: '.ENV',
-            live_agent_display_name: '.ENV'
+            live_agent_display_name: '.ENV',
+            live_agent_phone_number_us: '.ENV',
+            live_agent_email_us: '.ENV',
+            live_agent_pass_us: '.ENV',
+            live_agent_display_name_us: '.ENV'
+        },
+        bot: {
+            bot_phone_number: '.ENV',
+            bot_phone_number_us: '.ENV',
         }
 
     },
@@ -183,14 +190,6 @@ const accountSid = process.env.npm_config_TWILIO_ACCOUNT_SID ||process.env.TWILI
 finalConfig.twilio.account_sid = accountSid;
 const authToken = process.env.npm_config_TWILIO_ACCOUNT_TOKEN ||process.env.TWILIO_ACCOUNT_TOKEN || envConfig.twilio.auth_token;
 finalConfig.twilio.auth_token = authToken;
-const myPhoneNumber = process.env.npm_config_MY_PHONE_NUMBER ||process.env.MY_PHONE_NUMBER || envConfig.profile.my_phone_number;
-finalConfig.profile.my_phone_number = myPhoneNumber;
-const myEmail = process.env.npm_config_MY_EMAIL ||process.env.MY_EMAIL || envConfig.profile.my_email;
-finalConfig.profile.my_email = myEmail;
-const myPass = process.env.npm_config_MY_PASS ||process.env.MY_PASS || envConfig.profile.my_pass;
-finalConfig.profile.my_pass = myPass;
-const myDisplayName = process.env.npm_config_MY_DISPLAY_NAME ||process.env.MY_DISPLAY_NAME || envConfig.profile.my_display_name;
-finalConfig.profile.my_display_name = myDisplayName;
 
 const liveAgentPhoneNumber = process.env.npm_config_LIVE_AGENT_PHONE_NUMBER
 || process.env.LIVE_AGENT_PHONE_NUMBER || envConfig.employee.live_agent_phone_number;
@@ -203,9 +202,36 @@ const liveAgentDisplayName = process.env.npm_config_LIVE_AGENT_DISPLAY_NAME
 || process.env.LIVE_AGENT_DISPLAY_NAME || envConfig.employee.live_agent_display_name;
 finalConfig.employee.live_agent_display_name = liveAgentDisplayName;
 
-const botAgentPhoneNumber = process.env.npm_config_BOT_AGENT_PHONE_NUMBER ||
-    process.env.BOT_AGENT_PHONE_NUMBER || envConfig.twilio.bot_agent_phone_number;
-finalConfig.twilio.bot_agent_phone_number = botAgentPhoneNumber;
+const liveAgentPhoneNumberUS = process.env.npm_config_LIVE_AGENT_PHONE_NUMBER_US
+|| process.env.LIVE_AGENT_PHONE_NUMBER_US || envConfig.employee.live_agent_phone_number_us;
+finalConfig.employee.live_agent_phone_number_us = liveAgentPhoneNumberUS;
+const liveAgentEmailUS = process.env.npm_config_LIVE_AGENT_EMAIL_US || process.env.LIVE_AGENT_EMAIL_US ||
+envConfig.employee.live_agent_email_us;
+finalConfig.employee.live_agent_email_us = liveAgentEmailUS;
+const liveAgentPassUS = process.env.npm_config_LIVE_AGENT_PASS_US || process.env.LIVE_AGENT_PASS_US ||
+ envConfig.employee.live_agent_pass_us;
+finalConfig.employee.live_agent_pass_us = liveAgentPassUS;
+const liveAgentDisplayNameUS = process.env.npm_config_LIVE_AGENT_DISPLAY_NAME_US
+|| process.env.LIVE_AGENT_DISPLAY_NAME_US || envConfig.employee.live_agent_display_name_us;
+finalConfig.employee.live_agent_display_name_us = liveAgentDisplayNameUS;
+
+const botPhoneNumber = process.env.npm_config_BOT_PHONE_NUMBER
+|| process.env.BOT_PHONE_NUMBER || envConfig.bot.bot_phone_number;
+finalConfig.bot.bot_phone_number = botPhoneNumber;
+const botPhoneNumberUS = process.env.npm_config_BOT_PHONE_NUMBER_US
+|| process.env.BOT_PHONE_NUMBER_US || envConfig.bot.bot_phone_number_us;
+finalConfig.bot.bot_phone_number_us = botPhoneNumberUS;
+
+// the active employee will be routed based on location, in index.ts
+// default to international employee
+finalConfig.employee.phone_number = finalConfig.employee.live_agent_phone_number;
+finalConfig.employee.email = finalConfig.employee.live_agent_email;
+finalConfig.employee.pass = finalConfig.employee.live_agent_pass;
+finalConfig.employee.display_name = finalConfig.employee.live_agent_display_name;
+
+// the active employee will be routed based on location, in index.ts
+// default to international employee
+finalConfig.bot.phone_number = finalConfig.bot.bot_phone_number;
 
 finalConfig.debugger = new Debug(finalConfig);
 

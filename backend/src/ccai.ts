@@ -77,7 +77,7 @@ export class ContactCenterAi {
         me.twilio.messages.create(
           {
             to: user.phoneNumber,
-            from: me.config.twilio['bot_agent_phone_number'],
+            from: me.config.bot['phone_number'],
             body: msg
           }).then(function(message){
             botResponse.platform = 'sms';
@@ -99,7 +99,7 @@ export class ContactCenterAi {
           // record: true,
           url: `${host}/api/twiml/`,
           to: user.phoneNumber,
-          from: me.config.twilio['bot_agent_phone_number']
+          from: me.config.bot['phone_number']
         })
         .then(function(call){
           // current time + 2 seconds, so it will be logged right after the web request.
@@ -273,10 +273,10 @@ export class ContactCenterAi {
 
         // TODO THE END OF INTERACTION SHOULD DO SOMETHING SIMILAR BUT IN A CLOUD FUNCTION
         // SEE THE EXAMPLE https://github.com/twilio/media-streams/tree/master/node/dialogflow-integration
-        this.dialogflow.on('isHandOver', () => {
-          const response = new Twilio.twiml.VoiceResponse();
-          return response.dial(this.config.employee['live_agent_phone_number']);
-        });
+        // this.dialogflow.on('isHandOver', () => {
+        //  const response = new Twilio.twiml.VoiceResponse();
+        //  return response.dial(this.config.employee['phone_number']);
+        // });
 
         // TODO
         this.dialogflow.on('endOfInteraction', (queryResult) => {
