@@ -94,6 +94,10 @@ export class ContactCenterAi {
 
     async streamOutbound(user:any, host: string, cb){
       const me = this;
+
+      // Register the call with Verified Calls
+      await this.registerVCall(me.config.twilio['bot_agent_phone_number'], user.phoneNumber);
+
       this.twilio.calls
         .create({
           // record: true,
@@ -313,6 +317,44 @@ export class ContactCenterAi {
           this.debug.log('MediaStream has finished');
           this.dialogflow.finish();
         });
+    }
+
+    async registerVCall(brandPhoneNumber: string, userPhoneNumber: string) {
+      const { GoogleAuth } = require('google-auth-library');
+      const got = require('got');
+
+      let bizCallsAuth = new GoogleAuth({
+        scopes: 'https://www.googleapis.com/auth/cloud-platform',
+      });
+
+      let authClient = await bizCallsAuth.getClient();
+
+      // Initialize auth token
+      await authClient.refreshAccessToken();
+      let accessToken = await authClient.getAccessToken();
+
+      if(userPhoneNumber.charAt(0) !== '+') userPhoneNumber = '+' + userPhoneNumber;
+
+      let options = {
+        method: 'POST',
+        json: {
+            brandNumber: brandPhoneNumber,
+            deviceNumber: userPhoneNumber,
+            callReason: 'Following up on your mortgage inquiry.',
+        },
+        responseType: 'json',
+        headers: {
+            Authorization: 'Bearer ' + accessToken.token,
+        },
+      };
+
+      // Register the call, this will error if you have not registered with Verified Calls
+      // or the userPhoneNumber does not support Verified Calls
+      try {
+        const response = await got('https://businesscalls.googleapis.com/v1:sendVcallVerification', options);
+      } catch(e) {
+        console.log(e);
+      }
     }
 }
 
