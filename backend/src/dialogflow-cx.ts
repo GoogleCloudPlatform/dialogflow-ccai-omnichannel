@@ -17,6 +17,7 @@
  */
 
 import * as df from '@google-cloud/dialogflow-cx';
+// import * as df from '../libs/dialogflow-v3alpha1-nodejs/src/v3alpha1';
 import * as uuid from 'uuid';
 
 import { BotResponse } from './dialogflow-bot-responses';
@@ -53,7 +54,7 @@ export interface QueryInputCX {
 }
 
 export class DialogflowCX extends EventEmitter {
-    public sessionClient: df.SessionsClient | df.v3beta1.SessionsClient;
+    public sessionClient: df.SessionsClient | df.SessionsClient;
     public projectId: string;
     public agentId: string;
     public location: string;

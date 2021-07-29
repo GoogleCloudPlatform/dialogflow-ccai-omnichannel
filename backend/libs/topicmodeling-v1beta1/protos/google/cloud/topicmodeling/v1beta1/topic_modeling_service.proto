@@ -1,0 +1,126 @@
+// Copyright 2019 Google LLC.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
+syntax = "proto3";
+
+package google.cloud.topicmodeling.v1beta1;
+
+import "google/api/annotations.proto";
+import "google/cloud/topicmodeling/v1beta1/conversation.proto";
+import "google/cloud/topicmodeling/v1beta1/model.proto";
+import "google/cloud/topicmodeling/v1beta1/topic.proto";
+import "google/longrunning/operations.proto";
+import "google/protobuf/empty.proto";
+
+option cc_enable_arenas = true;
+option csharp_namespace = "Google.Cloud.Topicmodeling.V1beta1";
+option go_package = "google.golang.org/genproto/googleapis/cloud/topicmodeling/v1beta1;topicmodeling";
+option java_multiple_files = true;
+option java_outer_classname = "TopicModelingServiceProto";
+option java_package = "com.google.cloud.topicmodeling.v1beta1";
+option objc_class_prefix = "GCTM";
+
+
+// Service for performing topic modeling operations.
+service TopicModelingService {
+  // Creates a custom topic model, and returns the long running operation.
+  rpc CreateModel(CreateModelRequest) returns (google.longrunning.Operation) {
+    option (google.api.http) = {
+      post: "/v1beta1/{parent=projects/*/locations/*}/models"
+      body: "model"
+    };
+  }
+
+  // Lists models in the project. The order is unspecified but deterministic.
+  // Newly created models will not necessarily be added tos the end of this
+  // list. Returns NOT_FOUND if the projects does not exist.
+  rpc ListModels(ListModelsRequest) returns (ListModelsResponse) {
+    option (google.api.http) = {
+      get: "/v1beta1/{parent=projects/*/locations/*}/models"
+    };
+  }
+
+  // Gets a model. Returns NOT_FOUND if the model does not exist.
+  rpc GetModel(GetModelRequest) returns (Model) {
+    option (google.api.http) = {
+      get: "/v1beta1/{name=projects/*/locations/*/models/*}"
+    };
+  }
+
+  // Deletes a model, or cancels training if the model isn't created yet.
+  // Returns NOT_FOUND if the model name doesn't exist.
+  rpc DeleteModel(DeleteModelRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/v1beta1/{name=projects/*/locations/*/models/*}"
+    };
+  }
+
+  // Exports topic modeling results by dumping topics metadata and topic
+  // assignment of input data to Google cloud storage location, and returns the
+  // long running operation.
+  rpc ExportModelResults(ExportModelResultsRequest) returns (google.longrunning.Operation) {
+    option (google.api.http) = {
+      post: "/v1beta1/{name=projects/*/locations/*/models/*}:exportResults"
+      body: "*"
+    };
+  }
+
+  // Lists topics in a model.
+  rpc ListTopics(ListTopicsRequest) returns (ListTopicsResponse) {
+    option (google.api.http) = {
+      get: "/v1beta1/{parent=projects/*/locations/*/models/*}/topics"
+    };
+  }
+
+  // Gets a topic. Returns NOT_FOUND if the topic does not exist.
+  rpc GetTopic(GetTopicRequest) returns (Topic) {
+    option (google.api.http) = {
+      get: "/v1beta1/{name=projects/*/locations/*/models/*/topics/*}"
+    };
+  }
+
+  // Updates the description of a topic. Returns NOT_FOUND if the topic does not
+  // exist. If a topic description does not exist, new topic description is set.
+  // Otherwise, existing topic description will be updated.
+  rpc UpdateTopic(UpdateTopicRequest) returns (Topic) {
+    option (google.api.http) = {
+      patch: "/v1beta1/{topic.name=projects/*/locations/*/models/*/topics/*}"
+      body: "topic"
+    };
+  }
+
+  // Lists conversations used in model training.
+  rpc ListConversations(ListConversationsRequest) returns (ListConversationsResponse) {
+    option (google.api.http) = {
+      get: "/v1beta1/{parent=projects/*/locations/*/models/*}/conversations"
+    };
+  }
+
+  // Gets a conversation. Returns NOT_FOUND if the conversation does not exist.
+  rpc GetConversation(GetConversationRequest) returns (Conversation) {
+    option (google.api.http) = {
+      get: "/v1beta1/{name=projects/*/locations/*/models/*/conversations/*}"
+    };
+  }
+
+  // Updates the topic assignment of conversation. Returns NOT_FOUND if the
+  // conversation does not exist.
+  rpc UpdateConversation(UpdateConversationRequest) returns (Conversation) {
+    option (google.api.http) = {
+      patch: "/v1beta1/{conversation.name=projects/*/locations/*/models/*/conversations/*}"
+      body: "conversation"
+    };
+  }
+}

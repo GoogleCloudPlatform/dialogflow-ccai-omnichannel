@@ -1,0 +1,217 @@
+// Copyright 2019 Google LLC.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
+syntax = "proto3";
+
+package google.cloud.topicmodeling.v1beta1;
+
+import "google/protobuf/timestamp.proto";
+import "google/api/annotations.proto";
+
+option cc_enable_arenas = true;
+option csharp_namespace = "Google.Cloud.Topicmodeling.V1beta1";
+option go_package = "google.golang.org/genproto/googleapis/cloud/topicmodeling/v1beta1;topicmodeling";
+option java_multiple_files = true;
+option java_outer_classname = "ModelProto";
+option java_package = "com.google.cloud.topicmodeling.v1beta1";
+option objc_class_prefix = "GCTM";
+
+
+// Cloud Storage location for the input content.
+message GcsSource {
+  // Cloud Storage paths to files e.g., gs://my_bucket//agent*.flv.
+  // Wildcards are allowed and will be expanded into all matched files. File
+  // format is determined based on file name extensions. API returns
+  // [google.rpc.Code.INVALID_ARGUMENT] for unsupported URI-s and file formats.
+  repeated string uris = 1;
+}
+
+// InputConfig contains a set of files in Cloud Storage for model
+// training.
+message InputConfig {
+  // The input content types enum.
+  enum Type {
+    // The content type is not specified.
+    TYPE_UNSPECIFIED = 0;
+
+    // Text data.
+    TEXT = 2;
+  }
+
+  // Name of this input config. Can be used when summarizing model performance.
+  string name = 1;
+
+  // Cloud Storage location where input content is located.
+  GcsSource gcs_source = 2;
+
+  // Required. If the type is not set or is `TYPE_UNSPECIFIED`,
+  // returns an `INVALID_ARGUMENT` error.
+  Type type = 3;
+}
+
+// Cloud Storage location for the output content.
+message GcsDestination {
+  // URI for a Cloud Storage directory where final topic modeling results
+  // like topics and topic assignment for input data items, and other meta
+  // information should be written to (e.g.,
+  // "gs://bucket_id/path/to/destination/dir"). If there is no trailing slash,
+  // the service will append one when composing the object path.
+  string uri_prefix = 1;
+}
+
+// OutputConfig contains Cloud Storage location for output content.
+message OutputConfig {
+  // Cloud Storage location where the outputs are written to.
+  GcsDestination gcs_destination = 1;
+}
+
+// Flags used for model training.
+message ModelTrainingFlags {
+  // Required. The number of topics will be generated in the model training.
+  // This is input argument of model training.
+  int64 desired_topic_count = 1;
+}
+
+// Represents a model trained on user supplied data.
+message Model {
+  // Required. The resource name of the model. Model names have the form
+  // `projects/{project_id}/locations/{location_id}/models/{model_id}`.
+  string name = 1;
+
+  // Required. Provides training data location.
+  InputConfig training_input_config = 2;
+
+  // Required. Used to specify the number of topics to be discovered during
+  // model training.
+  ModelTrainingFlags model_training_flags = 3;
+
+  // Output only. Time CreateModel was called.
+  google.protobuf.Timestamp create_time = 4;
+
+  // Output only. When the topic modeling pipeline was started.
+  google.protobuf.Timestamp processing_start_time = 5;
+
+  // Output only. When the topic modeling pipeline was finished.
+  google.protobuf.Timestamp processing_end_time = 6;
+}
+
+// Stored in the LRO.metadata field returned by CreateModel.
+message ModelCreationOperationMetadata {
+  // The current state of the training operation.
+  State state = 1;
+
+  // The time when the batch request was submitted to the server.
+  google.protobuf.Timestamp start_time = 2;
+
+  // The time when the batch request is finished and
+  // [google.longrunning.Operation.done][google.longrunning.Operation.done] is set to true.
+  google.protobuf.Timestamp end_time = 3;
+
+  // Progress of operation. Range: [0, 100].
+  float progress_percent = 4;
+}
+
+// Enumerates the possible states that the creation request can be in.
+enum State {
+  // Invalid.
+  STATE_UNSPECIFIED = 0;
+
+  // Request is submitted, but initialization or training is not started yet.
+  // May remain in this state until there is enough capacity to start
+  // training.
+  SUBMITTED = 1;
+
+  // Request is being prepared for distributed processing.
+  INITIALIZING = 2;
+
+  // Custom model is training.
+  TRAINING = 3;
+
+  // Model is in the process of being deleted (or cancelled if creation did
+  // not complete). This is the expected state immediately after the user
+  // called DeleteModel on the model name.
+  DELETING = 4;
+
+  // The model has been created.
+  SUCCEEDED = 5;
+
+  // The model could not be created.
+  FAILED = 6;
+
+  // Deleted.
+  DELETED = 7;
+}
+
+// Request message for CreateModel.
+message CreateModelRequest {
+  // Required. Project names have the form
+  // `projects/{project_id}/locations/{location_id}`.
+  string parent = 1;
+
+  // The model to create.
+  Model model = 2;
+}
+
+// Request message for ListModels.
+message ListModelsRequest {
+  // The name of the project whose models we'd like to list. Project names
+  // have the form `projects/{project_id}/locations/{location_id}`.
+  string parent = 1;
+
+  // Requested page size. Server may return fewer models than requested.
+  // If unspecified, server will pick an appropriate default.
+  int32 page_size = 2;
+
+  // A token identifying a page of results the server should return. Typically,
+  // this is the value of [ListModelsResponse.next_page_token] returned from the
+  // previous call to `ListModels` method.
+  string page_token = 3;
+}
+
+// Response message for ListModels.
+message ListModelsResponse {
+  // The list of models.
+  repeated Model models = 1;
+
+  // A token to retrieve next page of results. Pass this value in the
+  // [ListModelsRequest.page_token] field in the subsequent call to `ListModels`
+  // method to retrieve the next page of results.
+  string next_page_token = 2;
+}
+
+// Request message for GetModel.
+message GetModelRequest {
+  // The name of the model to retrieve. Model names have the form
+  // `projects/{project_id}/locations/{location_id}/models/{model_id}`.
+  string name = 1;
+}
+
+// Request message for DeleteModel. All output data associated with model are
+// deleted as well.
+message DeleteModelRequest {
+  // The name of the model to delete. Model names have the form
+  // `projects/{project_id}/locations/{location_id}/models/{model_id}`.
+  string name = 1;
+}
+
+// Request message for ExportModelingResults.
+message ExportModelResultsRequest {
+  // The name of the model to export resulting data. Model names have the
+  // form `projects/{project_id}/locations/{location_id}/models/{model_id}`.
+  string name = 1;
+
+  // Required. Provides output location.
+  OutputConfig output_config = 2;
+}

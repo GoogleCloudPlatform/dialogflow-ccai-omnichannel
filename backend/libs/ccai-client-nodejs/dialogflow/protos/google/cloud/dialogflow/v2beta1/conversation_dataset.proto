@@ -1,0 +1,591 @@
+// Copyright 2021 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+
+package google.cloud.dialogflow.v2beta1;
+
+import "google/api/annotations.proto";
+import "google/api/client.proto";
+import "google/api/field_behavior.proto";
+import "google/api/resource.proto";
+import "google/cloud/dialogflow/v2beta1/conversation_profile.proto";
+import "google/cloud/dialogflow/v2beta1/gcs.proto";
+import "google/cloud/dialogflow/v2beta1/human_agent_assistant.proto";
+import "google/longrunning/operations.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
+import "google/rpc/status.proto";
+
+option cc_enable_arenas = true;
+option csharp_namespace = "Google.Cloud.Dialogflow.V2beta1";
+option go_package = "google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1;dialogflow";
+option java_multiple_files = true;
+option java_outer_classname = "ConversationDatasetProto";
+option java_package = "com.google.cloud.dialogflow.v2beta1";
+option objc_class_prefix = "DF";
+
+// Conversation datasets.
+//
+// Conversation datasets contain raw conversation files along with their
+// customizable metadata that can be used to train custom human agent assistant
+// models, evaluate models in regression tests and other stuff.
+service ConversationDatasets {
+  option (google.api.default_host) = "dialogflow.googleapis.com";
+  option (google.api.oauth_scopes) =
+      "https://www.googleapis.com/auth/cloud-platform,"
+      "https://www.googleapis.com/auth/dialogflow";
+
+  // Creates a new conversation dataset.
+  rpc CreateConversationDataset(CreateConversationDatasetRequest)
+      returns (google.longrunning.Operation) {
+    option (google.api.http) = {
+      post: "/v2beta1/{parent=projects/*/locations/*}/conversationDatasets"
+      body: "conversation_dataset"
+    };
+    option (google.api.method_signature) = "parent,conversation_dataset";
+    option (google.longrunning.operation_info) = {
+      response_type: "ConversationDataset"
+      metadata_type: "CreateConversationDatasetOperationMetadata"
+    };
+  }
+
+  // Retrieves the specified conversation dataset.
+  rpc GetConversationDataset(GetConversationDatasetRequest)
+      returns (ConversationDataset) {
+    option (google.api.http) = {
+      get: "/v2beta1/{name=projects/*/conversationDatasets/*}"
+      additional_bindings {
+        get: "/v2beta1/{name=projects/*/locations/*/conversationDatasets/*}"
+      }
+    };
+    option (google.api.method_signature) = "name";
+  }
+
+  // Returns the list of all conversation datasets in the specified
+  // project.
+  rpc ListConversationDatasets(ListConversationDatasetsRequest)
+      returns (ListConversationDatasetsResponse) {
+    option (google.api.http) = {
+      get: "/v2beta1/{parent=projects/*}/conversationDatasets"
+      additional_bindings {
+        get: "/v2beta1/{parent=projects/*/locations/*}/conversationDatasets"
+      }
+    };
+  }
+
+  // Deletes the specified conversation dataset and all annotated conversation
+  // datasets that belong to it.
+  rpc DeleteConversationDataset(DeleteConversationDatasetRequest)
+      returns (google.longrunning.Operation) {
+    option (google.api.http) = {
+      delete: "/v2beta1/{name=projects/*/locations/*/conversationDatasets/*}"
+    };
+    option (google.api.method_signature) = "name";
+    option (google.longrunning.operation_info) = {
+      response_type: "google.protobuf.Empty"
+      metadata_type: "DeleteConversationDatasetOperationMetadata"
+    };
+  }
+
+  // Retrieves the specified annotated conversation dataset.
+  rpc GetAnnotatedConversationDataset(GetAnnotatedConversationDatasetRequest)
+      returns (AnnotatedConversationDataset) {
+    option (google.api.http) = {
+      get: "/v2beta1/{name=projects/*/conversationDatasets/*/annotatedConversationDatasets/*}"
+      additional_bindings {
+        get: "/v2beta1/{name=projects/*/locations/*/conversationDatasets/*/annotatedConversationDatasets/*}"
+      }
+    };
+    option (google.api.method_signature) = "name";
+  }
+
+  // Returns the list of all annotated conversation datasets that
+  // belong to a given conversation dataset.
+  rpc ListAnnotatedConversationDatasets(
+      ListAnnotatedConversationDatasetsRequest)
+      returns (ListAnnotatedConversationDatasetsResponse) {
+    option (google.api.http) = {
+      get: "/v2beta1/{parent=projects/*/conversationDatasets/*}/annotatedConversationDatasets"
+      additional_bindings {
+        get: "/v2beta1/{parent=projects/*/locations/*/conversationDatasets/*}/annotatedConversationDatasets"
+      }
+    };
+  }
+
+  // Deletes the specified annotated conversation dataset and annotations that
+  // belongs to it.
+  rpc DeleteAnnotatedConversationDataset(
+      DeleteAnnotatedConversationDatasetRequest)
+      returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/v2beta1/{name=projects/*/conversationDatasets/*/annotatedConversationDatasets/*}"
+      additional_bindings {
+        delete: "/v2beta1/{name=projects/*/locations/*/conversationDatasets/*/annotatedConversationDatasets/*}"
+      }
+    };
+    option (google.api.method_signature) = "name";
+  }
+
+  // Import data into the specified conversation dataset. Note that it
+  // is not allowed to import data to a conversation dataset that
+  // already has data in it.
+  //
+  // Operation <response:
+  // [ImportConversationDataOperationResponse][google.cloud.dialogflow.v2beta1.ImportConversationDataOperationResponse],
+  //            metadata:
+  //            [ImportConversationDataOperationMetadata][google.cloud.dialogflow.v2beta1.ImportConversationDataOperationMetadata]>
+  rpc ImportConversationData(ImportConversationDataRequest)
+      returns (google.longrunning.Operation) {
+    option (google.api.http) = {
+      post: "/v2beta1/{name=projects/*/conversationDatasets/*}:importConversationData"
+      body: "*"
+      additional_bindings {
+        post: "/v2beta1/{name=projects/*/locations/*/conversationDatasets/*}:importConversationData"
+        body: "*"
+      }
+    };
+    option (google.longrunning.operation_info) = {
+      response_type: "ImportConversationDataOperationResponse"
+      metadata_type: "ImportConversationDataOperationMetadata"
+    };
+  }
+
+  // Creates and starts a conversation dataset annotation task.
+  //
+  // Operation <response:
+  // [LabelConversationResponse][google.cloud.dialogflow.v2beta1.LabelConversationResponse],
+  //            metadata:
+  //            [LabelConversationOperationMetadata][google.cloud.dialogflow.v2beta1.LabelConversationOperationMetadata]>
+  rpc LabelConversation(LabelConversationRequest)
+      returns (google.longrunning.Operation) {
+    option (google.api.http) = {
+      post: "/v2beta1/{parent=projects/*/conversationDatasets/*}:labelConversation"
+      body: "*"
+      additional_bindings {
+        post: "/v2beta1/{parent=projects/*/locations/*/conversationDatasets/*}:labelConversation"
+        body: "*"
+      }
+    };
+    option (google.longrunning.operation_info) = {
+      response_type: "LabelConversationResponse"
+      metadata_type: "LabelConversationOperationMetadata"
+    };
+  }
+}
+
+// Represents metadata of a conversation.
+message ConversationInfo {
+  // Optional. The language code of the conversation. See
+  // https://cloud.google.com/apis/design/standard_fields
+  string language_code = 1 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. The region code of the conversation. See
+  // https://cloud.google.com/apis/design/standard_fields
+  string region_code = 2 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. The timestamp that user sets to represent what time range this
+  // dataset belongs to.
+  google.protobuf.Timestamp conversation_start_time = 3
+      [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. The field reserved for customers to provide their customized
+  // metadata. For example, agent id, contact center id, and topic tag, etc.
+  // These metadata will be used for filtering conversation dataset.
+  google.protobuf.Struct custom_fields = 4
+      [(google.api.field_behavior) = OPTIONAL];
+}
+
+// Represents the configuration of importing a set of conversation files in
+// Google Cloud Storage.
+message InputConfig {
+  // Required. Where the data is from.
+  oneof source {
+    // The Cloud Storage URI has the form gs://my_bucket//agent*.json. Wildcards
+    // are allowed and will be expanded into all matched files.
+    GcsSources gcs_source = 1;
+  }
+}
+
+// Represents a conversation dataset that a user imports raw data into.
+// The data inside ConversationDataset
+// can not be changed after ImportConversationData finishes (and calling
+// ImportConversationData on a dataset that already has data is
+// not allowed).
+message ConversationDataset {
+  option (google.api.resource) = {
+    type: "dialogflow.googleapis.com/ConversationDataset"
+    pattern: "projects/{project}/conversationDatasets/{conversation_dataset}"
+    pattern: "projects/{project}/locations/{location}/conversationDatasets/{conversation_dataset}"
+  };
+
+  // Output only. ConversationDataset resource name. Format:
+  // `projects/<Project ID>/conversationDatasets/<Conversation Dataset ID>`
+  string name = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Required. The display name of the dataset. Maximum of 64 bytes.
+  string display_name = 2 [(google.api.field_behavior) = REQUIRED];
+
+  // Optional. The description of the dataset. Maximum of 10000 bytes.
+  string description = 3 [(google.api.field_behavior) = OPTIONAL];
+
+  // Output only. Creation time of this dataset.
+  google.protobuf.Timestamp create_time = 4
+      [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Output only. Input configurations set during conversation data import.
+  InputConfig input_config = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Output only. Metadata set during conversation data import.
+  ConversationInfo conversation_info = 6
+      [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Output only. The number of conversations this conversation dataset
+  // contains.
+  int64 conversation_count = 7 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// Represents an annotated conversation dataset.
+// ConversationDataset can have multiple AnnotatedConversationDataset, each of
+// them represents one result from one annotation task.
+// AnnotatedConversationDataset can only be generated from annotation task,
+// which will be triggered by LabelConversation.
+message AnnotatedConversationDataset {
+  option (google.api.resource) = {
+    type: "dialogflow.googleapis.com/AnnotatedConversationDataset"
+    pattern: "projects/{project}/conversationDatasets/{conversation_dataset}/annotatedConversationDatasets/{annotated_conversation_dataset}"
+    pattern: "projects/{project}/locations/{location}/conversationDatasets/{conversation_dataset}/annotatedConversationDatasets/{annotated_conversation_dataset}"
+  };
+
+  // Output only. AnnotatedConversationDataset resource name. Format:
+  // `projects/<Project ID>/conversationDatasets/<Conversation Dataset
+  // ID>/annotatedConversationDatasets/<Annotated Conversation Dataset ID>`
+  string name = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Required. The display name of the annotated conversation dataset.
+  // It's specified when user starts an annotation task. Maximum of 64 bytes.
+  string display_name = 2 [(google.api.field_behavior) = REQUIRED];
+
+  // Optional. The description of the annotated conversation dataset.
+  // Maximum of 10000 bytes.
+  string description = 3 [(google.api.field_behavior) = OPTIONAL];
+
+  // Output only. Creation time of this annotated conversation dataset.
+  google.protobuf.Timestamp create_time = 4
+      [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Output only. Number of examples in the annotated conversation dataset.
+  int64 example_count = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Output only. Number of examples that have annotations in the annotated
+  // conversation dataset.
+  int64 completed_example_count = 6 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Output only. Question type name that identifies a labeling task.
+  // A question is a single task that a worker answers. A question type is set
+  // of related questions. Each question belongs to a particular question type.
+  // It can be used in CrowdCompute UI to filter and manage labeling tasks.
+  string question_type_name = 7 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// Represents an annotation task config.
+message AnnotationTaskConfig {
+  // Required. The display name of the conversation annotation task.
+  // It's specified when user starts an annotation task. Maximum of 64 bytes.
+  string display_name = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // Optional. The description of the conversation annotation task.
+  // Maximum of 10000 bytes.
+  string description = 2 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. HTTP URI containing instructions for the annotation.
+  string instruction_uri = 3 [(google.api.field_behavior) = OPTIONAL];
+
+  // Required. Replications used for annotation, which means how many raters a
+  // question may be sent to for final decision.
+  int32 replica_count = 4 [(google.api.field_behavior) = REQUIRED];
+
+  // Optional. List of G Suite accounts for annotators. The format should be
+  // an Email.
+  repeated string annotator_accounts = 5
+      [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. Email of the user who should be notified by email when events
+  // occur, such as the creation of a labeling Task, the occurrence of errors
+  // during the human labeling process, or the completion of a labeling task. If
+  // empty no notification will be sent.
+  string user_email_address = 7 [(google.api.field_behavior) = OPTIONAL];
+
+  // Required. Configuration for preprocessing on the dataset before annotation.
+  oneof preprocess_config {
+    // Deprecated. Specifies where and how to get default conversation
+    // suggestions that will be annotated.
+    ArticleSuggestionConfig article_suggestion_config = 6 [deprecated = true];
+
+    // Specifies the source of knowledge base to get articles from.
+    HumanAgentAssistantConfig.SuggestionQueryConfig.KnowledgeBaseQuerySource
+        knowledge_base_query_source = 8;
+  }
+}
+
+// The request message for
+// [ConversationDatasets.CreateConversationDataset][google.cloud.dialogflow.v2beta1.ConversationDatasets.CreateConversationDataset].
+message CreateConversationDatasetRequest {
+  // Required. The project to create conversation dataset for. Format:
+  // `projects/<Project ID>`
+  string parent = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // Required. The conversation dataset to create.
+  ConversationDataset conversation_dataset = 2
+      [(google.api.field_behavior) = REQUIRED];
+}
+
+// The request message for
+// [ConversationDatasets.GetConversationDataset][google.cloud.dialogflow.v2beta1.ConversationDatasets.GetConversationDataset].
+message GetConversationDatasetRequest {
+  // Required. The conversation dataset to retrieve. Format:
+  // `projects/<Project ID>/conversationDatasets/<Conversation Dataset ID>`
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {
+      type: "dialogflow.googleapis.com/ConversationDataset"
+    }
+  ];
+}
+
+// The request message for
+// [ConversationDatasets.ListConversationDatasets][google.cloud.dialogflow.v2beta1.ConversationDatasets.ListConversationDatasets].
+message ListConversationDatasetsRequest {
+  // Required. The project to list all conversation datasets for.
+  // Format: `projects/<Project ID>`
+  string parent = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {
+      child_type: "dialogflow.googleapis.com/ConversationDataset"
+    }
+  ];
+
+  // Optional. Maximum number of conversation datasets to return in a single
+  // page. By default 100 and at most 1000.
+  int32 page_size = 2 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. The next_page_token value returned from a previous list request.
+  string page_token = 3 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// The response message for
+// [ConversationDatasets.ListConversationDatasets][google.cloud.dialogflow.v2beta1.ConversationDatasets.ListConversationDatasets].
+message ListConversationDatasetsResponse {
+  // The list of datasets to return.
+  repeated ConversationDataset conversation_datasets = 1;
+
+  // Token to retrieve the next page of results, or empty if there are no more
+  // results in the list.
+  string next_page_token = 2;
+}
+
+// The request message for
+// [ConversationDatasets.DeleteConversationDataset][google.cloud.dialogflow.v2beta1.ConversationDatasets.DeleteConversationDataset].
+message DeleteConversationDatasetRequest {
+  // Optional. The conversation dataset to delete. Format:
+  // `projects/<Project ID>/conversationDatasets/<Conversation Dataset ID>`
+  string name = 1 [
+    (google.api.field_behavior) = OPTIONAL,
+    (google.api.resource_reference) = {
+      type: "dialogflow.googleapis.com/ConversationDataset"
+    }
+  ];
+}
+
+// The request message for
+// [ConversationDatasets.GetAnnotatedConversationDataset][google.cloud.dialogflow.v2beta1.ConversationDatasets.GetAnnotatedConversationDataset].
+message GetAnnotatedConversationDatasetRequest {
+  // Required. The annotated conversation dataset to retrieve. Format:
+  // `projects/<Project ID>/conversationDatasets/<Conversation Dataset
+  // ID>/annotatedConversationDatasets/<Annotated Conversation Dataset ID>`
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {
+      type: "dialogflow.googleapis.com/AnnotatedConversationDataset"
+    }
+  ];
+}
+
+// The request message for
+// [ConversationDatasets.ListAnnotatedConversationDatasets][google.cloud.dialogflow.v2beta1.ConversationDatasets.ListAnnotatedConversationDatasets].
+message ListAnnotatedConversationDatasetsRequest {
+  // Required. The conversation dataset to list all annotated conversation
+  // datasets for. Format: `projects/<Project
+  // ID>/conversationDatasets/<Conversation Dataset ID>`
+  string parent = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {
+      type: "dialogflow.googleapis.com/ConversationDataset"
+    }
+  ];
+
+  // Optional. The maximum number of items to return in a single page. By
+  // default 100 and at most 1000.
+  int32 page_size = 2 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. The next_page_token value returned from a previous list request.
+  string page_token = 3 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// The request message for
+// [ConversationDatasets.DeleteAnnotatedConversationDataset][google.cloud.dialogflow.v2beta1.ConversationDatasets.DeleteAnnotatedConversationDataset].
+message DeleteAnnotatedConversationDatasetRequest {
+  // Required. The annotated conversation dataset to delete. Format:
+  // `projects/<Project ID>/conversationDatasets/<Conversation Dataset
+  // ID>/annotatedConversationDatasets/<Annotated Conversation Dataset ID>`
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {
+      type: "dialogflow.googleapis.com/AnnotatedConversationDataset"
+    }
+  ];
+}
+
+// The response message for
+// [ConversationDatasets.ListAnnotatedConversationDatasets][google.cloud.dialogflow.v2beta1.ConversationDatasets.ListAnnotatedConversationDatasets].
+message ListAnnotatedConversationDatasetsResponse {
+  // The list of annotated conversation datasets to return.
+  repeated AnnotatedConversationDataset annotated_conversation_datasets = 1;
+
+  // Token to retrieve the next page of results, or empty if there are no more
+  // results in the list.
+  string next_page_token = 2;
+}
+
+// The request message for
+// [ConversationDatasets.ImportConversationData][google.cloud.dialogflow.v2beta1.ConversationDatasets.ImportConversationData].
+message ImportConversationDataRequest {
+  // Required. Dataset resource name. Format:
+  // `projects/<Project ID>/conversationDatasets/<Conversation Dataset ID>`
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {
+      type: "dialogflow.googleapis.com/ConversationDataset"
+    }
+  ];
+
+  // Required. Configurations that contains information of raw file location,
+  // raw file type, etc.
+  InputConfig input_config = 2 [(google.api.field_behavior) = REQUIRED];
+
+  // Optional. Conversation info contains extra information on location, time,
+  // and customized metadata for the batch of raw conversation files to be
+  // imported.
+  ConversationInfo conversation_info = 3
+      [(google.api.field_behavior) = OPTIONAL];
+}
+
+// The request message for
+// [ConversationDatasets.LabelConversation][google.cloud.dialogflow.v2beta1.ConversationDatasets.LabelConversation].
+message LabelConversationRequest {
+  // Required. Dataset resource name to create the annotation task for. Format:
+  // `projects/<Project ID>/conversationDatasets/<Conversation Dataset ID>`
+  string parent = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {
+      type: "dialogflow.googleapis.com/ConversationDataset"
+    }
+  ];
+
+  // Required. Configs to create and start a labeling task.
+  AnnotationTaskConfig annotation_task_config = 2
+      [(google.api.field_behavior) = REQUIRED];
+}
+
+// The response for
+// [ConversationDatasets.LabelConversation][google.cloud.dialogflow.v2beta1.ConversationDatasets.LabelConversation].
+message LabelConversationResponse {
+  // New annotated conversation dataset created by the labeling task.
+  AnnotatedConversationDataset annotated_conversation_dataset = 1;
+}
+
+// Metadata for a
+// [ConversationDatasets.ImportConversationData][google.cloud.dialogflow.v2beta1.ConversationDatasets.ImportConversationData]
+// operation.
+message ImportConversationDataOperationMetadata {
+  // The resource name of the imported conversation dataset. Format:
+  // `projects/<Project ID>/conversationDatasets/<Conversation Dataset Id>`
+  string conversation_dataset = 1 [(google.api.resource_reference) = {
+    type: "dialogflow.googleapis.com/ConversationDataset"
+  }];
+
+  // Partial failures are failures that don't fail the whole long running
+  // operation, e.g. single files that couldn't be read.
+  repeated google.rpc.Status partial_failures = 2;
+
+  // Timestamp when import conversation data request was created. The time is
+  // measured on server side.
+  google.protobuf.Timestamp create_time = 3;
+}
+
+// Response used for
+// [ConversationDatasets.ImportConversationData][google.cloud.dialogflow.v2beta1.ConversationDatasets.ImportConversationData]
+// long running operation.
+message ImportConversationDataOperationResponse {
+  // The resource name of the imported conversation dataset. Format:
+  // `projects/<Project ID>/conversationDatasets/<Conversation Dataset Id>`
+  string conversation_dataset = 1 [(google.api.resource_reference) = {
+    type: "dialogflow.googleapis.com/ConversationDataset"
+  }];
+
+  // Number of conversations requested to import.
+  int32 request_count = 2;
+
+  // Number of conversations imported successfully.
+  int32 import_count = 3;
+}
+
+// Metadata for a
+// [ConversationDatasets.LabelConversation][google.cloud.dialogflow.v2beta1.ConversationDatasets.LabelConversation]
+// operation.
+message LabelConversationOperationMetadata {
+  // Conversation dataset to be labelled. Format:
+  // `projects/<Project ID>/conversationDatasets/<Conversation Dataset Id>`
+  string conversation_dataset = 5 [(google.api.resource_reference) = {
+    type: "dialogflow.googleapis.com/ConversationDataset"
+  }];
+
+  // Output only. Annotated conversation dataset generated. Format:
+  // `projects/<Project ID>/conversationDatasets/<Conversation Dataset
+  // ID>/annotatedConversationDatasets/<Annotated Conversation Dataset ID>`
+  string annotated_conversation_dataset = 6
+      [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Progress of label operation. Range: [0, 100].
+  int32 progress_percent = 1;
+
+  // Partial failures encountered.
+  // E.g. single files that couldn't be read.
+  // Status details field will contain standard GCP error details.
+  repeated google.rpc.Status partial_failures = 2;
+
+  // Timestamp when labeling request was created. The time is measured on server
+  // side.
+  google.protobuf.Timestamp create_time = 3;
+
+  // Config for label conversation annotation task.
+  AnnotationTaskConfig annotation_task_config = 4;
+}
+
+// Metadata for [ConversationDatasets][CreateConversationDataset].
+message CreateConversationDatasetOperationMetadata {}
+
+// Metadata for [ConversationDatasets][DeleteConversationDataset].
+message DeleteConversationDatasetOperationMetadata {}

@@ -16,15 +16,15 @@
  * =============================================================================
  */
 
- import * as df from '@google-cloud/dialogflow';
- import * as uuid from 'uuid';
- import { BotResponse } from './dialogflow-bot-responses';
- import { EventEmitter } from 'events';
- import { PassThrough, pipeline } from 'stream';
- import { Transform } from 'stream';
- import { WaveFile } from 'wavefile';
-import { User } from 'actions-on-google/dist/service/actionssdk/conversation/user';
- const struct = require('./structjson');
+import * as df from '@google-cloud/dialogflow';
+// import * as df from '../libs/ccai-client-nodejs/dialogflow/src/v2beta1';
+import * as uuid from 'uuid';
+import { BotResponse } from './dialogflow-bot-responses';
+import { EventEmitter } from 'events';
+import { PassThrough, pipeline } from 'stream';
+import { Transform } from 'stream';
+import { WaveFile } from 'wavefile';
+const struct = require('./structjson');
 
  export interface QueryInputV2Beta1 {
      event?: {
@@ -44,8 +44,8 @@ import { User } from 'actions-on-google/dist/service/actionssdk/conversation/use
  }
 
  export class DialogflowV2Beta1 extends EventEmitter {
-     public sessionClient: df.v2beta1.SessionsClient;
-     public contextClient: df.v2beta1.ContextsClient;
+     public sessionClient: df.SessionsClient;
+     public contextClient: df.ContextsClient;
      public projectId: string;
      public sessionId: string;
      public sessionPath: string;
@@ -58,9 +58,9 @@ import { User } from 'actions-on-google/dist/service/actionssdk/conversation/use
          this.debug = global.debugger;
          this.projectId = global['gc_project_id'];
          this.sessionId = uuid.v4();
-         this.sessionClient = new df.v2beta1.SessionsClient();
+         this.sessionClient = new df.SessionsClient();
          this.sessionPath = this.sessionClient.projectAgentSessionPath(this.projectId, this.sessionId);
-         this.contextClient = new df.v2beta1.ContextsClient();
+         this.contextClient = new df.ContextsClient();
      }
 
      detectIntentText(query: string, contexts?: Array<any>) {

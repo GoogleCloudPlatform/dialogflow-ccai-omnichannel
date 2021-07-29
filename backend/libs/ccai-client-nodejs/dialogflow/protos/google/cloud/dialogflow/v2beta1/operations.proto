@@ -1,0 +1,150 @@
+// Copyright 2021 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+
+package google.cloud.dialogflow.v2beta1;
+
+import "google/api/annotations.proto";
+import "google/api/resource.proto";
+import "google/protobuf/timestamp.proto";
+
+option cc_enable_arenas = true;
+option csharp_namespace = "Google.Cloud.Dialogflow.V2beta1";
+option go_package = "google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1;dialogflow";
+option java_multiple_files = true;
+option java_outer_classname = "OperationsProto";
+option java_package = "com.google.cloud.dialogflow.v2beta1";
+option objc_class_prefix = "DF";
+
+// Metadata for a
+// [ConversationModels.CreateConversationModel][google.cloud.dialogflow.v2beta1.ConversationModels.CreateConversationModel]
+// operation.
+message CreateConversationModelOperationMetadata {
+  // State of CreateConversationModel operation.
+  enum State {
+    // Invalid.
+    STATE_UNSPECIFIED = 0;
+
+    // Request is submitted, but training has not started yet.
+    // The model may remain in this state until there is enough capacity to
+    // start training.
+    PENDING = 1;
+
+    // The training has succeeded.
+    SUCCEEDED = 2;
+
+    // The training has succeeded.
+    FAILED = 3;
+
+    // The training has been cancelled.
+    CANCELLED = 4;
+
+    // The training is in cancelling state.
+    CANCELLING = 5;
+
+    // Custom model is training.
+    TRAINING = 6;
+  }
+
+  // The resource name of the conversation model. Format:
+  // `projects/<Project ID>/conversationModels/<Conversation Model Id>`
+  string conversation_model = 1;
+
+  // State of CreateConversationModel operation.
+  State state = 2;
+
+  // Timestamp when the request to create conversation model was submitted. The
+  // time is measured on server side.
+  google.protobuf.Timestamp create_time = 3;
+}
+
+// Metadata for a
+// [ConversationModels.DeployConversationModel][google.cloud.dialogflow.v2beta1.ConversationModels.DeployConversationModel]
+// operation.
+message DeployConversationModelOperationMetadata {
+  // The resource name of the conversation model. Format:
+  // `projects/<Project ID>/conversationModels/<Conversation Model Id>`
+  string conversation_model = 1;
+
+  // Timestamp when request to deploy conversation model was submitted. The time
+  // is measured on server side.
+  google.protobuf.Timestamp create_time = 3;
+}
+
+// Metadata for a
+// [ConversationModels.UndeployConversationModel][google.cloud.dialogflow.v2beta1.ConversationModels.UndeployConversationModel]
+// operation.
+message UndeployConversationModelOperationMetadata {
+  // The resource name of the conversation model. Format:
+  // `projects/<Project ID>/conversationModels/<Conversation Model Id>`
+  string conversation_model = 1;
+
+  // Timestamp when the request to undeploy conversation model was submitted.
+  // The time is measured on server side.
+  google.protobuf.Timestamp create_time = 3;
+}
+
+// Metadata for a
+// [ConversationModels.DeleteConversationModel][google.cloud.dialogflow.v2beta1.ConversationModels.DeleteConversationModel]
+// operation.
+message DeleteConversationModelOperationMetadata {
+  // The resource name of the conversation model. Format:
+  // `projects/<Project ID>/conversationModels/<Conversation Model Id>`
+  string conversation_model = 1;
+
+  // Timestamp when delete conversation model request was created. The time is
+  // measured on server side.
+  google.protobuf.Timestamp create_time = 3;
+}
+
+// Metadata for
+// [Documents.GenerateDocument][google.cloud.dialogflow.v2beta1.Documents.GenerateDocument]
+// operation when customer request to generate document.
+message GenerateDocumentOperationMetadata {
+  // State of GeneratingDocument operation.
+  enum State {
+    // Operation status not specified.
+    STATE_UNSPECIFIED = 0;
+
+    // The operation is being prepared.
+    INITIALIZING = 1;
+
+    // The operation is running.
+    RUNNING = 2;
+
+    // The operation is cancelled.
+    CANCELLED = 3;
+
+    // The operation has succeeded.
+    SUCCEEDED = 4;
+
+    // The operation has failed.
+    FAILED = 5;
+  }
+
+  // State of generating document operation.
+  State state = 1;
+
+  // The time when the operation was submitted.
+  google.protobuf.Timestamp create_time = 2;
+
+  // The source conversation datasets used to generate the allowlist.
+  repeated string source_conversation_datasets = 3;
+
+  // The name of the document to retrieve. Format:
+  // `projects/<Project ID>/knowledgeBases/<Knowledge Base
+  // ID>/documents/<Document ID>`.
+  string document = 4;
+}

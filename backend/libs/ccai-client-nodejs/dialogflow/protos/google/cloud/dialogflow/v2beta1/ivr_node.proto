@@ -1,0 +1,425 @@
+// Copyright 2021 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+
+package google.cloud.dialogflow.v2beta1;
+
+import "google/api/annotations.proto";
+import "google/api/client.proto";
+import "google/api/field_behavior.proto";
+import "google/cloud/dialogflow/v2beta1/audio_config.proto";
+import "google/cloud/dialogflow/v2beta1/context.proto";
+import "google/cloud/dialogflow/v2beta1/intent.proto";
+import "google/protobuf/duration.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/field_mask.proto";
+
+option cc_enable_arenas = true;
+option csharp_namespace = "Google.Cloud.Dialogflow.V2beta1";
+option go_package = "google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1;dialogflow";
+option java_multiple_files = true;
+option java_outer_classname = "IvrNodesProto";
+option java_package = "com.google.cloud.dialogflow.v2beta1";
+option objc_class_prefix = "DF";
+
+// Service for managing [IvrNodes][google.cloud.dialogflow.v2beta1.IvrNode].
+service IvrNodes {
+  option (google.api.default_host) = "dialogflow.googleapis.com";
+  option (google.api.oauth_scopes) =
+      "https://www.googleapis.com/auth/cloud-platform,"
+      "https://www.googleapis.com/auth/dialogflow";
+
+  // Returns the list of all ivr nodes in the specified agent.
+  rpc ListIvrNodes(ListIvrNodesRequest) returns (ListIvrNodesResponse) {
+    option (google.api.http) = {
+      get: "/v2beta1/{parent=projects/*/agent}/ivrNodes"
+    };
+  }
+
+  // Retrieves an IVR node.
+  rpc GetIvrNode(GetIvrNodeRequest) returns (IvrNode) {
+    option (google.api.http) = {
+      get: "/v2beta1/{name=projects/*/agent/ivrNodes/*}"
+    };
+  }
+
+  // Creates an IVR node.
+  rpc CreateIvrNode(CreateIvrNodeRequest) returns (IvrNode) {
+    option (google.api.http) = {
+      post: "/v2beta1/{parent=projects/*/agent}/ivrNodes"
+      body: "node"
+    };
+  }
+
+  // Updates an IVR node.
+  rpc UpdateIvrNode(UpdateIvrNodeRequest) returns (IvrNode) {
+    option (google.api.http) = {
+      patch: "/v2beta1/{node.name=projects/*/agent/ivrNodes/*}"
+      body: "node"
+    };
+  }
+
+  // Deletes an IVR node.
+  rpc DeleteIvrNode(DeleteIvrNodeRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/v2beta1/{name=projects/*/agent/ivrNodes/*}"
+    };
+  }
+}
+
+// Represents an IVR node.
+// IVR node is a virtual encapsulation of one or more intents that represents
+// the functionality of an IVR node played by a Voice Browser.
+//
+// IVR Node is not a real resource. Internally they are stored as one or more
+// intents, and thus all auditing and permission settings are based on intents.
+message IvrNode {
+  // Required. Name of the IVR node.
+  string name = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // Optional. List of intents at the entering layer.
+  repeated EnteringIntent entering_intents = 2
+      [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. List of intents at the exiting layer.
+  repeated ExitingIntent exiting_intents = 3
+      [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. Defines the intents for no input case.
+  repeated LoopingIntent no_input_intents = 4
+      [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. Defines the intents for no match case.
+  repeated LoopingIntent no_match_intents = 5
+      [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. Defines the intent for max reprompt case.
+  MaxRepromptIntent max_reprompt_intent = 6
+      [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. Defines node level settings.
+  IvrNodeSettings settings = 7 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// Represents an intent at the entering layer.
+message EnteringIntent {
+  // Required. ID of the intent. Must be unique among all entering intents.
+  // Used to compose intent display name.
+  string id = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // Optional. List of contexts that must be present in order to trigger this
+  // intent.
+  repeated string input_context_names = 2
+      [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. List of contexts to output if this intent is matched.
+  repeated Context output_contexts = 3 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. List of response messages to prompt if this intent is matched.
+  repeated Intent.Message messages = 4 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. Whether webhook should be called if this intent is matched.
+  Intent.WebhookState webhook_state = 6
+      [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. Whether barge-in is allowed for this intent's responses.
+  // If no value is present, we use the setting defined at node level.
+  bool allow_barge_in = 7 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. The name of the action associated with the intent.
+  // Note: The action name must not contain whitespaces.
+  string action = 8 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. The condition used to activate the intent for being matched.
+  // This is a boolean logical expression. If it is true, the intent is
+  // activated. It can refer to context parameters in the form of
+  // `#my-context-name.params.my-param-name`.
+  //
+  // See the
+  // [conditions
+  // reference](https://cloud.google.com/dialogflow/priv/docs/v3/condition).
+  //
+  // By default, the condition is true and the intent is always activated.
+  string condition = 9 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. The next node to go to immediately when this `EnteringIntent` is
+  // used. If empty, do not go to any node.
+  string next_node = 10 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. Represents a list of conditional messages.
+  // Each case in the message is associated with a condition. During
+  // query time, Dialogflow will never populate conditional_messages. Instead,
+  // Dialogflow will append all messages with conditions that are evaluated to
+  // true to
+  // [messages][google.cloud.dialogflow.v2beta1.EnteringIntent.messages].
+  repeated Intent.ConditionalMessage conditional_messages = 11
+      [(google.api.field_behavior) = OPTIONAL];
+}
+
+// Represents an intent at the looping layer. Either it is for no input case,
+// or it is for no match case.
+message LoopingIntent {
+  // Required. List of response messages to prompt if the intent is matched.
+  repeated Intent.Message messages = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // Optional. Whether barge-in is allowed for this intent's responses.
+  // If no value is present, we use the setting defined at node level.
+  bool allow_barge_in = 2 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. Whether webhook should be called if this intent is matched.
+  Intent.WebhookState webhook_state = 3
+      [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. List of contexts that must be present in order to trigger this
+  // intent.
+  repeated string input_context_names = 4
+      [(google.api.field_behavior) = OPTIONAL];
+
+  // Required. ID of the intent. Must be unique among all intents of the same
+  // category.
+  string id = 5 [(google.api.field_behavior) = REQUIRED];
+
+  // Optional. The name of the action associated with the intent.
+  // Note: The action name must not contain whitespaces.
+  string action = 6 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. The condition used to activate the intent for being matched.
+  // This is a boolean logical expression. If it is true, the intent is
+  // activated. It can refer to context parameters in the form of
+  // `#my-context-name.params.my-param-name`.
+  //
+  // See the
+  // [conditions
+  // reference](https://cloud.google.com/dialogflow/priv/docs/v3/condition).
+  //
+  // By default, the condition is true and the intent is always activated.
+  string condition = 7 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. Represents a list of conditional messages.
+  // Each case in the message is associated with a condition. During
+  // query time, Dialogflow will never populate conditional_messages. Instead,
+  // Dialogflow will append all messages with conditions that are evaluated to
+  // true to [messages][google.cloud.dialogflow.v2beta1.LoopingIntent.messages].
+  repeated Intent.ConditionalMessage conditional_messages = 8
+      [(google.api.field_behavior) = OPTIONAL];
+}
+
+// Represents the intent that handles the max reprompt case.
+message MaxRepromptIntent {
+  // Required. The next node or event to transition to when the intent is
+  // matched.
+  //
+  // Format:
+  //
+  // * When transitioning to a node: `projects/<Project ID>/agent/ivrNodes/<node
+  // ID>`.
+  // * When transitioning to an event: `<event name>`, e.g. `WELCOME`.
+  string next_node = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // Optional. List of contexts to output if this intent is matched.
+  repeated Context output_contexts = 2 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. Whether webhook should be called if this intent is matched.
+  Intent.WebhookState webhook_state = 3
+      [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. The name of the action associated with the intent.
+  // Note: The action name must not contain whitespaces.
+  string action = 4 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// Represents an intent at the exiting layer.
+message ExitingIntent {
+  // Required. ID of the intent. Must be unique among all exiting intents.
+  string id = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // Required. The next node or event to transition to when the intent is
+  // matched.
+  //
+  // Format:
+  //
+  // * When transitioning to a node: `projects/<Project ID>/agent/ivrNodes/<node
+  // ID>`.
+  // * When transitioning to an event: `<event name>`, e.g. `WELCOME`.
+  string next_node = 2 [(google.api.field_behavior) = REQUIRED];
+
+  // Required. List of training phrases that can be used to match this intent.
+  repeated Intent.TrainingPhrase training_phrases = 3
+      [(google.api.field_behavior) = REQUIRED];
+
+  // Optional. The collection of parameters associated with the intent.
+  repeated Intent.Parameter parameters = 4
+      [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. List of contexts to output if this intent is matched.
+  repeated Context output_contexts = 5 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. Whether webhook should be called if this intent is matched.
+  Intent.WebhookState webhook_state = 6
+      [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. List of contexts that must be present in order to trigger this
+  // intent.
+  repeated string input_context_names = 7
+      [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. The collection of event names that trigger the intent.
+  // This can be any string that represents an event name.
+  repeated string events = 8 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. The name of the action associated with the intent.
+  // Note: The action name must not contain whitespaces.
+  string action = 9 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. The condition used to activate the intent for being matched.
+  // This is a boolean logical expression. If it is true, the intent is
+  // activated. It can refer to context parameters in the form of
+  // `#my-context-name.params.my-param-name`.
+  //
+  // See the
+  // [conditions
+  // reference](https://cloud.google.com/dialogflow/priv/docs/v3/condition).
+  //
+  // By default, the condition is true and the intent is always activated.
+  string condition = 10 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// Defines node level settings for the IVR node
+message IvrNodeSettings {
+  // Represents settings related to DTMF input.
+  // Must specify at least one of the fields in this message.
+  message DtmfSettings {
+    // Optional. Maximum number of digits allowed for DTMF input.
+    int32 max_digits = 1 [(google.api.field_behavior) = OPTIONAL];
+
+    // Optional. The digit that inidicates the end of DTMF input.
+    TelephonyDtmf finish_digit = 2 [(google.api.field_behavior) = OPTIONAL];
+
+    // Optional. Whether to enable DTMF for this IVR node.
+    bool enable_dtmf = 3 [(google.api.field_behavior) = OPTIONAL];
+  }
+
+  // Represents settings related to logging at the current IVR Node.
+  message LoggingSettings {
+    // Optional. Whether logging should be disabled at the current IVR Node.
+    // Currently logging includes Dialogflow History, Contact Center messages
+    // StackDriver logs as well as speech logging.
+    bool disable_logging = 1 [(google.api.field_behavior) = OPTIONAL];
+  }
+
+  // Optional. Whether barge-in is allowed if an intent at entering layer or
+  // looping layer is matched.
+  // Each intent may override this setting in its own `allow_barge_in` field.
+  bool allow_barge_in = 1 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. Defines the length of time of speech silence after we start
+  // detecting speech that triggers NO_INPUT event. In this case, we consider
+  // the user to not have said anything.
+  // Default is using Avaya's preset value.
+  // Fraction below one second is dropped.
+  google.protobuf.Duration no_input_timeout = 2
+      [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. Minimum length of silence after user has started that triggers
+  // end of speech in Avaya.
+  // If unspecified, Dialogflow uses Avaya's default values.
+  // Fraction below one second is dropped.
+  google.protobuf.Duration speech_complete_timeout = 3
+      [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. Defines the number of no input or no match cases to be triggered
+  // before we trigger the max reprompt case.
+  // Default is 5 if unspecified or 0.
+  int32 max_reprompt_count = 4 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. Settings for DTMF input.
+  DtmfSettings dtmf_settings = 5 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. Settings for logging.
+  LoggingSettings logging_settings = 6 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. The list of conditional followup event inputs.
+  repeated Intent.ConditionalFollowupEventInput
+      conditional_followup_event_inputs = 7
+      [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. If not empty, export audio to the specified URI when the node is
+  // entered via this intent.
+  string export_uri = 8 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// The request message for
+// [IvrNodes.ListIvrNodes][google.cloud.dialogflow.v2beta1.IvrNodes.ListIvrNodes].
+message ListIvrNodesRequest {
+  // Required. The agent to list all IVR nodes from.
+  // Format: `projects/<Project ID>/agent`.
+  string parent = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // Optional. The maximum number of items to return in a single page. By
+  // default 100 and at most 1000.
+  int32 page_size = 4 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. The next_page_token value returned from a previous list request.
+  string page_token = 5 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// The response message for
+// [IvrNodes.ListIvrNodes][google.cloud.dialogflow.v2beta1.IvrNodes.ListIvrNodes].
+message ListIvrNodesResponse {
+  // The list of IVR nodes.
+  repeated IvrNode nodes = 1;
+
+  // Token to retrieve the next page of results, or empty if there are no
+  // more results in the list.
+  string next_page_token = 2;
+}
+
+// The request message for
+// [IvrNodes.GetIvrNode][google.cloud.dialogflow.v2beta1.IvrNodes.GetIvrNode].
+message GetIvrNodeRequest {
+  // Required. The name of the IVR node.
+  // Format: `projects/<Project ID>/agent/IvrNodes/<node ID>`.
+  string name = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// The request message for
+// [IvrNodes.CreateIvrNode][google.cloud.dialogflow.v2beta1.IvrNodes.CreateIvrNode].
+message CreateIvrNodeRequest {
+  // Required. The agent to create an IVR node for.
+  // Format: `projects/<Project ID>/agent`.
+  string parent = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // Required. The IVR node to create.
+  IvrNode node = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+// The request message for
+// [IvrNodes.UpdateIvrNode][google.cloud.dialogflow.v2beta1.IvrNodes.UpdateIvrNode].
+message UpdateIvrNodeRequest {
+  // Required. The IVR node to update.
+  IvrNode node = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // Optional. The mask to control which fields get updated. An empty mask means
+  // that Dialogflow updates everything.
+  google.protobuf.FieldMask update_mask = 2
+      [(google.api.field_behavior) = OPTIONAL];
+}
+
+// The request message for
+// [IvrNodes.DeleteIvrNode][google.cloud.dialogflow.v2beta1.IvrNodes.DeleteIvrNode].
+message DeleteIvrNodeRequest {
+  // Required. The name of the IVR node to delete.
+  string name = 1 [(google.api.field_behavior) = REQUIRED];
+}

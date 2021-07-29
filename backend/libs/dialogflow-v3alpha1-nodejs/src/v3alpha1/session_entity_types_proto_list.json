@@ -1,0 +1,15 @@
+[
+  "../../protos/google/cloud/dialogflow/v3alpha1/agent.proto",
+  "../../protos/google/cloud/dialogflow/v3alpha1/audio_config.proto",
+  "../../protos/google/cloud/dialogflow/v3alpha1/entity_type.proto",
+  "../../protos/google/cloud/dialogflow/v3alpha1/flow.proto",
+  "../../protos/google/cloud/dialogflow/v3alpha1/fulfillment.proto",
+  "../../protos/google/cloud/dialogflow/v3alpha1/gcs.proto",
+  "../../protos/google/cloud/dialogflow/v3alpha1/intent.proto",
+  "../../protos/google/cloud/dialogflow/v3alpha1/ivr.proto",
+  "../../protos/google/cloud/dialogflow/v3alpha1/page.proto",
+  "../../protos/google/cloud/dialogflow/v3alpha1/response_message.proto",
+  "../../protos/google/cloud/dialogflow/v3alpha1/session.proto",
+  "../../protos/google/cloud/dialogflow/v3alpha1/session_entity_type.proto",
+  "../../protos/google/cloud/dialogflow/v3alpha1/webhook.proto"
+]

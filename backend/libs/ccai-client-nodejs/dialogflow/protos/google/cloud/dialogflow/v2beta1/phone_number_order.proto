@@ -1,0 +1,291 @@
+// Copyright 2021 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+
+package google.cloud.dialogflow.v2beta1;
+
+import "google/api/annotations.proto";
+import "google/api/client.proto";
+import "google/api/field_behavior.proto";
+import "google/api/resource.proto";
+import "google/protobuf/duration.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/timestamp.proto";
+
+option cc_enable_arenas = true;
+option csharp_namespace = "Google.Cloud.Dialogflow.V2beta1";
+option go_package = "google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1;dialogflow";
+option java_multiple_files = true;
+option java_outer_classname = "PhoneNumberOrderProto";
+option java_package = "com.google.cloud.dialogflow.v2beta1";
+option objc_class_prefix = "DF";
+
+// Service for managing
+// [PhoneNumberOrders][google.cloud.dialogflow.v2beta1.PhoneNumberOrder].
+service PhoneNumberOrders {
+  option (google.api.default_host) = "dialogflow.googleapis.com";
+  option (google.api.oauth_scopes) =
+      "https://www.googleapis.com/auth/cloud-platform,"
+      "https://www.googleapis.com/auth/dialogflow";
+
+  // Creates an order to request phone numbers be added to a project.
+  // The initial `LifecycleState` of a newly created order is
+  // [PENDING][google.cloud.dialogflow.v2beta1.PhoneNumberOrder.LifecycleState.PENDING].
+  rpc CreatePhoneNumberOrder(CreatePhoneNumberOrderRequest)
+      returns (PhoneNumberOrder) {
+    option (google.api.http) = {
+      post: "/v2beta1/{parent=projects/*}/phoneNumberOrders"
+      body: "phone_number_order"
+      additional_bindings {
+        post: "/v2beta1/{parent=projects/*/locations/*}/phoneNumberOrders"
+        body: "phone_number_order"
+      }
+    };
+    option (google.api.method_signature) = "parent,phone_number_order";
+  }
+
+  // Returns a specific `PhoneNumberOrder`.
+  rpc GetPhoneNumberOrder(GetPhoneNumberOrderRequest)
+      returns (PhoneNumberOrder) {
+    option (google.api.http) = {
+      get: "/v2beta1/{name=projects/*/phoneNumberOrders/*}"
+      additional_bindings {
+        get: "/v2beta1/{name=projects/*/locations/*/phoneNumberOrders/*}"
+      }
+    };
+    option (google.api.method_signature) = "name";
+  }
+
+  // Lists of all `PhoneNumberOrder` resources in the specified project.
+  rpc ListPhoneNumberOrders(ListPhoneNumberOrdersRequest)
+      returns (ListPhoneNumberOrdersResponse) {
+    option (google.api.http) = {
+      get: "/v2beta1/{parent=projects/*}/phoneNumberOrders"
+      additional_bindings {
+        get: "/v2beta1/{parent=projects/*/locations/*}/phoneNumberOrders"
+      }
+    };
+    option (google.api.method_signature) = "parent";
+  }
+
+  // Updates the specified `PhoneNumberOrder` resource.
+  // Returns an error if the order is in state
+  // [IN_PROGRESS][google.cloud.dialogflow.v2beta1.PhoneNumberOrder.LifecycleState.IN_PROGRESS]
+  // or
+  // [COMPLETED][google.cloud.dialogflow.v2beta1.PhoneNumberOrder.LifecycleState.COMPLETED].
+  rpc UpdatePhoneNumberOrder(UpdatePhoneNumberOrderRequest)
+      returns (PhoneNumberOrder) {
+    option (google.api.http) = {
+      patch: "/v2beta1/{phone_number_order.name=projects/*/phoneNumberOrders/*}"
+      body: "phone_number_order"
+      additional_bindings {
+        patch: "/v2beta1/{phone_number_order.name=projects/*/locations/*/phoneNumberOrders/*}"
+        body: "phone_number_order"
+      }
+    };
+    option (google.api.method_signature) = "phone_number_order,update_mask";
+  }
+
+  // Cancels an `PhoneNumberOrder`.
+  // Returns an error if the order is in state
+  // [IN_PROGRESS][google.cloud.dialogflow.v2beta1.PhoneNumberOrder.LifecycleState.IN_PROGRESS]
+  // or
+  // [COMPLETED][google.cloud.dialogflow.v2beta1.PhoneNumberOrder.LifecycleState.COMPLETED].
+  rpc CancelPhoneNumberOrder(CancelPhoneNumberOrderRequest)
+      returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v2beta1/{name=projects/*/phoneNumberOrders/*}:cancel"
+      body: "*"
+      additional_bindings {
+        post: "/v2beta1/{name=projects/*/locations/*/phoneNumberOrders/*}:cancel"
+        body: "*"
+      }
+    };
+    option (google.api.method_signature) = "name";
+  }
+}
+
+// Represents a phone number order.
+// Orders can assign phone numbers to projects.
+message PhoneNumberOrder {
+  option (google.api.resource) = {
+    type: "dialogflow.googleapis.com/PhoneNumberOrder"
+    pattern: "projects/{project}/phoneNumberOrders/{phone_number_order}"
+    pattern: "projects/{project}/locations/{location}/phoneNumberOrders/{phone_number_order}"
+  };
+
+  // Enumeration of the different statuses the order can be in during its
+  // lifecycle.
+  enum LifecycleState {
+    // Unknown.
+    LIFECYCLE_STATE_UNSPECIFIED = 0;
+
+    // Order is awaiting action.
+    PENDING = 1;
+
+    // Order is being worked on, and is partially fulfilled.
+    IN_PROGRESS = 2;
+
+    // Order has been fulfilled.
+    COMPLETED = 3;
+
+    // Order has been cancelled.
+    CANCELLED = 4;
+  }
+
+  // Optional. The unique identifier of this order.
+  // Required for
+  // [PhoneNumberOrders.UpdatePhoneNumberOrder][google.cloud.dialogflow.v2beta1.PhoneNumberOrders.UpdatePhoneNumberOrder]
+  // method. Format: `projects/<Project ID>/phoneNumberOrders/<Order ID>`.
+  // Format: `projects/<Project ID>/locations/<Location
+  // ID>/phoneNumberOrders/<Order ID>`.
+  string name = 1 [(google.api.field_behavior) = OPTIONAL];
+
+  // Definition of what is being ordered.
+  oneof order {
+    // Order is for new numbers.
+    PhoneNumberSpec phone_number_spec = 2;
+  }
+
+  // Optional. A description of the order, limit is 1024 bytes.
+  string description = 4 [(google.api.field_behavior) = OPTIONAL];
+
+  // Output only. The current status of the order.
+  LifecycleState lifecycle_state = 5
+      [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Output only. A map of ordered numbers filled so far, keyed by their
+  // resource name. Key format:
+  // `projects/<Project ID>/phoneNumbers/<PhoneNumber ID>`.
+  // Value format: E.164 phone number. Output only.
+  map<string, string> phone_numbers = 6
+      [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Output only. The time this order was created.
+  google.protobuf.Timestamp create_time = 7
+      [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Output only. The time this order was last updated.
+  google.protobuf.Timestamp update_time = 8
+      [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// Request for new numbers fitting a set of parameters.
+// The country code for newly requested numbers defaults to 1 (US) until the
+// service is available in other regions.
+message PhoneNumberSpec {
+  // Optional. Area codes to use. An empty list means 'any code'. Each value
+  // is treated as equally preferred. Each entry has a limit of 10 bytes.
+  // "area code" corresponds to "National Destination Code" described in
+  // [E.164](https://en.wikipedia.org/wiki/E.164) standard.
+  repeated string preferred_area_codes = 2;
+
+  // Required. Total numbers requested, between 1 and 10 inclusive.
+  int32 count = 3;
+}
+
+// The request message for
+// [PhoneNumberOrders.CreatePhoneNumberOrder][google.cloud.dialogflow.v2beta1.PhoneNumberOrders.CreatePhoneNumberOrder].
+message CreatePhoneNumberOrderRequest {
+  // Required. Resource identifier of the project requesting the orders.
+  // Format: `projects/<Project ID>`.
+  // Format: `projects/<Project ID>/locations/<Location ID>`.
+  string parent = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {
+      child_type: "dialogflow.googleapis.com/PhoneNumberOrder"
+    }
+  ];
+
+  // Required. The order to create.
+  PhoneNumberOrder phone_number_order = 2
+      [(google.api.field_behavior) = REQUIRED];
+}
+
+// The request message for
+// [PhoneNumberOrders.GetPhoneNumberOrder][google.cloud.dialogflow.v2beta1.PhoneNumberOrders.GetPhoneNumberOrder].
+message GetPhoneNumberOrderRequest {
+  // Required. The unique identifier of the order to retrieve.
+  // Format: `projects/<Project ID>/phoneNumberOrders/<Order ID>`.
+  // Format: `projects/<Project ID>/locations/<Location
+  // ID>/phoneNumberOrders/<Order ID>`.
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {
+      type: "dialogflow.googleapis.com/PhoneNumberOrder"
+    }
+  ];
+}
+
+// The request message for
+// [PhoneNumberOrders.ListPhoneNumberOrders][google.cloud.dialogflow.v2beta1.PhoneNumberOrders.ListPhoneNumberOrders].
+message ListPhoneNumberOrdersRequest {
+  // Required. The project to list all orders from.
+  // Format: `projects/<Project ID>`.
+  // Format: `projects/<Project ID>/locations/<Location ID>`.
+  string parent = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {
+      child_type: "dialogflow.googleapis.com/PhoneNumberOrder"
+    }
+  ];
+
+  // Optional. The maximum number of items to return in a single page.
+  // The default value is 100. The maximum value is 1000.
+  int32 page_size = 2 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. The next_page_token value returned from a previous list request.
+  string page_token = 4 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// The response message for
+// [PhoneNumberOrders.ListPhoneNumberOrders][google.cloud.dialogflow.v2beta1.PhoneNumberOrders.ListPhoneNumberOrders].
+message ListPhoneNumberOrdersResponse {
+  // The list of orders. There is a maximum number of items returned based
+  // on the page_size field in the request.
+  repeated PhoneNumberOrder phone_number_orders = 1;
+
+  // Token to retrieve the next page of results, or empty if there are no
+  // more results in the list.
+  string next_page_token = 2;
+}
+
+// The request message for
+// [PhoneNumberOrders.UpdatePhoneNumberOrder][google.cloud.dialogflow.v2beta1.PhoneNumberOrders.UpdatePhoneNumberOrder].
+message UpdatePhoneNumberOrderRequest {
+  // Required. The order to update.
+  PhoneNumberOrder phone_number_order = 1
+      [(google.api.field_behavior) = REQUIRED];
+
+  // Optional. The mask to control which fields get updated.
+  google.protobuf.FieldMask update_mask = 2
+      [(google.api.field_behavior) = OPTIONAL];
+}
+
+// The request message for
+// [PhoneNumberOrders.CancelPhoneNumberOrder][google.cloud.dialogflow.v2beta1.PhoneNumberOrders.CancelPhoneNumberOrder].
+message CancelPhoneNumberOrderRequest {
+  // Required. The unique identifier of the order to delete.
+  // Format: `projects/<Project ID>/phoneNumberOrders/<Order ID>`.
+  // Format: `projects/<Project ID>/locations/<Location
+  // ID>/phoneNumberOrders/<Order ID>`.
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {
+      type: "dialogflow.googleapis.com/PhoneNumberOrder"
+    }
+  ];
+}

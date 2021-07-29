@@ -1,0 +1,101 @@
+// Copyright 2021 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+
+package google.cloud.dialogflow.v2beta1;
+
+import "google/api/annotations.proto";
+import "google/api/client.proto";
+import "google/api/field_behavior.proto";
+import "google/cloud/dialogflow/v2beta1/webhook.proto";
+import "google/rpc/status.proto";
+
+option cc_enable_arenas = true;
+option csharp_namespace = "Google.Cloud.Dialogflow.V2beta1";
+option go_package = "google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1;dialogflow";
+option java_multiple_files = true;
+option java_outer_classname = "AsynchronousFulfillmentProto";
+option java_package = "com.google.cloud.dialogflow.v2beta1";
+option objc_class_prefix = "DF";
+
+// Fulfillment is code that's deployed as a webhook that lets your Dialogflow
+// agent call business logic on an intent-by-intent basis. Some of the
+// fulfillment calls could take a long time (in the order of minutes). With
+// asynchronous fulfillment, customers can send an on-hold message while their
+// end users are waiting for an asynchronous backend call to return. The
+// asynchronous fulfillment notifies its completion to Dialogflow through
+// [PushFulfillmentResult][google.cloud.dialogflow.v2beta1.AsynchronousFulfillment.PushFulfillmentResult]
+// method.
+service AsynchronousFulfillment {
+  option (google.api.default_host) = "dialogflow.googleapis.com";
+  option (google.api.oauth_scopes) =
+      "https://www.googleapis.com/auth/cloud-platform,"
+      "https://www.googleapis.com/auth/dialogflow";
+
+  // Pushes the result of asynchronous fulfillment to Dialogflow.
+  rpc PushFulfillmentResult(PushFulfillmentResultRequest)
+      returns (FulfillmentResult) {
+    option (google.api.http) = {
+      post: "/v2beta1/{session=projects/*/agent/sessions/*}:pushFulfillmentResult"
+      body: "fulfillment_result"
+      additional_bindings {
+        post: "/v2beta1/{session=projects/*/agent/environments/*/users/*/sessions/*}:pushFulfillmentResult"
+        body: "fulfillment_result"
+      }
+      additional_bindings {
+        post: "/v2beta1/{session=projects/*/locations/*/agent/sessions/*}:pushFulfillmentResult"
+        body: "fulfillment_result"
+      }
+      additional_bindings {
+        post: "/v2beta1/{session=projects/*/locations/*/agent/environments/*/users/*/sessions/*}:pushFulfillmentResult"
+        body: "fulfillment_result"
+      }
+    };
+  }
+}
+
+// The request message for
+// [AsynchronousFulfillment.PushFulfillmentResult][google.cloud.dialogflow.v2beta1.AsynchronousFulfillment.PushFulfillmentResult].
+message PushFulfillmentResultRequest {
+  // Required. The name of the session to push the fulfillment result for.
+  // Format: `projects/<Project ID>/agent/sessions/<Session ID>`, or
+  // `projects/<Project ID>/agent/environments/<Environment ID>/users/<User
+  // ID>/sessions/<Session ID>`. If `Environment ID` is not specified, we assume
+  // default 'draft' environment. If `User ID` is not specified, we are using
+  // "-". It's up to the API caller to choose an appropriate `Session ID` and
+  // `User Id`. They can be a random numbers or some type of user and session
+  // identifiers (preferably hashed). The length of the `Session ID` and
+  // `User ID` must not exceed 36 characters.
+  string session = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // Required. The fulfillment result to push to Dialogflow.
+  FulfillmentResult fulfillment_result = 2
+      [(google.api.field_behavior) = REQUIRED];
+}
+
+// The response message for
+// [AsynchronousFulfillment.PushFulfillmentResult][google.cloud.dialogflow.v2beta1.AsynchronousFulfillment.PushFulfillmentResult].
+message FulfillmentResult {
+  // Required. The name of the event that the async fulfillment is associated.
+  // The format of full event name is: ASYNC_FULFILLMENT_POLL_<Event Suffix>.
+  string event_name = 1;
+
+  // Optional. The response message for a fulfillment call. If
+  // fulfillment_status is not OK, the fulfillment may not be populated.
+  WebhookResponse fulfillment_response = 2;
+
+  // Required. The status of the fulfillment.
+  google.rpc.Status fulfillment_status = 3;
+}

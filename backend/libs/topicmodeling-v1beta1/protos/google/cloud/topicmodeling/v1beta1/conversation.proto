@@ -1,0 +1,102 @@
+// Copyright 2019 Google LLC.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
+syntax = "proto3";
+
+package google.cloud.topicmodeling.v1beta1;
+
+import "google/protobuf/field_mask.proto";
+import "google/api/annotations.proto";
+
+option cc_enable_arenas = true;
+option csharp_namespace = "Google.Cloud.Topicmodeling.V1beta1";
+option go_package = "google.golang.org/genproto/googleapis/cloud/topicmodeling/v1beta1;topicmodeling";
+option java_multiple_files = true;
+option java_outer_classname = "ConversationProto";
+option java_package = "com.google.cloud.topicmodeling.v1beta1";
+option objc_class_prefix = "GCTM";
+
+
+// Represents a conversation used in a model training.
+message Conversation {
+  // Required. The resource name of the conversation. Conversation names have
+  // the form
+  // `projects/{project_id}/locations/{location_id}/models/{model_id}/conversations/{conversation_id}`.
+  string name = 1;
+
+  // The URI of Cloud Storage location to store the conversation file, for
+  // example, "gs://bucket_id/dir1/file1".
+  string gcs_uri = 2;
+
+  // The resource name of topic that the conversation mainly talks about.
+  string topic = 3;
+}
+
+// The request message for ListConversations.
+message ListConversationsRequest {
+  // The name of the model whose input conversations we'd like to list. Model
+  // names have the form
+  // `projects/{project_id}/locations/{location_id}/models/{model_id}`.
+  string parent = 1;
+
+  // Requested page size. Server may return fewer conversations than requested.
+  // If unspecified, server will pick an appropriate default.
+  int32 page_size = 2;
+
+  // A token identifying a page of results the server should return. Typically,
+  // this is the value of [ListConversationsResponse.next_page_token] returned
+  // from the previous call to `ListConversations` method.
+  string page_token = 3;
+
+  // Filter specifying constraints of a list operation.
+  // For example,
+  // `topic="projects/{project_id}/locations/{location_id}/models/{model_id}/topics/{topic_id}"`.
+  string filter = 4;
+}
+
+// The response message for ListConversations.
+message ListConversationsResponse {
+  // The list of conversations.
+  repeated Conversation conversations = 1;
+
+  // A token to retrieve next page of results. Pass this value in the
+  // [ListConversationsRequest.page_token] field in the subsequent call to
+  // `ListConversations` method to retrieve the next page of results.
+  string next_page_token = 2;
+}
+
+// The request message for GetConversation.
+message GetConversationRequest {
+  // The name of conversation to retrieve. Conversation names have the form
+  // `projects/{project_id}/locations/{location_id}/models/{model_id}/conversations/{conversation_id}`.
+  string name = 1;
+
+  // The URI of Cloud Storage location of the conversation file, for example,
+  // "gs://bucket_id/dir1/file1".
+  string gcs_uri = 2;
+}
+
+// The request message for UpdateConversation.
+message UpdateConversationRequest {
+  // The conversation that updates the resource in the server. The field `name`
+  // is required and field `topic` must specify new value of topic name.
+  Conversation conversation = 1;
+
+  // Only updates the fields indicated by this mask.
+  // The field mask must not be empty, and it must not contain fields that
+  // are immutable or only set by the server.
+  // For now, mutable field is only `topic`.
+  google.protobuf.FieldMask update_mask = 2;
+}

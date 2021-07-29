@@ -1,0 +1,95 @@
+// Copyright 2019 Google LLC.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
+syntax = "proto3";
+
+package google.cloud.topicmodeling.v1beta1;
+
+import "google/protobuf/field_mask.proto";
+import "google/api/annotations.proto";
+
+option cc_enable_arenas = true;
+option csharp_namespace = "Google.Cloud.Topicmodeling.V1beta1";
+option go_package = "google.golang.org/genproto/googleapis/cloud/topicmodeling/v1beta1;topicmodeling";
+option java_multiple_files = true;
+option java_outer_classname = "TopicProto";
+option java_package = "com.google.cloud.topicmodeling.v1beta1";
+option objc_class_prefix = "GCTM";
+
+
+// Represents a topic discovered in a model.
+message Topic {
+  // Required. The resource name of the topic. Topic names have the form
+  // `projects/{project_id}/locations/{location_id}/models/{model_id}/topics/{topic_id}`.
+  string name = 1;
+
+  // A list of keywords to describe the topic. For now, the length of each
+  // keyword is limited to 128 bytes, and the total number of keywords is
+  // limited to 20.
+  repeated string keywords = 2;
+
+  // A human readable sentence/phrase to summarize the topic. For now, this is
+  // only set by cloud users. Length of the description is limited to 4096
+  // bytes.
+  string description = 3;
+}
+
+// The request message for ListTopics.
+message ListTopicsRequest {
+  // The name of the model whose topics we'd like to list. Model names have
+  // the form `projects/{project_id}/locations/{location_id}/models/{model_id}`.
+  string parent = 1;
+
+  // Requested page size. Server may return fewer topics than requested.
+  // If unspecified, server will pick an appropriate default.
+  int32 page_size = 2;
+
+  // A token identifying a page of results the server should return. Typically,
+  // this is the value of [ListTopicsResponse.next_page_token] returned from the
+  // previous call to `ListTopics` method.
+  string page_token = 3;
+}
+
+// The response message for ListTopics.
+message ListTopicsResponse {
+  // The list of topics.
+  repeated Topic topics = 1;
+
+  // A token to retrieve next page of results. Pass this value in the
+  // [ListTopicsRequest.page_token] field in the subsequent call to `ListTopics`
+  // method to retrieve the next page of results.
+  string next_page_token = 2;
+}
+
+// The request message for GetTopic.
+message GetTopicRequest {
+  // The name of topic to retrieve. Topic names have the form
+  // `projects/{project_id}/locations/{location_id}/models/{model_id}/topics/{topic_id}`.
+  string name = 1;
+}
+
+// The request message for UpdateTopic.
+message UpdateTopicRequest {
+  // The topic that updates the resource in the server. The fields `name` and
+  // `keywords` must be empty and field `description` must specify new value of
+  // description.
+  Topic topic = 1;
+
+  // Only updates the fields indicated by this mask.
+  // The field mask must not be empty, and it must not contain fields that
+  // are immutable or only set by the server.
+  // For now, mutable field is only `description`.
+  google.protobuf.FieldMask update_mask = 2;
+}

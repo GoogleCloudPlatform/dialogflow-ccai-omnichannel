@@ -26,7 +26,7 @@ import { global } from './config';
 import { Aog } from './aog';
 import { BusinessMessages } from './business-messages';
 import { Web, WebStream } from './web';
-import { ContactCenterAi } from './ccai';
+import { ContactCenterAi } from './twilio';
 import * as fb from './firebase';
 
 
@@ -307,6 +307,7 @@ export class App {
             if(userRecord && userRecord.phoneNumber){
                 me.botPhoneRouter(userRecord['country'], userRecord.phoneNumber[0]);
                 await me.ccai.streamOutbound(userRecord, host, function(data){
+                    console.log(data);
                     res.json(data);
                 });
             } else {

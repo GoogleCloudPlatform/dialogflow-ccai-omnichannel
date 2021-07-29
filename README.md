@@ -192,7 +192,7 @@ To test an agent,
 4. For this demo we are integrating an iframe with the preview of the add in the external website interface. In a real world application, this will be provided through an ads platform.
 
 ### Verified Calls
-With Verified Calls, you can upgraade a regular phone call from a business to a consumer. When a user receives a call from a business, the user sees who is calling, the logo of the business, that the business has been verified, and the reason for the call. See the [Verified Calls](https://developers.google.com/business-communications/verified-calls/guides/learn) documentation for more information.
+With Verified Calls, you can upgrade a regular phone call from a business to a consumer. When a user receives a call from a business, the user sees who is calling, the logo of the business, that the business has been verified, and the reason for the call. See the [Verified Calls](https://developers.google.com/business-communications/verified-calls/guides/learn) documentation for more information.
 
 #### Before you begin
 

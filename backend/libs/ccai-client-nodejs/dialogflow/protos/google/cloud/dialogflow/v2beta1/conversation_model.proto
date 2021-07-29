@@ -1,0 +1,444 @@
+// Copyright 2021 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+
+package google.cloud.dialogflow.v2beta1;
+
+import "google/api/annotations.proto";
+import "google/api/client.proto";
+import "google/api/field_behavior.proto";
+import "google/api/resource.proto";
+import "google/cloud/dialogflow/v2beta1/participant.proto";
+import "google/longrunning/operations.proto";
+import "google/protobuf/timestamp.proto";
+
+option cc_enable_arenas = true;
+option csharp_namespace = "Google.Cloud.Dialogflow.V2beta1";
+option go_package = "google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1;dialogflow";
+option java_multiple_files = true;
+option java_outer_classname = "ConversationModelProto";
+option java_package = "com.google.cloud.dialogflow.v2beta1";
+option objc_class_prefix = "DF";
+
+// Manages a collection of models for human agent assistant.
+service ConversationModels {
+  option (google.api.default_host) = "dialogflow.googleapis.com";
+  option (google.api.oauth_scopes) =
+      "https://www.googleapis.com/auth/cloud-platform,"
+      "https://www.googleapis.com/auth/dialogflow";
+
+  // Creates a model.
+  //
+  // Operation <response:
+  // [ConversationModel][google.cloud.dialogflow.v2beta1.ConversationModel],
+  //            metadata:
+  //            [CreateConversationModelOperationMetadata][google.cloud.dialogflow.v2beta1.CreateConversationModelOperationMetadata]>
+  rpc CreateConversationModel(CreateConversationModelRequest)
+      returns (google.longrunning.Operation) {
+    option (google.api.http) = {
+      post: "/v2beta1/{parent=projects/*}/conversationModels"
+      body: "conversation_model"
+      additional_bindings {
+        post: "/v2beta1/{parent=projects/*/locations/*}/conversationModels"
+        body: "conversation_model"
+      }
+    };
+    option (google.longrunning.operation_info) = {
+      response_type: "ConversationModel"
+      metadata_type: "CreateConversationModelOperationMetadata"
+    };
+  }
+
+  // Gets conversation model.
+  rpc GetConversationModel(GetConversationModelRequest)
+      returns (ConversationModel) {
+    option (google.api.http) = {
+      get: "/v2beta1/{name=projects/*/conversationModels/*}"
+      additional_bindings {
+        get: "/v2beta1/{name=projects/*/locations/*/conversationModels/*}"
+      }
+    };
+  }
+
+  // Lists conversation models.
+  rpc ListConversationModels(ListConversationModelsRequest)
+      returns (ListConversationModelsResponse) {
+    option (google.api.http) = {
+      get: "/v2beta1/{parent=projects/*}/conversationModels"
+      additional_bindings {
+        get: "/v2beta1/{parent=projects/*/locations/*}/conversationModels"
+      }
+    };
+  }
+
+  // Deletes a model.
+  //
+  // Operation <response: [google.protobuf.Empty][google.protobuf.Empty],
+  //            metadata:
+  //            [DeleteConversationModelOperationMetadata][google.cloud.dialogflow.v2beta1.DeleteConversationModelOperationMetadata]>
+  rpc DeleteConversationModel(DeleteConversationModelRequest)
+      returns (google.longrunning.Operation) {
+    option (google.api.http) = {
+      delete: "/v2beta1/{name=projects/*/conversationModels/*}"
+      additional_bindings {
+        delete: "/v2beta1/{name=projects/*/locations/*/conversationModels/*}"
+      }
+    };
+    option (google.longrunning.operation_info) = {
+      response_type: "google.protobuf.Empty"
+      metadata_type: "DeleteConversationModelOperationMetadata"
+    };
+  }
+
+  // Deploys a model. If a model is already deployed, deploying it
+  // has no effect. A model can only serve prediction requests after it gets
+  // deployed. For article suggestion, custom model will not be used unless
+  // it is deployed.
+  //
+  // Operation <response: [google.protobuf.Empty][google.protobuf.Empty],
+  //            metadata:
+  //            [DeployConversationModelOperationMetadata][google.cloud.dialogflow.v2beta1.DeployConversationModelOperationMetadata]>
+  rpc DeployConversationModel(DeployConversationModelRequest)
+      returns (google.longrunning.Operation) {
+    option (google.api.http) = {
+      post: "/v2beta1/{name=projects/*/conversationModels/*}:deploy"
+      body: "*"
+      additional_bindings {
+        post: "/v2beta1/{name=projects/*/locations/*/conversationModels/*}:deploy"
+        body: "*"
+      }
+    };
+    option (google.longrunning.operation_info) = {
+      response_type: "google.protobuf.Empty"
+      metadata_type: "DeployConversationModelOperationMetadata"
+    };
+  }
+
+  // Undeploys a model. If the model is not deployed this method has no effect.
+  // If the model is currently being used:
+  //   - For article suggestion, article suggestion will fallback to the default
+  //     model if model is undeployed.
+  //
+  // Operation <response: [google.protobuf.Empty][google.protobuf.Empty],
+  //            metadata:
+  //            [UndeployConversationModelOperationMetadata][google.cloud.dialogflow.v2beta1.UndeployConversationModelOperationMetadata]>
+  rpc UndeployConversationModel(UndeployConversationModelRequest)
+      returns (google.longrunning.Operation) {
+    option (google.api.http) = {
+      post: "/v2beta1/{name=projects/*/conversationModels/*}:undeploy"
+      body: "*"
+      additional_bindings {
+        post: "/v2beta1/{name=projects/*/locations/*/conversationModels/*}:undeploy"
+        body: "*"
+      }
+    };
+    option (google.longrunning.operation_info) = {
+      response_type: "google.protobuf.Empty"
+      metadata_type: "UndeployConversationModelOperationMetadata"
+    };
+  }
+}
+
+// Represents a conversation model.
+message ConversationModel {
+  option (google.api.resource) = {
+    type: "dialogflow.googleapis.com/ConversationModel"
+    pattern: "projects/{project}/conversationModels/{conversation_model}"
+    pattern: "projects/{project}/locations/{location}/conversationModels/{conversation_model}"
+  };
+
+  // State of the model.
+  enum State {
+    // Should not be used, an un-set enum has this value by default.
+    STATE_UNSPECIFIED = 0;
+
+    // Model being created.
+    CREATING = 1;
+
+    // Model is not deployed but ready to deploy.
+    UNDEPLOYED = 2;
+
+    // Model is deploying.
+    DEPLOYING = 3;
+
+    // Model is deployed and ready to use.
+    DEPLOYED = 4;
+
+    // Model is undeploying.
+    UNDEPLOYING = 5;
+
+    // Model is deleting.
+    DELETING = 6;
+
+    // Model is in error state. Not ready to deploy and use.
+    FAILED = 7;
+
+    // Model is being created but the training has not started,
+    // The model may remain in this state until there is enough capacity to
+    // start training.
+    PENDING = 8;
+  }
+
+  // Model type.
+  enum ModelType {
+    // ModelType unspecified.
+    MODEL_TYPE_UNSPECIFIED = 0;
+
+    // ModelType article suggestion gbt.
+    ARTICLE_SUGGESTION_GBT_MODEL = 1;
+
+    // ModelType smart reply dual encoder model.
+    SMART_REPLY_DUAL_ENCODER_MODEL = 2;
+
+    // ModelType smart reply bert model.
+    SMART_REPLY_BERT_MODEL = 6;
+
+    // ModelType article suggestion dual encoder model.
+    ARTICLE_SUGGESTION_DUAL_ENCODER_MODEL = 3;
+
+    // ModelType smart compose dual encoder model.
+    SMART_COMPOSE_DUAL_ENCODER_MODEL = 4;
+
+    // ModelType issue smart compose dual encoder model.
+    ISSUE_SMART_COMPOSE_DUAL_ENCODER_MODEL = 7;
+
+    // ModelType article suggestion unsupervised model.
+    ARTICLE_SUGGESTION_UNSUPERVISED_MODEL = 5;
+
+    // ModelType smart reply generative model.
+    SMART_REPLY_GENERATIVE_MODEL = 9;
+  }
+
+  // ConversationModel resource name. Format:
+  // `projects/<Project ID>/conversationModels/<Conversation Model ID>`
+  string name = 1;
+
+  // Required. The display name of the model. At most 64 bytes long.
+  string display_name = 2 [(google.api.field_behavior) = REQUIRED];
+
+  // Output only. Creation time of this model.
+  google.protobuf.Timestamp create_time = 3
+      [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Required. Datasets used to create model.
+  repeated InputDataset datasets = 4 [(google.api.field_behavior) = REQUIRED];
+
+  // Output only. State of the model. A model can only serve prediction requests
+  // after it gets deployed.
+  State state = 7 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Required.
+  // The model metadata that is specific to the problem type.
+  // Must match the metadata type of the dataset used to train the model.
+  oneof model_metadata {
+    // Metadata for article suggestion models.
+    ArticleSuggestionModelMetadata article_suggestion_model_metadata = 8;
+
+    // Metadata for smart reply models.
+    SmartReplyModelMetadata smart_reply_model_metadata = 9;
+
+    // Metadata for smart compose models.
+    SmartComposeModelMetadata smart_compose_model_metadata = 14;
+
+    // Metadata for summarization models.
+    SummarizationModelMetadata summarization_model_metadata = 15;
+
+    // Metadata for key moment models.
+    KeyMomentModelMetadata key_moment_model_metadata = 16;
+  }
+}
+
+// InputDataset used to create model or do evaluation.
+// NextID:5
+message InputDataset {
+  // Required. ConversationDataset resource name. Format:
+  // `projects/<Project ID>/conversationDatasets/<Conversation Dataset ID>`
+  // or
+  // `projects/<Project ID>/conversationDatasets/<Conversation Dataset
+  // ID>/annotatedConversationDatasets/<Annotated Conversation Dataset ID>`
+  string dataset = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {
+      type: "dialogflow.googleapis.com/ConversationDataset"
+    }
+  ];
+}
+
+// Metadata for article suggestion models.
+message ArticleSuggestionModelMetadata {
+  // Optional. DEPRECATED: Prefer defining and accessing the model type using
+  // training_model_type. Type of the article suggestion model. The available
+  // values are:
+  //
+  // *   `article-suggestion-gbt-1` - (default) Article Suggestion Gbt model.
+  // *   `article-suggestion-unsupervised-1`
+  //      - Article Suggestion Unsupervised Model.
+  string model_type = 1
+      [deprecated = true, (google.api.field_behavior) = OPTIONAL];
+
+  // Optional. Type of the article suggestion model. If not provided, model_type
+  // is used.
+  ConversationModel.ModelType training_model_type = 3
+      [(google.api.field_behavior) = OPTIONAL];
+}
+
+// Information of the associated allowlist for the conversation model.
+message AssociateAllowlistInfo {
+  // Source of the allowlist.
+  enum SourceType {
+    // Should not be used, default value when source unspecified.
+    SOURCE_TYPE_UNSPECIFIED = 0;
+
+    // The allowlist will be automatically generated along with the conversation
+    // model during training.
+    AUTOMATIC = 1;
+
+    // The allowlist is previously generated, and explicitly associated with
+    // the conversation model.
+    PRETRAINED = 2;
+  }
+
+  // The resource name of the associated allowlist. Format:
+  // 'projects/<Project ID>/knowledgeBases/<KnowledgeBase
+  // ID>/documents/<Document ID>'
+  string document = 1 [(google.api.resource_reference) = {
+    type: "dialogflow.googleapis.com/Document"
+  }];
+
+  // Source of the associated allowlist document.
+  SourceType source_type = 2;
+}
+
+// Metadata for smart reply models.
+message SmartReplyModelMetadata {
+  // DEPRECATED: Prefer defining and accessing the model type using
+  // training_model_type. Type of the smart reply model. The available values
+  // are:
+  //
+  // *   `smart-reply-dual-encoder-model-1`
+  //      - (default) Smart Reply Dual Encoder Model.
+  string model_type = 1 [deprecated = true];
+
+  // Optional. Type of the smart reply model. If not provided, model_type is
+  // used.
+  ConversationModel.ModelType training_model_type = 6
+      [(google.api.field_behavior) = OPTIONAL];
+}
+
+// Metadata for smart compose models.
+message SmartComposeModelMetadata {
+  // Optional. DEPRECATED: Prefer defining and accessing the model type using
+  // training_model_type. Type of the smart compose model. The available values
+  // are:
+  //
+  // *   `smart-compose-dual-encoder-model-1`
+  //      - (default) Smart Compose Dual Encoder Model.
+  string model_type = 1
+      [deprecated = true, (google.api.field_behavior) = OPTIONAL];
+
+  // Optional. The information of the allowlist associated with the conversation
+  // model. This field is internal and only to be accessed by the web console.
+  AssociateAllowlistInfo associated_allowlist_info = 6
+      [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. Type of the smart compose model. If not provided, model_type is
+  // used.
+  ConversationModel.ModelType training_model_type = 7
+      [(google.api.field_behavior) = OPTIONAL];
+}
+
+// Metadata for summarization models.
+message SummarizationModelMetadata {
+  // Type of the smart reply model. The available values are:
+  // *  `summarization-model-1` - (default)
+  string model_type = 1;
+}
+
+// Metadata for key moment models.
+message KeyMomentModelMetadata {
+  // Type of the smart reply model. The available values are:
+  // *  `key-moment-model-1` - (default)
+  string model_type = 1;
+}
+
+// The request message for
+// [ConversationModels.CreateConversationModel][google.cloud.dialogflow.v2beta1.ConversationModels.CreateConversationModel]
+message CreateConversationModelRequest {
+  // The project to create conversation model for. Format:
+  // `projects/<Project ID>`
+  string parent = 1;
+
+  // Required. The conversation model to create.
+  ConversationModel conversation_model = 2
+      [(google.api.field_behavior) = REQUIRED];
+}
+
+// The request message for
+// [ConversationModels.GetConversationModel][google.cloud.dialogflow.v2beta1.ConversationModels.GetConversationModel]
+message GetConversationModelRequest {
+  // Required. The conversation model to retrieve. Format:
+  // `projects/<Project ID>/conversationModels/<Conversation Model ID>`
+  string name = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// The request message for
+// [ConversationModels.ListConversationModels][google.cloud.dialogflow.v2beta1.ConversationModels.ListConversationModels]
+message ListConversationModelsRequest {
+  // Required. The project to list all conversation models for.
+  // Format: `projects/<Project ID>`
+  string parent = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // Optional. Maximum number of conversation models to return in a single
+  // page. By default 100 and at most 1000.
+  int32 page_size = 2 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. The next_page_token value returned from a previous list request.
+  string page_token = 3 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// The response message for
+// [ConversationModels.ListConversationModels][google.cloud.dialogflow.v2beta1.ConversationModels.ListConversationModels]
+message ListConversationModelsResponse {
+  // The list of models to return.
+  repeated ConversationModel conversation_models = 1;
+
+  // Token to retrieve the next page of results, or empty if there are no more
+  // results in the list.
+  string next_page_token = 2;
+}
+
+// The request message for
+// [ConversationModels.DeleteConversationModel][google.cloud.dialogflow.v2beta1.ConversationModels.DeleteConversationModel]
+message DeleteConversationModelRequest {
+  // Required. The conversation model to delete. Format:
+  // `projects/<Project ID>/conversationModels/<Conversation Model ID>`
+  string name = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// The request message for
+// [ConversationModels.DeployConversationModel][google.cloud.dialogflow.v2beta1.ConversationModels.DeployConversationModel]
+message DeployConversationModelRequest {
+  // Required. The conversation model to deploy. Format:
+  // `projects/<Project ID>/conversationModels/<Conversation Model ID>`
+  string name = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// The request message for
+// [ConversationModels.UndeployConversationModel][google.cloud.dialogflow.v2beta1.ConversationModels.UndeployConversationModel]
+message UndeployConversationModelRequest {
+  // Required. The conversation model to undeploy. Format:
+  // `projects/<Project ID>/conversationModels/<Conversation Model ID>`
+  string name = 1 [(google.api.field_behavior) = REQUIRED];
+}

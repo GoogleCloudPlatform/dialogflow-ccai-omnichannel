@@ -1,0 +1,390 @@
+// Copyright 2021 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+
+package google.cloud.dialogflow.v2beta1;
+
+import "google/api/annotations.proto";
+import "google/api/client.proto";
+import "google/api/field_behavior.proto";
+import "google/api/resource.proto";
+import "google/cloud/dialogflow/v2beta1/document.proto";
+import "google/cloud/dialogflow/v2beta1/participant.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/field_mask.proto";
+
+option cc_enable_arenas = true;
+option csharp_namespace = "Google.Cloud.Dialogflow.V2beta1";
+option go_package = "google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1;dialogflow";
+option java_multiple_files = true;
+option java_outer_classname = "HumanAgentAssistantProto";
+option java_package = "com.google.cloud.dialogflow.v2beta1";
+option objc_class_prefix = "DF";
+
+// Deprecated: use configs in
+// [HumanAgentAssistantConfig.SuggestionFeatureConfig][google.cloud.dialogflow.v2beta1.HumanAgentAssistantConfig.SuggestionFeatureConfig]
+// of [ConversationProfile][google.cloud.dialogflow.v2beta1.ConversationProfile]
+// Removal Date: 2020-09-01. From 2020-06-08, we will disable
+// [HumanAgentAssistants.CreateHumanAgentAssistant][google.cloud.dialogflow.v2beta1.HumanAgentAssistants.CreateHumanAgentAssistant].
+// After 2020-09-01, all configuration will be migrated into
+// [ConversationProfile][google.cloud.dialogflow.v2beta1.ConversationProfile]
+// automatically.
+//
+// Manages a collection of human agent assistants.
+//
+// A human agent assistant provides prompts and information to a live, human
+// agent to use with end users. Each human agent participating in a conversation
+// can use a different human agent assistant.
+//
+// The life cycle of human agent assistant resources is independent of the
+// lifecycle of conversations.
+service HumanAgentAssistants {
+  option deprecated = true;
+  option (google.api.default_host) = "dialogflow.googleapis.com";
+  option (google.api.oauth_scopes) =
+      "https://www.googleapis.com/auth/cloud-platform,"
+      "https://www.googleapis.com/auth/dialogflow";
+
+  // Returns the list of all human agent assistants.
+  rpc ListHumanAgentAssistants(ListHumanAgentAssistantsRequest)
+      returns (ListHumanAgentAssistantsResponse) {
+    option deprecated = true;
+    option (google.api.http) = {
+      get: "/v2beta1/{parent=projects/*}/humanAgentAssistants"
+    };
+  }
+
+  // Retrieves a human agent assistant.
+  rpc GetHumanAgentAssistant(GetHumanAgentAssistantRequest)
+      returns (HumanAgentAssistant) {
+    option deprecated = true;
+    option (google.api.http) = {
+      get: "/v2beta1/{name=projects/*/humanAgentAssistants/*}"
+    };
+  }
+
+  // Creates a human agent assistant.
+  // Deprecated. Use
+  // [ConversationProfiles.CreateConversationProfile][google.cloud.dialogflow.v2beta1.ConversationProfiles.CreateConversationProfile]
+  // instead.
+  //
+  // Starting 2020-06-08, this method will always return INVALID_ARGUMENT. If
+  // you need to continue using this method, you can set
+  // [CreateHumanAgentAssistantRequest.bypass_deprecation][google.cloud.dialogflow.v2beta1.CreateHumanAgentAssistantRequest.bypass_deprecation]
+  // to true. The bypass flag will be removed after 2020-09-01, so you will need
+  // to stop using this method by that date.
+  // .
+  rpc CreateHumanAgentAssistant(CreateHumanAgentAssistantRequest)
+      returns (HumanAgentAssistant) {
+    option deprecated = true;
+    option (google.api.http) = {
+      post: "/v2beta1/{parent=projects/*}/humanAgentAssistants"
+      body: "human_agent_assistant"
+    };
+  }
+
+  // Updates the specified human agent assistant.
+  rpc UpdateHumanAgentAssistant(UpdateHumanAgentAssistantRequest)
+      returns (HumanAgentAssistant) {
+    option deprecated = true;
+    option (google.api.http) = {
+      patch: "/v2beta1/{human_agent_assistant.name=projects/*/humanAgentAssistants/*}"
+      body: "human_agent_assistant"
+    };
+  }
+
+  // Deletes the specified human agent assistant.
+  rpc DeleteHumanAgentAssistant(DeleteHumanAgentAssistantRequest)
+      returns (google.protobuf.Empty) {
+    option deprecated = true;
+    option (google.api.http) = {
+      delete: "/v2beta1/{name=projects/*/humanAgentAssistants/*}"
+    };
+  }
+
+  // Uses the specified human agent assistant to come up with suggestions
+  // (relevant articles and FAQs) on how to respond to a given conversation.
+  rpc CompileSuggestions(CompileSuggestionsRequest)
+      returns (CompileSuggestionsResponse) {
+    option deprecated = true;
+    option (google.api.http) = {
+      post: "/v2beta1/{name=projects/*/humanAgentAssistants/*}:compileSuggestions"
+      body: "*"
+    };
+  }
+}
+
+// Deprecated: use configs in
+// [HumanAgentAssistantConfig.SuggestionFeatureConfig][google.cloud.dialogflow.v2beta1.HumanAgentAssistantConfig.SuggestionFeatureConfig]
+// of [ConversationProfile][google.cloud.dialogflow.v2beta1.ConversationProfile]
+//
+// Represents a human agent assistant that provides suggestions to help
+// human agents to resolve customer issues. This defines the types of content
+// that the human agent assistant can present to a human agent.
+message HumanAgentAssistant {
+  option deprecated = true;
+
+  // The unique identifier of human agent assistant.
+  // Required for
+  // [HumanAgentAssistants.UpdateHumanAgentAssistant][google.cloud.dialogflow.v2beta1.HumanAgentAssistants.UpdateHumanAgentAssistant]
+  // method. Format: `projects/<Project ID>/humanAgentAssistants/<Human Agent
+  // Assistant ID>`.
+  string name = 1;
+
+  // Optional. Human readable name. Max length 1024 bytes.
+  string display_name = 6;
+
+  // Optional. Settings for article suggestion.
+  ArticleSuggestionConfig article_suggestion_config = 2;
+
+  // Optional. Settings for knowledge service.
+  FaqAnswersConfig faq_answers_config = 4;
+
+  // Optional. Settings for smart reply service.
+  SmartReplyConfig smart_reply_config = 3;
+
+  // Optional. Settings for Dialogflow assist service.
+  DialogflowAssistConfig dialogflow_assist_config = 8;
+}
+
+// Settings for article suggestions.
+// Articles are uploaded by contact center operators and saved in a knowledge
+// base. They are used by the service to choose the best articles during a
+// conversation.
+message ArticleSuggestionConfig {
+  option deprecated = true;
+
+  // Required. Settings for knowledge base, Format:
+  // `projects/<Project ID>/knowledgeBases/<Knowledge Base ID>`.
+  string knowledge_base_name = 1;
+
+  // Optional. Maximum number of results to return. If unset, defaults to 10.
+  int32 max_results = 4;
+
+  // Deprecated. Will only take effect in `legacy` workflow. In new workflow,
+  // it is moved to
+  // [HumanAgentAssistantConfig.SuggestionFeatureConfig.trigger_model_mode][google.cloud.dialogflow.v2beta1.HumanAgentAssistantConfig.SuggestionFeatureConfig.trigger_model_mode].
+  // See
+  // [HumanAgentAssistantConfig.name][google.cloud.dialogflow.v2beta1.HumanAgentAssistantConfig.name]
+  // for more details.
+  //
+  // Optional. Trigger Model is a feature that predicts whether human agent
+  // assistant needs to provide suggestions on current message with the context
+  // of current conversation. User can choose whether to enable this feature or
+  // not by setting up this field. If TriggerModelMode is enabled, human agent
+  // assistant will only generate suggestions when the score from the model
+  // prediction result exceeds certain threshold. If the TriggerModelMode is
+  // disabled, human agent assistant will try to generate suggestions for every
+  // message. If it is set to TRIGGER_MODEL_MODE_UNSPECIFIED, it will be
+  // automatically set to TRIGGER_MODEL_MODE_ENABLED during the human agent
+  // assistant creation. Note that for previously created human agent
+  // assistants before this feature launch, the default value of this flag is
+  // disabled so their behavior won't change unless updating this field using
+  // UpdateHumanAgentAssistant.
+  TriggerModelMode trigger_model_mode = 10 [deprecated = true];
+
+  // Optional. Custom conversation model name. Format:
+  // `projects/<Project ID>/conversationModels/<Model ID>`.
+  string model = 11;
+
+  // Optional. Confidence threshold to filter out low score article
+  // suggestions. If not set, filter out suggestions with score equal to 0.
+  double confidence_threshold = 12;
+}
+
+// Deprecated, use
+// [HumanAgentAssistantConfig.SuggestionTriggerSettings][google.cloud.dialogflow.v2beta1.HumanAgentAssistantConfig.SuggestionTriggerSettings]
+// instead. Enumeration of different values of TriggerModelMode.
+enum TriggerModelMode {
+  option deprecated = true;
+
+  // TriggerModelMode not set.
+  TRIGGER_MODEL_MODE_UNSPECIFIED = 0;
+
+  // TriggerModel enabled.
+  TRIGGER_MODEL_MODE_ENABLED = 1;
+
+  // TriggerModelMode disabled.
+  TRIGGER_MODEL_MODE_DISABLED = 2;
+
+  // Enables a lite trigger model. Suggestion will only be computed when the
+  // latest message is from `END_USER`.
+  TRIGGER_MODEL_MODE_END_USER_ONLY = 3;
+}
+
+// Settings for a FAQ response.
+// Question and answer pairs are uploaded by contact center operators and saved
+// in a knowledge base. They are used by the service to choose the best answer
+// given the question extracted from a conversation.
+message FaqAnswersConfig {
+  option deprecated = true;
+
+  // Required. Settings for knowledge base, Format:
+  // `projects/<Project ID>/knowledgeBases/<Knowledge Base ID>`.
+  string knowledge_base_name = 1;
+
+  // Optional. Maximum number of results to return. If unset, defaults to 10.
+  int32 max_results = 2;
+
+  // This field is no longer has any effect.
+  // We will only return FAQ doc in faq suggestion.
+  repeated Document.KnowledgeType knowledge_types = 4;
+}
+
+// Settings for a smart reply.
+// Candidate replies are automatically generated by the service based on raw
+// conversations and independent from model training. These replies are then
+// revised for correctness and improvement by contact center operators. These
+// candidate replies are saved in a knowledge document, which is used by the
+// service to choose the best replies during a conversation.
+message SmartReplyConfig {
+  option deprecated = true;
+
+  // Required. Smart reply model resource name. Format: `projects/<Project
+  // ID>/conversationModels/<Model ID>`.
+  string model = 1;
+
+  // Required. Knowledge document with candidate reply responses. Format:
+  // `projects/<Project ID>/locations/<Location
+  // ID>/knowledgeBases/<KnowledgeBase ID>/documents/<Document ID>`.
+  string candidate_document = 2;
+
+  // Optional. Maximum number of smart reply options to return. If unspecified
+  // or zero, defaults to 3.
+  int32 max_replies = 3;
+}
+
+// The configuration for Dialogflow assist.
+message DialogflowAssistConfig {
+  option deprecated = true;
+
+  // Required. Name of a Dialogflow virtual agent. Format:
+  // `projects/<Project ID>/agent`. It may be extended to include Agent ID
+  // when multiple agents are allowed in the same Dialogflow project.
+  string agent = 1;
+
+  // Optional. Maximum number of Dialogflow assist suggestions to return. If
+  // unspecified or zero, defaults to 1.
+  int32 max_result_count = 2;
+}
+
+// The request message for
+// [HumanAgentAssistants.ListHumanAgentAssistants][google.cloud.dialogflow.v2beta1.HumanAgentAssistants.ListHumanAgentAssistants].
+message ListHumanAgentAssistantsRequest {
+  option deprecated = true;
+
+  // Required. The project to list all agent assistants from.
+  // Format: `projects/<Project ID>`.
+  string parent = 1;
+
+  // Optional. The maximum number of items to return in a single page.
+  // The default value is 100; the maximum value is 1000.
+  int32 page_size = 2;
+
+  // Optional. The next_page_token value returned from a previous list request.
+  string page_token = 3;
+}
+
+// The response message for
+// [HumanAgentAssistants.ListHumanAgentAssistants][google.cloud.dialogflow.v2beta1.HumanAgentAssistants.ListHumanAgentAssistants].
+message ListHumanAgentAssistantsResponse {
+  option deprecated = true;
+
+  // The list of project agent assistants. There is a maximum number of
+  // items returned based on the page_size field in the request.
+  repeated HumanAgentAssistant human_agent_assistants = 1;
+
+  // Token to retrieve the next page of results or empty if there are no
+  // more results in the list.
+  string next_page_token = 2;
+}
+
+// The request message for
+// [HumanAgentAssistants.GetHumanAgentAssistant][google.cloud.dialogflow.v2beta1.HumanAgentAssistants.GetHumanAgentAssistant].
+message GetHumanAgentAssistantRequest {
+  option deprecated = true;
+
+  // Required. The resource name of the agent assistant.
+  // Format: `projects/<Project ID>/humanAgentAssistants/<Human Agent Assistant
+  // ID>`.
+  string name = 1;
+}
+
+// The request message for
+// [HumanAgentAssistants.CreateHumanAgentAssistant][google.cloud.dialogflow.v2beta1.HumanAgentAssistants.CreateHumanAgentAssistant].
+message CreateHumanAgentAssistantRequest {
+  option deprecated = true;
+
+  // Required. The project to create a agent assistant for.
+  // Format: `projects/<Project ID>`.
+  string parent = 1;
+
+  // Required. The agent assistant to create.
+  HumanAgentAssistant human_agent_assistant = 2;
+
+  // Starting 2020-06-08, the deprecated
+  // [HumanAgentAssistants.CreateHumanAgentAssistant][google.cloud.dialogflow.v2beta1.HumanAgentAssistants.CreateHumanAgentAssistant]
+  // method will always return INVALID_ARGUMENT. If you need to continue using
+  // this method, you can set `bypass_deprecation` to true. The bypass flag will
+  // be removed after 2020-09-01, so you will need to stop using this method by
+  // that date.
+  bool bypass_deprecation = 3;
+}
+
+// The request message for
+// [HumanAgentAssistants.UpdateHumanAgentAssistant][google.cloud.dialogflow.v2beta1.HumanAgentAssistants.UpdateHumanAgentAssistant].
+message UpdateHumanAgentAssistantRequest {
+  option deprecated = true;
+
+  // Required. The agent assistant to update.
+  HumanAgentAssistant human_agent_assistant = 1;
+
+  // Optional. The mask to specify which fields to update.
+  google.protobuf.FieldMask update_mask = 2;
+}
+
+// The request message for
+// [HumanAgentAssistants.DeleteHumanAgentAssistant][google.cloud.dialogflow.v2beta1.HumanAgentAssistants.DeleteHumanAgentAssistant].
+message DeleteHumanAgentAssistantRequest {
+  option deprecated = true;
+
+  // Required. The resource name of the agent assistant.
+  // Format: `projects/<Project ID>/humanAgentAssistants/<Human Agent Assistant
+  // ID>`.
+  string name = 1;
+}
+
+// The request message for
+// [HumanAgentAssistants.CompileSuggestions][google.cloud.dialogflow.v2beta1.HumanAgentAssistants.CompileSuggestions].
+message CompileSuggestionsRequest {
+  option deprecated = true;
+
+  // Required. The resource name of the agent assistant.
+  // Format: `projects/<Project ID>/humanAgentAssistants/<Human Agent Assistant
+  // ID>`.
+  string name = 1;
+
+  // Required. List of messages in a conversation in chronological order.
+  repeated Message messages = 2;
+}
+
+// The response message for
+// [HumanAgentAssistants.CompileSuggestions][google.cloud.dialogflow.v2beta1.HumanAgentAssistants.CompileSuggestions]
+message CompileSuggestionsResponse {
+  option deprecated = true;
+
+  // Required.
+  repeated Suggestion suggestions = 1;
+}
