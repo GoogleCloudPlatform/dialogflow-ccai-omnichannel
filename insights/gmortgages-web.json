@@ -1,0 +1,74 @@
+{
+  "categories":[
+    {
+      "display_name":"Web"
+    },
+    {
+      "display_name":"Mortgage Consultation"
+    },
+    {
+      "display_name":"APPOINTMENT_SCHEDULING"
+    }    
+   ],
+    "entries": [
+        {
+            "text": "Hi there, in order to help you better, please login.",
+            "user_id": 2,
+            "start_timestamp_usec": 100000,
+            "role": "AGENT"         
+        },
+      {
+        "text": "Welcome to G-Mortgages. I see that you have prequalified for a fixed rate mortgage. Would you like me to book an appointment?",
+        "user_id": 2,
+		"start_timestamp_usec": 1000000,
+		"role": "AGENT"
+      },
+      {
+        "text": "Yeah that would be nice.",
+        "user_id": 1,
+		"start_timestamp_usec": 3000000,
+		"role": "CUSTOMER"
+      },
+      {
+        "text": "I can schedule a mortgage consultation with Mr. Gerrit Oogle. Monday the 8th at 2 pm. Would this work for you?",
+        "user_id": 2,
+		"start_timestamp_usec": 5000000,
+		"role": "AGENT"
+      },
+      {
+        "text": "Yes, that would work for me.",
+        "user_id": 1,
+		"start_timestamp_usec": 7000000,
+		"role": "CUSTOMER"
+      },
+      {
+        "text": "Perfect, you'll have a mortgage appointment for Monday the 8th at 2 pm.",
+        "user_id": 2,
+        "start_timestamp_usec": 9000000,
+        "role": "AGENT"
+    },{
+        "text": "You will receive a text confirmation for the virtual appointment via text.",
+        "user_id": 2,
+        "start_timestamp_usec": 9100000,
+        "role": "AGENT"
+    },
+      {
+          "text": "Is there anything else I can help you with?",
+          "user_id": 2,
+          "start_timestamp_usec": 9200000,
+          "role": "AGENT"
+      },
+      {
+        "text": "No that's it for now, thank you.",
+        "user_id": 1,
+		"start_timestamp_usec": 10000000,
+		"role": "CUSTOMER"
+      },
+      {
+        "text": "Thank you for contacting G-Mortgages. Have a nice day!",
+        "user_id": 2,
+        "start_timestamp_usec": 9200000,
+        "role": "AGENT"
+    }
+    ]
+  }

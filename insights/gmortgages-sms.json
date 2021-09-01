@@ -1,0 +1,33 @@
+{
+  "categories":[
+    {
+      "display_name":"SMS"
+    },
+    {
+      "display_name":"Mortgage Consultation"
+    },
+    {
+      "display_name":"APPOINTMENT_CONFIRMED"
+    }      
+   ],
+    "entries": [
+        {
+            "text": "Hi [NAME]. Thank you for scheduling an appointment with G-Mortgages. Your virtual consultation with a licensed broker has been set for tomorrow, Wednesday the 8th at 2:00pm. Feel free to reply, if you want to re-schedule your appointment",
+            "user_id": 2,
+            "start_timestamp_usec": 100000,
+            "role": "AGENT"         
+        },
+      {
+        "text": "Can we make it 30min later?",
+        "user_id": 1,
+		"start_timestamp_usec": 3000000,
+		"role": "CUSTOMER"
+      },
+      {
+        "text": "Ok, your appointment is set for Monday the 8th at 2:30 pm.",
+        "user_id": 2,
+		"start_timestamp_usec": 5000000,
+		"role": "AGENT"
+      }
+    ]
+  }

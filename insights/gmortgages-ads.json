@@ -1,0 +1,69 @@
+{
+  "categories":[
+    {
+      "display_name":"Ads"
+    },
+    {
+      "display_name":"Mortgage Consultation"
+    },
+    {
+      "display_name":"AD"
+    }      
+   ],
+    "entries": [
+        {
+            "text": "Do you have any questions about this property?",
+            "user_id": 2,
+            "start_timestamp_usec": 100000,
+            "role": "AGENT"         
+        },
+      {
+        "text": "Yes, I’m curious if I qualify for a mortgage loan.",
+        "user_id": 1,
+		"start_timestamp_usec": 3000000,
+		"role": "CUSTOMER"
+      },
+      {
+        "text": "Great! Let’s answer a few questions to find out for which rates you prequalify.",
+        "user_id": 2,
+		"start_timestamp_usec": 5000000,
+		"role": "AGENT"
+      },
+      {
+        "text": "We can do a quick calculation. How much do you make?",
+        "user_id": 2,
+		"start_timestamp_usec": 5500000,
+		"role": "AGENT"
+      },
+      {
+        "text": "About 1500 euro a month.",
+        "user_id": 1,
+		"start_timestamp_usec": 7000000,
+		"role": "CUSTOMER"
+      },
+      {
+        "text": "Okay, and do you want to make a down payment?",
+        "user_id": 2,
+		"start_timestamp_usec": 9000000,
+		"role": "AGENT"
+      },
+      {
+        "text": "I might, I don't know how much I want to put in yet.",
+        "user_id": 1,
+		"start_timestamp_usec": 10000000,
+		"role": "CUSTOMER"
+      },
+      {
+        "text": "No problem. Let’s go to the G-Mortgages website to set up a consultation with a licensed lending agent.",
+        "user_id": 2,
+		"start_timestamp_usec": 12000000,
+		"role": "AGENT"
+      },
+      {
+        "text": "Button: Schedule an appointment",
+        "user_id": 2,
+		"start_timestamp_usec": 12500000,
+		"role": "AGENT"
+      }      
+    ]
+  }

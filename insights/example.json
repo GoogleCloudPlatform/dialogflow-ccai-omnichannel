@@ -1,0 +1,124 @@
+{
+    "entries": [
+      {
+        "text": "",
+        "user_id": 1,
+		"start_timestamp_usec": 100000,
+		"role": "CUSTOMER"
+      },
+      {
+        "text": "Hi my name is John. Can I ask who I’m speaking with today?",
+        "user_id": 2,
+		"start_timestamp_usec": 1000000,
+		"role": "AGENT"
+      },
+      {
+        "text": "Jane",
+        "user_id": 1,
+		"start_timestamp_usec": 3000000,
+		"role": "CUSTOMER"
+      },
+      {
+        "text": "Great, “thanks Jane. Before we get started I need to confirm your identity so that I can access your account. I’ll be sending a passcode to your smartphone, can you read off the code you received?",
+        "user_id": 2,
+		"start_timestamp_usec": 5000000,
+		"role": "AGENT"
+      },
+      {
+        "text": "Sure, it’s 654757",
+        "user_id": 1,
+		"start_timestamp_usec": 7000000,
+		"role": "CUSTOMER"
+      },
+      {
+        "text": "Great, I’ve authenticated it’s you and I can access your account.",
+        "user_id": 2,
+		"start_timestamp_usec": 9000000,
+		"role": "AGENT"
+      },
+	  {
+        "text": "I see that you recently had an order fail due to an issue processing your credit card payment, is that why you’re calling today?",
+        "user_id": 2,
+		"start_timestamp_usec": 10000000,
+		"role": "AGENT"
+      },
+      {
+        "text": "Exactly! I don’t understand why my Chase Visa card isn’t working? It worked just fine on Amazon earlier today.",
+        "user_id": 1,
+		"start_timestamp_usec": 11000000,
+		"role": "CUSTOMER"
+      },
+      {
+        "text": "I see, have you checked to see if you have enough funds in your account to cover the entire charge? I show the amount as 165.45$.",
+        "user_id": 2,
+		"start_timestamp_usec": 13000000,
+		"role": "AGENT"
+      },
+      {
+        "text": "Are you kidding? Of course I have enough credit, that’s a ridiculous question!",
+        "user_id": 1,
+		"start_timestamp_usec": 15000000,
+		"role": "CUSTOMER"
+      },
+      {
+        "text": "I don’t appreciate you implying that I don’t have the money to make the purchase. I want to talk to your supervisor!",
+        "user_id": 1,
+		"start_timestamp_usec": 17000000,
+		"role": "CUSTOMER"
+      },
+      {
+        "text": "I’m sorry for that Jane. I can certainly get a supervisor. However, if you want I could offer you an account credit and we could try reprocessing the payment over the phone?",
+        "user_id": 2,
+		"start_timestamp_usec": 19000000,
+		"role": "AGENT"
+      },
+      {
+        "text": "I suppose that would be fine.",
+        "user_id": 1,
+		"start_timestamp_usec": 21000000,
+		"role": "CUSTOMER"
+      },
+	{
+        "text": "Great. I’ll take a note to issue the credit after our call.",
+        "user_id": 2,
+		"start_timestamp_usec": 23000000,
+		"role": "AGENT"
+      },
+	{
+        "text": "Let’s try running the transaction again, do you mind holding for a few minutes?",
+        "user_id": 2,
+		"start_timestamp_usec": 25000000,
+		"role": "AGENT"
+      },
+      {
+        "text": "That’s fine.",
+        "user_id": 1,
+		"start_timestamp_usec": 27000000,
+		"role": "CUSTOMER"
+      },
+	{
+        "text": "I’m back and I’ve confirmed that the transaction has gone through.",
+        "user_id": 2,
+		"start_timestamp_usec": 87000000,
+		"role": "AGENT"
+      },
+      {
+        "text": "Is there anything else I can help you with today?",
+        "user_id": 2,
+		"start_timestamp_usec": 89000000,
+		"role": "AGENT"
+      },
+	{
+        "text": "No, that’s it. Thank you for your help.",
+        "user_id": 1,
+		"start_timestamp_usec": 89000000,
+		"role": "CUSTOMER"
+      },
+      {
+        "text": "My pleasure! Enjoy the rest of your day.",
+        "user_id": 2,
+		"start_timestamp_usec": 91000000,
+		"role": "AGENT"
+      }
+    ]
+  }
