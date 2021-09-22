@@ -54,7 +54,7 @@ export interface QueryInputCX {
 }
 
 export class DialogflowCX extends EventEmitter {
-    public sessionClient: df.SessionsClient | df.SessionsClient;
+    public sessionClient: df.SessionsClient | df.SessionsClient | any;
     public projectId: string;
     public agentId: string;
     public location: string;

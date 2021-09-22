@@ -19,6 +19,7 @@ import * as df from '@google-cloud/dialogflow-cx';
 import * as cx from './dialogflow-cx';
 
 export class DialogflowCXV3Beta1 extends cx.DialogflowCX {
+
     constructor(global){
         super(global); // calling Parent's constructor
         this.sessionClient = new df.v3beta1.SessionsClient();

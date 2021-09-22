@@ -84,7 +84,10 @@ gcloud projects add-iam-policy-binding $PROJECT_ID \
 gcloud projects add-iam-policy-binding $PROJECT_ID \
   --member serviceAccount:$SA_EMAIL \
   --role roles/storage.objectViewer
-
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+  --member serviceAccount:$SA_EMAIL \
+  --role roles/contactcenterinsights.editor
+  
 ## ENABLE APIS
 bold "Enable APIs..."
 gcloud services enable \

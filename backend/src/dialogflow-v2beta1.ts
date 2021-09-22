@@ -133,20 +133,18 @@ const struct = require('./structjson');
               lifespanCount
           }
       };
-      console.log(request);
       return this.contextClient.createContext(request);
     }
 
     async getContext(contextId) {
-      console.log(contextId);
-      this.debug.log('------- GET CONTEXT');
+      // this.debug.log('------- GET CONTEXT');
+      // this.debug.log(contextId);
       var ctx = await this.contextClient.getContext({
         name: `${this.sessionPath}/contexts/${contextId}`
       });
       var jsonCtx = struct.structProtoToJson(ctx[0].parameters);
-      console.log('!!!! CONTEXT IS:')
-      console.log(jsonCtx);
-      this.debug.log(jsonCtx[contextId]);
+      // console.log('!!!! CONTEXT IS:')
+      // this.debug.log(jsonCtx[contextId]);
       return jsonCtx[contextId];
     }
 
@@ -328,7 +326,7 @@ export class DialogflowV2Beta1Stream extends DialogflowV2Beta1 {
 
             // TODO DF2 - Need logic for CX
             var me = this;
-            me.debug.log('----------------------- SET CONTEXT');
+            // me.debug.log('----------------------- SET CONTEXT');
             var user = {};
             var country = {};
             var streamId = {};
@@ -337,10 +335,10 @@ export class DialogflowV2Beta1Stream extends DialogflowV2Beta1 {
             country['country'] = msg.start.customParameters.userCountry;
             streamId['streamId'] = msg.start.streamSid;
             callSid['callId'] = msg.start.callSid;
-            var u = await me.createContext('user', user);
-            var c = await me.createContext('country', country);
-            var s = await me.createContext('streamId', streamId);
-            var ci = await me.createContext('callId', callSid);
+            await me.createContext('user', user);
+            await me.createContext('country', country);
+            await me.createContext('streamId', streamId);
+            await me.createContext('callId', callSid);
           }
           if (msg.event === 'mark') {
             this.debug.log(`Mark received ${msg.mark.name}`);
@@ -352,9 +350,11 @@ export class DialogflowV2Beta1Stream extends DialogflowV2Beta1 {
 
         // TODO
         // CHANGES FOR CX
+        var mergeObj = {};
+        mergeObj['recognitionResult'] = {};
+
         responseStreamPassThrough.on('data', async (data) => {
           var botResponse;
-          var mergeObj = {};
 
           if (
             data.recognitionResult &&
@@ -362,6 +362,9 @@ export class DialogflowV2Beta1Stream extends DialogflowV2Beta1 {
             data.recognitionResult.transcript.length > 0
           ) {
             this.emit('interrupted', data.recognitionResult.transcript);
+            // temp results
+            mergeObj['recognitionResult']['transcript'] = data.recognitionResult.transcript;
+            mergeObj['recognitionResult']['confidence'] = data.recognitionResult.confidence;
           }
 
           if(data.recognitionResult && data.recognitionResult.isFinal) {
@@ -372,31 +375,19 @@ export class DialogflowV2Beta1Stream extends DialogflowV2Beta1 {
               // TODO for CX this will be different
               mergeObj['query'] = data.recognitionResult.dtmfDigits;
             }
-
-            mergeObj['recognitionResult'] = {};
-            mergeObj['recognitionResult']['transcript'] = data.recognitionResult.transcript;
-            mergeObj['recognitionResult']['confidence'] = data.recognitionResult.confidence;
           }
 
+          // as soon as an intent was matched
           if(data.queryResult && data.queryResult.intent){
             botResponse = await this.beautifyResponses(data, 'audio');
-            botResponse['recognitionResult'] = {};
-            if(mergeObj && mergeObj['recognitionResult']) {
-              botResponse['recognitionResult']['transcript'] = mergeObj['recognitionResult']['transcript'];
-              botResponse['recognitionResult']['confidence'] = mergeObj['recognitionResult']['confidence'];
-            }
-            this.emit('botResponse', botResponse);
+            botResponse['recognitionResult'] = mergeObj['recognitionResult'];
+            // we will add the recognition results to the botResponse
+            this.debug.log('@@@ BOT RESPONSE - SPEECH RESULTS');
+            this.debug.log(mergeObj['recognitionResult']);
+            this.debug.log(botResponse);
 
-            // TODO for CX this will be different
-            // TODO this should be in a business logics layer
-            if(data.queryResult.intent.parameters &&
-              data.queryResult.intent.parameters.action &&
-              data.queryResult.intent.parameters.action === 'HANDOVER'
-              ){
-              console.log('!!!!!!! HANDOVER !!!!!!!!');
-              botResponse['intentDetection']['isLiveAgent'] = true;
-              this.emit('isHandOver', botResponse);
-            }
+            // and then we fire botResponse is available event
+            this.emit('botResponse', botResponse);
           }
 
           if (
