@@ -1,0 +1,76 @@
+{
+  "categories":[
+    {
+      "display_name":"WEB"
+    },
+    {
+      "display_name":"General Mortgage"
+    },
+    {
+      "display_name":"SUPPLEMENTAL"
+    }        
+   ],
+    "entries": [
+        {
+            "text": "Hi Lee. How can I help you?",
+            "user_id": 2,
+            "start_timestamp_usec": 100000,
+            "role": "AGENT"         
+        },
+      {
+        "text": "I have a question, what is an adjustable rate mortgage?",
+        "user_id": 1,
+		"start_timestamp_usec": 3000000,
+		"role": "CUSTOMER"
+      },
+      {
+        "text": "Adjustable rate mortgages typically have low initial interest rates. After the initial period, the rate adjusts to the current market conditions.",
+        "user_id": 2,
+		"start_timestamp_usec": 5000000,
+		"role": "AGENT"
+      },
+      {
+        "text": "Okay, well is it better than a fixed rate mortgage?",
+        "user_id": 1,
+		"start_timestamp_usec": 6000000,
+		"role": "CUSTOMER"
+      },
+      {
+        "text": "Well, it depends. How long do you plan to own the house?",
+        "user_id": 2,
+		"start_timestamp_usec": 7000000,
+		"role": "AGENT"
+      },
+      {
+        "text": "I’m not sure, maybe 5 years.",
+        "user_id": 1,
+		"start_timestamp_usec": 8000000,
+		"role": "CUSTOMER"
+      },
+      {
+        "text": "In that case I would suggest an adjustable rate mortgage. No sense in locking a rate for 30 years if you’re not going to live there that long.",
+        "user_id": 2,
+		"start_timestamp_usec": 11000000,
+		"role": "AGENT"
+      },
+      {
+        "text": "Do you have any other questions?",
+        "user_id": 2,
+		"start_timestamp_usec": 12000000,
+		"role": "AGENT"
+      },
+      {
+        "text": "I do have another question, can you give me a phone call?",
+        "user_id": 1,
+		"start_timestamp_usec": 13000000,
+		"role": "CUSTOMER"
+      },
+      {
+        "text": "I would be happy to speak on the phone. Please allow me just a moment",
+        "user_id": 2,
+		"start_timestamp_usec": 15000000,
+		"role": "AGENT"
+      }
+    ]
+  }
+

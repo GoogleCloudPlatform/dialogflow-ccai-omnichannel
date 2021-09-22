@@ -1,0 +1,81 @@
+{
+  "categories":[
+     {
+        "display_name":"PHONE"
+     },
+     {
+        "display_name":"General Mortgage"
+     },
+     {
+        "display_name":"SUPPLEMENTAL"
+     }
+  ],
+  "entries":[
+     {
+        "text":"Hello?",
+        "user_id":1,
+        "start_timestamp_usec":5000,
+        "role":"CUSTOMER"
+     },
+     {
+        "text":"Hi, I am the G-Mortgages virtual assistant. How can I help?",
+        "user_id":2,
+        "start_timestamp_usec":100000,
+        "role":"AGENT"
+     },
+     {
+        "text":"Ah thanks for calling. I’m thinking about taking a new job. Will that affect my mortgage application?",
+        "user_id":1,
+        "start_timestamp_usec":3000000,
+        "role":"CUSTOMER"
+     },
+     {
+        "text":"That’s exciting! Unfortunately, taking a job at a new company will affect your length of employment and may impact your application.",
+        "user_id":2,
+        "start_timestamp_usec":5000000,
+        "role":"AGENT"
+     },
+     {
+        "text":"Oh no!!! Are you serious?",
+        "user_id":1,
+        "start_timestamp_usec":6000000,
+        "role":"CUSTOMER"
+     },
+     {
+        "text":"So what would you suggest?",
+        "user_id":1,
+        "start_timestamp_usec":7000000,
+        "role":"CUSTOMER"
+     },
+     {
+        "text":"I know it’s a tough situation, but if you could defer the start date until after the mortgage is approved that would help.",
+        "user_id":2,
+        "start_timestamp_usec":8000000,
+        "role":"AGENT"
+     },
+     {
+        "text":"Do you have any other questions?",
+        "user_id":2,
+        "start_timestamp_usec":9000000,
+        "role":"AGENT"
+     },
+     {
+        "text":"Hmm. Not exactly what I was hoping for. But I guess it is what it is.",
+        "user_id":1,
+        "start_timestamp_usec":11000000,
+        "role":"CUSTOMER"
+     },
+     {
+        "text":"Goodbye.",
+        "user_id":1,
+        "start_timestamp_usec":12000000,
+        "role":"CUSTOMER"
+     },
+     {
+        "text":"I'm sorry. Well have a good day.",
+        "user_id":2,
+        "start_timestamp_usec":14000000,
+        "role":"AGENT"
+     }
+  ]
+}

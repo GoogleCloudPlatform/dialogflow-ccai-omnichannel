@@ -1,0 +1,12 @@
+{
+    "audio": {
+        "uri":"gs://insights-questions/Sample-gMortgages.wav"
+    },
+    "config": {
+        "diarizationSpeakerCount": 2,
+        "enableAutomaticPunctuation": false,
+        "enableSpeakerDiarization": true,
+        "languageCode": "en-US",
+        "model": "default"
+    }
+  }

@@ -1,0 +1,753 @@
+{
+  "results": [
+    {
+      "alternatives": [
+        {
+          "transcript": "Hello.",
+          "confidence": 0.9805153,
+          "words": [
+            {
+              "startTime": "1s",
+              "endTime": "1.600s",
+              "word": "Hello."
+            }
+          ]
+        }
+      ],
+      "channel_tag": 1,
+      "languageCode": "en-us"
+    },
+    {
+      "alternatives": [
+        {
+          "transcript": "Hi, I am a virtual assistant for G mortgages. You've asked me to give you a ring. How can I help?",
+          "confidence": 0.9595354,
+          "words": [
+            {
+              "startTime": "3.500s",
+              "endTime": "3.900s",
+              "word": "Hi,"
+            },
+            {
+              "startTime": "3.900s",
+              "endTime": "4.400s",
+              "word": "I"
+            },
+            {
+              "startTime": "4.400s",
+              "endTime": "4.500s",
+              "word": "am"
+            },
+            {
+              "startTime": "4.500s",
+              "endTime": "4.700s",
+              "word": "a"
+            },
+            {
+              "startTime": "4.700s",
+              "endTime": "5.200s",
+              "word": "virtual"
+            },
+            {
+              "startTime": "5.200s",
+              "endTime": "5.700s",
+              "word": "assistant"
+            },
+            {
+              "startTime": "5.700s",
+              "endTime": "5.900s",
+              "word": "for"
+            },
+            {
+              "startTime": "5.900s",
+              "endTime": "6s",
+              "word": "G"
+            },
+            {
+              "startTime": "6s",
+              "endTime": "6.600s",
+              "word": "mortgages."
+            },
+            {
+              "startTime": "6.600s",
+              "endTime": "7.300s",
+              "word": "You've"
+            },
+            {
+              "startTime": "7.300s",
+              "endTime": "7.500s",
+              "word": "asked"
+            },
+            {
+              "startTime": "7.500s",
+              "endTime": "7.700s",
+              "word": "me"
+            },
+            {
+              "startTime": "7.700s",
+              "endTime": "7.700s",
+              "word": "to"
+            },
+            {
+              "startTime": "7.700s",
+              "endTime": "8s",
+              "word": "give"
+            },
+            {
+              "startTime": "8s",
+              "endTime": "8s",
+              "word": "you"
+            },
+            {
+              "startTime": "8s",
+              "endTime": "8.100s",
+              "word": "a"
+            },
+            {
+              "startTime": "8.100s",
+              "endTime": "8.500s",
+              "word": "ring."
+            },
+            {
+              "startTime": "8.500s",
+              "endTime": "9s",
+              "word": "How"
+            },
+            {
+              "startTime": "9s",
+              "endTime": "9.200s",
+              "word": "can"
+            },
+            {
+              "startTime": "9.200s",
+              "endTime": "9.300s",
+              "word": "I"
+            },
+            {
+              "startTime": "9.300s",
+              "endTime": "9.400s",
+              "word": "help?"
+            }
+          ]
+        }
+      ],
+      "channel_tag": 2,
+      "languageCode": "en-us"
+    },
+    {
+      "alternatives": [
+        {
+          "transcript": " Hi, thanks for calling. I'm thinking about changing my job. Will this affect my mortgage application?",
+          "confidence": 0.95112544,
+          "words": [
+            {
+              "startTime": "10.700s",
+              "endTime": "11.100s",
+              "word": "Hi,"
+            },
+            {
+              "startTime": "11.100s",
+              "endTime": "11.400s",
+              "word": "thanks"
+            },
+            {
+              "startTime": "11.400s",
+              "endTime": "11.500s",
+              "word": "for"
+            },
+            {
+              "startTime": "11.500s",
+              "endTime": "12s",
+              "word": "calling."
+            },
+            {
+              "startTime": "12s",
+              "endTime": "12.600s",
+              "word": "I'm"
+            },
+            {
+              "startTime": "12.600s",
+              "endTime": "12.900s",
+              "word": "thinking"
+            },
+            {
+              "startTime": "12.900s",
+              "endTime": "13.100s",
+              "word": "about"
+            },
+            {
+              "startTime": "13.100s",
+              "endTime": "13.900s",
+              "word": "changing"
+            },
+            {
+              "startTime": "13.900s",
+              "endTime": "14.400s",
+              "word": "my"
+            },
+            {
+              "startTime": "14.400s",
+              "endTime": "14.900s",
+              "word": "job."
+            },
+            {
+              "startTime": "14.900s",
+              "endTime": "15.300s",
+              "word": "Will"
+            },
+            {
+              "startTime": "15.300s",
+              "endTime": "15.500s",
+              "word": "this"
+            },
+            {
+              "startTime": "15.500s",
+              "endTime": "15.700s",
+              "word": "affect"
+            },
+            {
+              "startTime": "15.700s",
+              "endTime": "16s",
+              "word": "my"
+            },
+            {
+              "startTime": "16s",
+              "endTime": "16.400s",
+              "word": "mortgage"
+            },
+            {
+              "startTime": "16.400s",
+              "endTime": "17.300s",
+              "word": "application?"
+            }
+          ]
+        }
+      ],
+      "channel_tag": 1,
+      "languageCode": "en-us"
+    },
+    {
+      "alternatives": [
+        {
+          "transcript": " That's exciting. Unfortunately, taking a job at a new company will affect your length of employment and may impact your application.",
+          "confidence": 0.9676619,
+          "words": [
+            {
+              "startTime": "19.500s",
+              "endTime": "20s",
+              "word": "That's"
+            },
+            {
+              "startTime": "20s",
+              "endTime": "20.300s",
+              "word": "exciting."
+            },
+            {
+              "startTime": "20.300s",
+              "endTime": "21.600s",
+              "word": "Unfortunately,"
+            },
+            {
+              "startTime": "21.600s",
+              "endTime": "22.100s",
+              "word": "taking"
+            },
+            {
+              "startTime": "22.100s",
+              "endTime": "22.200s",
+              "word": "a"
+            },
+            {
+              "startTime": "22.200s",
+              "endTime": "22.500s",
+              "word": "job"
+            },
+            {
+              "startTime": "22.500s",
+              "endTime": "22.700s",
+              "word": "at"
+            },
+            {
+              "startTime": "22.700s",
+              "endTime": "22.700s",
+              "word": "a"
+            },
+            {
+              "startTime": "22.700s",
+              "endTime": "22.900s",
+              "word": "new"
+            },
+            {
+              "startTime": "22.900s",
+              "endTime": "23.300s",
+              "word": "company"
+            },
+            {
+              "startTime": "23.300s",
+              "endTime": "23.500s",
+              "word": "will"
+            },
+            {
+              "startTime": "23.500s",
+              "endTime": "23.700s",
+              "word": "affect"
+            },
+            {
+              "startTime": "23.700s",
+              "endTime": "23.900s",
+              "word": "your"
+            },
+            {
+              "startTime": "23.900s",
+              "endTime": "24.200s",
+              "word": "length"
+            },
+            {
+              "startTime": "24.200s",
+              "endTime": "24.200s",
+              "word": "of"
+            },
+            {
+              "startTime": "24.200s",
+              "endTime": "24.400s",
+              "word": "employment"
+            },
+            {
+              "startTime": "24.400s",
+              "endTime": "25s",
+              "word": "and"
+            },
+            {
+              "startTime": "25s",
+              "endTime": "25.200s",
+              "word": "may"
+            },
+            {
+              "startTime": "25.200s",
+              "endTime": "25.500s",
+              "word": "impact"
+            },
+            {
+              "startTime": "25.500s",
+              "endTime": "25.700s",
+              "word": "your"
+            },
+            {
+              "startTime": "25.700s",
+              "endTime": "26.400s",
+              "word": "application."
+            }
+          ]
+        }
+      ],
+      "channel_tag": 2,
+      "languageCode": "en-us"
+    },
+    {
+      "alternatives": [
+        {
+          "transcript": " Oh, no, are you serious? So now what?",
+          "confidence": 0.9360379,
+          "words": [
+            {
+              "startTime": "27.400s",
+              "endTime": "27.700s",
+              "word": "Oh,"
+            },
+            {
+              "startTime": "27.700s",
+              "endTime": "28s",
+              "word": "no,"
+            },
+            {
+              "startTime": "28s",
+              "endTime": "28.100s",
+              "word": "are"
+            },
+            {
+              "startTime": "28.100s",
+              "endTime": "28.200s",
+              "word": "you"
+            },
+            {
+              "startTime": "28.200s",
+              "endTime": "29s",
+              "word": "serious?"
+            },
+            {
+              "startTime": "29s",
+              "endTime": "30s",
+              "word": "So"
+            },
+            {
+              "startTime": "30s",
+              "endTime": "30.200s",
+              "word": "now"
+            },
+            {
+              "startTime": "30.200s",
+              "endTime": "30.500s",
+              "word": "what?"
+            }
+          ]
+        }
+      ],
+      "channel_tag": 1,
+      "languageCode": "en-us"
+    },
+    {
+      "alternatives": [
+        {
+          "transcript": "I know it's a tough situation. But if you could defer the start date until after the mortgage is approved, that would help. Is there anything else. I can help you with?",
+          "confidence": 0.97983736,
+          "words": [
+            {
+              "startTime": "31.600s",
+              "endTime": "31.900s",
+              "word": "I"
+            },
+            {
+              "startTime": "31.900s",
+              "endTime": "32.100s",
+              "word": "know"
+            },
+            {
+              "startTime": "32.100s",
+              "endTime": "32.300s",
+              "word": "it's"
+            },
+            {
+              "startTime": "32.300s",
+              "endTime": "32.400s",
+              "word": "a"
+            },
+            {
+              "startTime": "32.400s",
+              "endTime": "32.600s",
+              "word": "tough"
+            },
+            {
+              "startTime": "32.600s",
+              "endTime": "33s",
+              "word": "situation."
+            },
+            {
+              "startTime": "33s",
+              "endTime": "33.700s",
+              "word": "But"
+            },
+            {
+              "startTime": "33.700s",
+              "endTime": "33.800s",
+              "word": "if"
+            },
+            {
+              "startTime": "33.800s",
+              "endTime": "33.900s",
+              "word": "you"
+            },
+            {
+              "startTime": "33.900s",
+              "endTime": "34.100s",
+              "word": "could"
+            },
+            {
+              "startTime": "34.100s",
+              "endTime": "34.400s",
+              "word": "defer"
+            },
+            {
+              "startTime": "34.400s",
+              "endTime": "34.600s",
+              "word": "the"
+            },
+            {
+              "startTime": "34.600s",
+              "endTime": "34.900s",
+              "word": "start"
+            },
+            {
+              "startTime": "34.900s",
+              "endTime": "35.100s",
+              "word": "date"
+            },
+            {
+              "startTime": "35.100s",
+              "endTime": "35.400s",
+              "word": "until"
+            },
+            {
+              "startTime": "35.400s",
+              "endTime": "35.700s",
+              "word": "after"
+            },
+            {
+              "startTime": "35.700s",
+              "endTime": "35.800s",
+              "word": "the"
+            },
+            {
+              "startTime": "35.800s",
+              "endTime": "36.200s",
+              "word": "mortgage"
+            },
+            {
+              "startTime": "36.200s",
+              "endTime": "36.300s",
+              "word": "is"
+            },
+            {
+              "startTime": "36.300s",
+              "endTime": "36.800s",
+              "word": "approved,"
+            },
+            {
+              "startTime": "36.800s",
+              "endTime": "36.900s",
+              "word": "that"
+            },
+            {
+              "startTime": "36.900s",
+              "endTime": "37.100s",
+              "word": "would"
+            },
+            {
+              "startTime": "37.100s",
+              "endTime": "37.400s",
+              "word": "help."
+            },
+            {
+              "startTime": "37.400s",
+              "endTime": "38.300s",
+              "word": "Is"
+            },
+            {
+              "startTime": "38.300s",
+              "endTime": "38.400s",
+              "word": "there"
+            },
+            {
+              "startTime": "38.400s",
+              "endTime": "38.600s",
+              "word": "anything"
+            },
+            {
+              "startTime": "38.600s",
+              "endTime": "38.900s",
+              "word": "else."
+            },
+            {
+              "startTime": "38.900s",
+              "endTime": "39.100s",
+              "word": "I"
+            },
+            {
+              "startTime": "39.100s",
+              "endTime": "39.100s",
+              "word": "can"
+            },
+            {
+              "startTime": "39.100s",
+              "endTime": "39.300s",
+              "word": "help"
+            },
+            {
+              "startTime": "39.300s",
+              "endTime": "39.500s",
+              "word": "you"
+            },
+            {
+              "startTime": "39.500s",
+              "endTime": "39.800s",
+              "word": "with?"
+            }
+          ]
+        }
+      ],
+      "channel_tag": 2,
+      "languageCode": "en-us"
+    },
+    {
+      "alternatives": [
+        {
+          "transcript": " Not exactly what I was hoping for but I guess it is what it is.",
+          "confidence": 0.9721429,
+          "words": [
+            {
+              "startTime": "40.600s",
+              "endTime": "42s",
+              "word": "Not"
+            },
+            {
+              "startTime": "42s",
+              "endTime": "42.500s",
+              "word": "exactly"
+            },
+            {
+              "startTime": "42.500s",
+              "endTime": "42.500s",
+              "word": "what"
+            },
+            {
+              "startTime": "42.500s",
+              "endTime": "42.700s",
+              "word": "I"
+            },
+            {
+              "startTime": "42.700s",
+              "endTime": "42.800s",
+              "word": "was"
+            },
+            {
+              "startTime": "42.800s",
+              "endTime": "42.900s",
+              "word": "hoping"
+            },
+            {
+              "startTime": "42.900s",
+              "endTime": "43.500s",
+              "word": "for"
+            },
+            {
+              "startTime": "43.500s",
+              "endTime": "43.900s",
+              "word": "but"
+            },
+            {
+              "startTime": "43.900s",
+              "endTime": "44s",
+              "word": "I"
+            },
+            {
+              "startTime": "44s",
+              "endTime": "44s",
+              "word": "guess"
+            },
+            {
+              "startTime": "44s",
+              "endTime": "44.400s",
+              "word": "it"
+            },
+            {
+              "startTime": "44.400s",
+              "endTime": "44.400s",
+              "word": "is"
+            },
+            {
+              "startTime": "44.400s",
+              "endTime": "44.600s",
+              "word": "what"
+            },
+            {
+              "startTime": "44.600s",
+              "endTime": "44.700s",
+              "word": "it"
+            },
+            {
+              "startTime": "44.700s",
+              "endTime": "44.900s",
+              "word": "is."
+            }
+          ]
+        }
+      ],
+      "channel_tag": 1,
+      "languageCode": "en-us"
+    },
+    {
+      "alternatives": [
+        {
+          "transcript": " Thank you, and goodbye.",
+          "confidence": 0.9793251,
+          "words": [
+            {
+              "startTime": "46.500s",
+              "endTime": "47.100s",
+              "word": "Thank"
+            },
+            {
+              "startTime": "47.100s",
+              "endTime": "47.200s",
+              "word": "you,"
+            },
+            {
+              "startTime": "47.200s",
+              "endTime": "47.400s",
+              "word": "and"
+            },
+            {
+              "startTime": "47.400s",
+              "endTime": "47.600s",
+              "word": "goodbye."
+            }
+          ]
+        }
+      ],
+      "channel_tag": 1,
+      "languageCode": "en-us"
+    },
+    {
+      "alternatives": [
+        {
+          "transcript": "Thank you for contacting G mortgages. Have a nice day.",
+          "confidence": 0.968023,
+          "words": [
+            {
+              "startTime": "48.900s",
+              "endTime": "49.300s",
+              "word": "Thank"
+            },
+            {
+              "startTime": "49.300s",
+              "endTime": "49.500s",
+              "word": "you"
+            },
+            {
+              "startTime": "49.500s",
+              "endTime": "49.600s",
+              "word": "for"
+            },
+            {
+              "startTime": "49.600s",
+              "endTime": "49.800s",
+              "word": "contacting"
+            },
+            {
+              "startTime": "49.800s",
+              "endTime": "50.500s",
+              "word": "G"
+            },
+            {
+              "startTime": "50.500s",
+              "endTime": "51.200s",
+              "word": "mortgages."
+            },
+            {
+              "startTime": "51.200s",
+              "endTime": "51.800s",
+              "word": "Have"
+            },
+            {
+              "startTime": "51.800s",
+              "endTime": "51.800s",
+              "word": "a"
+            },
+            {
+              "startTime": "51.800s",
+              "endTime": "52.100s",
+              "word": "nice"
+            },
+            {
+              "startTime": "52.100s",
+              "endTime": "52.400s",
+              "word": "day."
+            }
+          ]
+        }
+      ],
+      "channel_tag": 2,
+      "languageCode": "en-us"
+    }
+  ],
+  "totalBilledTime": "60s"
+}
