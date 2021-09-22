@@ -21,12 +21,13 @@ import { CommonModule } from '@angular/common';
 import { ProfileComponent } from './profile/profile.component';
 import { AuthComponent } from './auth/auth.component';
 import { ChatComponent } from './chat/chat.component';
-
+import { DashboardComponent } from './dashboard/dashboard.component';
 
 const routes: Routes = [
   { path: 'chat', component: ChatComponent},
   { path: 'profile', component: ProfileComponent},
   { path: 'login', component: AuthComponent},
+  { path: 'dashboard', component: DashboardComponent},
   { path: '', redirectTo: '/chat', pathMatch: 'full' }
 ];
 

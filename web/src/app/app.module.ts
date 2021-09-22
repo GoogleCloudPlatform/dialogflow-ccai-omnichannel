@@ -68,11 +68,12 @@ import { AppComponent } from './app.component';
 import { ChatComponent } from './chat/chat.component';
 import { MicrophoneComponent } from './chat.microphone/chat.microphone.component';
 import { CallComponent } from './call/call.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
 import { AuthComponent } from './auth/auth.component';
 import { ProfileComponent } from './profile/profile.component';
 import { environment } from '../environments/environment';
 
-import firebase from 'firebase/app';
+// import firebase from 'firebase/app';
 
 @NgModule({
   declarations: [
@@ -81,6 +82,7 @@ import firebase from 'firebase/app';
     MicrophoneComponent,
     CallComponent,
     AuthComponent,
+    DashboardComponent,
     ProfileComponent
   ],
   imports: [
