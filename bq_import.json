@@ -1,0 +1,28 @@
+[
+    {
+        "SESSION_ID": "68694f4c-efa9-4319-8043-30cc1d3ee4c4",
+        "SESSION_PATH": "projects/ccai-360/agent/sessions/68694f4c-efa9-4319-8043-30cc1d3ee4c4",
+        "PLATFORM": "web",
+        "LANGUAGE_CODE": "en",
+        "DATE_TIME": "2021-09-22T12:54:39.505Z",
+        "QUERY":"What’s the difference between being prequalified and preapproved?",
+        "TEXT_RESPONSE": "A quick consultation with a G-Mortgages consultant, about your income, assets and down payment is all it takes to get prequalified. But if you want to get preapproved, you will need to verify your financial information and submit your loan for preliminary underwriting. A preapproval takes a little more time and documentation, but it also carries a lot more weight.",
+        "RESPONSE_MESSAGES": "[{'platform':'PLATFORM_UNSPECIFIED','text':{'text':['A quick consultation with a G-Mortgages consultant, about your income, assets and down payment is all it takes to get prequalified. But if you want to get preapproved, you will need to verify your financial information and submit your loan for preliminary underwriting. A preapproval takes a little more time and documentation, but it also carries a lot more weight.']},'message':'text'},{'platform':'PLATFORM_UNSPECIFIED','text':{'text':['Which is better? Think of prequalification as an initial step and preapproval as the green light signaling that you’re ready to start your home search. \\nWhen a G-Mortgages consultant reviews your offer, a preapproval means you’re a serious buyer who already started the loan process.']},'message':'text'}]",
+        "SPEECH_TRANSCRIPT": "",
+        "SPEECH_CONFIDENCE": "",
+        "SENTIMENT_SCORE": "0.10000000149011612",
+        "SENTIMENT_MAGNITUDE": "0.10000000149011612",
+        "INTENT_DETECTION_DISPLAYNAME": "Sup: Difference prequalified & preapproved",
+        "INTENT_DETECTION_NAME": "projects/ccai-360/agent/intents/ef8356c4-7ddd-4479-8d9b-29fcdbc7eafd",
+        "INTENT_DETECTION_CONFIDENCE": 1,
+        "INTENT_DETECTION_PARAMETERS": "{}",
+        "INTENT_DETECTION_IS_FALLBACK": false,
+        "INTENT_DETECTION_IS_END": false,
+        "INTENT_DETECTION_IS_LIVE_AGENT": false,
+        "FUNNEL_STEP": "APPOINTMENT_SCHEDULING",
+        "USER_UID": "1MCuGckfUTMMf8UxgdccIEjDWwN2",
+        "USER_COUNTRY": "NL",
+        "TOOL": "v2beta1",
+        "VERTICAL": "fsi"
+    }
+]

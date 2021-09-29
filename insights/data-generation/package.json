@@ -11,5 +11,8 @@
     "insights"
   ],
   "author": "Lee Boonstra",
-  "license": "Apache-2.0"
+  "license": "Apache-2.0",
+  "dependencies": {
+    "uuid": "^8.3.2"
+  }
 }
