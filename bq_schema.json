@@ -102,23 +102,6 @@
     "mode": "NULLABLE"
     },
     {
-    "name": "TOPIC_MINING",
-    "type": "RECORD",
-    "fields": [
-    {
-    "mode": "NULLABLE",
-    "name": "name",
-    "type": "STRING"
-    },
-    {
-    "mode": "NULLABLE",
-    "name": "value",
-    "type": "STRING"
-    }
-    ],
-    "mode": "REPEATED"
-    },
-    {
     "name": "NPS",
     "type": "FLOAT"
     },

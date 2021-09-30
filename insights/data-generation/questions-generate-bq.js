@@ -1,4 +1,5 @@
 var fs = require('fs');
+const arrayToNdjson = require('array-to-ndjson');
 const { v4: uuidv4 } = require('uuid');
 var exportBq = [];
 var secondsCounter = 0;
@@ -230,10 +231,4 @@ for(var u = 0; u<userArray.length; u++){
     usedQuestionsArray = [];
 }
 
-// Convert it from an object to a string with JSON.stringify
-var json = JSON.stringify(exportBq);
-var newDate = new Date();
-// Write the file
-fs.writeFile(`supplementals-${newDate.getUTCDate()}.json`, json, 'utf8', function(){
-    console.log(`Created file.`);
-});
+arrayToNdjson(exportBq).pipe(fs.createWriteStream('supplementals1.json'))

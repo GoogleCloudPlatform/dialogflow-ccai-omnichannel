@@ -144,8 +144,30 @@ gcloud functions deploy chatanalytics --region=$REGION_ALTERNATIVE \
 bold "Create PubSub Topic..."
 gcloud pubsub topics create projects/$PROJECT_ID/topics/$PUBSUB_TOPIC
 
+
 ## CREATE BQ DATASET & TABLE
 bold "Creating BQ dataset..."
 bq --location=$BQ_LOCATION mk $DATASET
 bold "Creating BQ table..."
 bq mk --table $DATASET.$TABLE ./bq_schema.json
+bold "Loading Dummy data in BQ..."
+gsutil mb -l $BQ_LOCATION gs://$BUCKET_NAME-data
+
+gsutil cp insights/data-generation/supplementals1.json gs://$BUCKET_NAME
+gsutil cp insights/data-generation/full-omni-flow.json gs://$BUCKET_NAME
+bq load \
+  --source_format=NEWLINE_DELIMITED_JSON \
+  $DATASET.$TABLE \
+  gs://$BUCKET_NAME-data/full-omni-flow.json \
+  ./bq_schema.json
+bq load \
+  --source_format=NEWLINE_DELIMITED_JSON \
+  $DATASET.$TABLE \
+  gs://$BUCKET_NAME-data/supplementals1.json \
+  ./bq_schema.json
+
+bq load \
+  --source_format=NEWLINE_DELIMITED_JSON \
+  chatanalytics.chatmessages \
+  gs://ccai-360-bucket-data/supplementals1.json \
+  ./bq_schema.json
