@@ -77,7 +77,7 @@ export class App {
         funnelMap.set(2, 'APPOINTMENT_SCHEDULING');
         funnelMap.set(3, 'APPOINTMENT_CONFIRMED');
         funnelMap.set(4, 'SUPPLEMENTAL');
-        funnelMap.set(5, 'OVERVIEW');
+        funnelMap.set(5, 'SUMMARY');
         funnelMap.set(6, 'OUTBOUND_SUPPORT');
         funnelMap.set(7, 'END');
         return funnelMap.get(step);

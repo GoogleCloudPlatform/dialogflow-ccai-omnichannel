@@ -363,3 +363,64 @@ if (!this.isFirst) {
 //Paks call router
 https://source.cloud.google.com/pakmingw-experimental/call-router-runtime/+/main
 go/cx-call-router-design
+
+### Prepare for Demo
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/ToYM8R0wW1I" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+#### Create a RCE360 "G-Mortgages" Account:
+
+1. Either go to your local environment or the live environment and sign up for an account. This will store your info in Firebase. It's important that you are setting up a Gmail address and a phone number. In case you will demo the Google Assistant, make sure you use the same gmail address.
+   
+http://localhost:4200/profile / https://www.conv.dev/profile
+
+2. Login on the G-Mortgages website http://localhost:4200 / https://www.conv.dev
+
+3. Follow this flow in the web:
+
+```
+Welcome to G-Mortgages. I see that you have prequalified for a fixed rate mortgage. Would you like me to book an appointment?
+> Yes
+I can schedule a mortgage consultation with Mr. Gerrit Oogle. Monday the 8th at 2 pm. Would this work for you?
+> Yeah that sounds good
+Perfect, you'll have a mortgage appointment for Monday the 8th at 2 pm.
+You will receive a text confirmation for the virtual appointment via text.
+Is there anything else I can help you with?
+> No that's it. Thanks.
+```
+
+4. Get your cell phone, you should have received a text message:
+
+```
+Hi [Name]. Thank you for scheduling an appointment with G-Mortgages.
+Your virtual consultation with a licensed broker has been set for tomorrow,
+Wednesday the 8th at 2:00pm. Feel free to reply, if you want to re-schedule your appointment.
+> Can we make it a half hour later?
+We have that time available, I will update the appointment to 2:30pm. If you have any questions, you can use the Google Assistant to talk to G-Mortgages.
+> Can you give me a call?
+Sure. I will contact you on the number that's set in your profile.
+
+5. You will receive a phone call:
+
+```
+> Hello
+Hi, I am the virtual assistant for G-Mortgages. You've asked me to give you a ring. How can I help?
+> I am thinking of changing my job, will this affect my mortgage?
+That’s exciting! Unfortunately, taking a job at a new company will affect your length of employment and may impact your application.
+> Ok, now what?
+I know it’s a tough situation, but if you could defer the start date until after the mortgage is approved that would help. Is there anything else I can help you with?
+> What's an adjustable rate mortgage?
+Adjustable rate mortgages typically have low initial interest rates. After the initial period, the rate adjusts to the current market conditions.
+> Is it better than a fixed rate mortgage?
+Well, it depends. How long do you plan to own the house?
+> Maybe 30 years.
+In that case I would suggest an adjustable rate mortgage. No sense in locking a rate for 30 years if you’re not going to live there that long. Is there anything else I can help you with?
+> No thank you, good bye.
+Thank you for contacting G-Mortgages. Have a nice day.
+```
+
+6. TODO Business Messages Steps
+
+7. TODO Google Assistant Steps
+
+8. To view the Looker Dashboard go to /dashboard
