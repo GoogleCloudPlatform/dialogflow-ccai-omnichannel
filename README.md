@@ -366,7 +366,7 @@ go/cx-call-router-design
 
 ### Prepare for Demo
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/ToYM8R0wW1I" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+[![Omnichannel Demo Video](https://img.youtube.com/vi/ToYM8R0wW1I/0.jpg)](https://youtu.be/ToYM8R0wW1I)
 
 #### Create a RCE360 "G-Mortgages" Account:
 
@@ -399,6 +399,7 @@ Wednesday the 8th at 2:00pm. Feel free to reply, if you want to re-schedule your
 We have that time available, I will update the appointment to 2:30pm. If you have any questions, you can use the Google Assistant to talk to G-Mortgages.
 > Can you give me a call?
 Sure. I will contact you on the number that's set in your profile.
+```
 
 5. You will receive a phone call:
 
