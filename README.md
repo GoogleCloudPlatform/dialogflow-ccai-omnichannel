@@ -342,28 +342,6 @@ gactions update --action_package action.json --project $GCP_PROJECT
 It will ask you to visit a URL for authentication, and you will have to copy paste a generated key in the terminal.
 
 
-
-// streamingDetect calls after 10 open streams, it will auto close,
-// so use this to fix the bug.
-
-if (!this.isFirst) {
-        logger.trace('CXUtils: closing old detect streams first');
-        this.halfCloseDetectStreams();
-      }
-// close detect streams only
-  halfCloseDetectStreams() {
-    logger.trace('CXUtils: halfCloseDetectStreams requested');
-    if(this.detectStream && this.audioRequestStream){
-      logger.trace('CXUtils: half closing detect streams');
-      this.detectStream.end();
-      this.audioRequestStream.end();
-    }
-  }
-
-//Paks call router
-https://source.cloud.google.com/pakmingw-experimental/call-router-runtime/+/main
-go/cx-call-router-design
-
 ### Prepare for Demo
 
 [![Omnichannel Demo Video](https://img.youtube.com/vi/ToYM8R0wW1I/0.jpg)](https://youtu.be/ToYM8R0wW1I)
