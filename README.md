@@ -292,10 +292,10 @@ The following steps will guide you to run all the various channels. These steps 
 As seen in the below architecture, all channels talk to the Node JS backend server.
 [index.ts](https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel/blob/main/backend/src/index.ts) is the entry point. It sets all the API POST/GET routes.
 Each individual middleware script takes care of the implementation per channel
-(Business Messages)[https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel/blob/main/backend/src/business-messages.ts],
-(Twilio)[https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel/blob/main/backend/src/twilio.ts], (Web)[https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel/blob/main/backend/src/web.ts], (AoG)[https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel/blob/main/backend/src/aog.ts]).
+[Business Messages](https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel/blob/main/backend/src/business-messages.ts),
+[Twilio](https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel/blob/main/backend/src/twilio.ts), [Web](https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel/blob/main/backend/src/web.ts), [AoG](https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel/blob/main/backend/src/aog.ts).
 
-They are all handled the same way, as they talk to the [Dialogflow ES](https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel/blob/main/backend/src/dialogflow-v2beta1.ts)/(Dialogflow CX)[https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel/blob/main/backend/src/dialogflow-cx.ts] environment depending on the version that was set in (config.ts)[https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel/blob/main/backend/src/config.ts]. 
+They are all handled the same way, as they talk to the [Dialogflow ES](https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel/blob/main/backend/src/dialogflow-v2beta1.ts)/[Dialogflow CX](https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel/blob/main/backend/src/dialogflow-cx.ts) environment depending on the version that was set in [config.ts](https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel/blob/main/backend/src/config.ts). 
 No matter which Dialogflow version you are using, the responses are flattent and normalized, so you can switch between versions. See [dialogflow-bot-responses.ts](https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel/blob/main/backend/src/dialogflow-bot-responses.ts).
 
 <img src="https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel/blob/main/images/architecture.png" width="800" />
