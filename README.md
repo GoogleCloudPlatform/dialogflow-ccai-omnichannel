@@ -21,13 +21,16 @@ Setup to the various parts:
 * [Dialogflow](https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel#dialogflow)
 * [Twilio Phone & SMS](https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel#twilio-phonesms)
 * [Firebase](https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel#firebase)
+* [Business Messages](https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel#business-messages)
+* [Business Messages Adlingo](https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel#business-messages-adlingo)
+* [Business Messages Verified Calls](https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel#business-messages-verified-calls)
+
+To deploy this environment on GKE use these steps:
+
 * [Deploy to GKE](https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel#deploy-to-gke)
   
 To run this environment locally use these setup guides:
 
-* [Business Messages](https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel#business-messages)
-* [Business Messages Adlingo](https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel#business-messages-adlingo)
-* [Verified Calls](https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel#business-messages-verified-calls)
 * [Node JS Backend Server](https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel#node-js-backend-server)
 * [Angular Website](https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel#angular-website)
 * [Flutter Mobile App](https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel#flutter-mobile-app)
@@ -83,6 +86,17 @@ https://dialogflow.cloud.google.com/#/newAgent
 
 3. Import the ES agent into Dialogflow: https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel/tree/main/dialogflow/es-agent.zip
 
+4. To link your Dialogflow instance with a local environment make sure
+the `GC_PROJECT_ID` variable is correctly set in `backend/.env`
+
+5. To make use of Dialogflow Essentials, make sure you have set this config in `backend/config.ts`. By default it's set to `v2beta1`.
+
+```
+        dialogflow: {
+            version: 'v2beta1',
+        },
+```
+
 #### Dialogflow CX
 
 1. Create a new agent:
@@ -95,6 +109,11 @@ https://dialogflow.cloud.google.com/cx/projects
 * Language: English
 
 2. Import the CX agent into Dialogflow CX: https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel/tree/main/dialogflow/cx-agent.blob
+
+3. To link your Dialogflow instance with a local environment make sure
+the `AGENT_ID` and `CX_LOCATION` variables are correctly set in `backend/.env`
+
+4. To make use of Dialogflow CX, make sure you have set this config in `backend/config.ts`. By default it's set to `cx`.
 
 ## Twilio Phone/SMS
 
@@ -124,6 +143,9 @@ https://ccai.ngrok.io/twiml
 NOTE: For outbound calls you will need to whitelist the geo permissions you can call:
 https://console.twilio.com/us1/develop/voice/settings/geo-permissions
 
+6. To link your Twilio instance with a local environment make sure
+the `TWILIO_ACCOUNT_SID` and `TWILIO_ACCOUNT_TOKEN` variables are correctly set in `backend/.env`. Also make sure you have set the correct phone numbers in this file.
+
 ## Firebase
 
 You will need an account on Firebase as we will store authentication data
@@ -134,6 +156,91 @@ in Firebase auth.
 To install the Firebase command-line tools use:
 
 2. `npm install firebase-admin --save`
+
+## Business Messages
+With Business Messages, you can place messaging buttons for brands within organic Google search results. When a user clicks on a messaging button, they start a conversation with an entity representing the brand—the brand's agent. See the [Business Messages](https://developers.google.com/business-communications/business-messages/guides) documentation for more information.
+
+### Before you begin
+
+1.  [Register with Business Messages](https://developers.google.com/business-communications/business-messages/guides/set-up/register).
+
+### Configure your webhook
+You must specify your webhook URL in order to start receiving messages for the Business Messages agent you create.
+
+1.  Open the [Business Communications Developer Console](https://business-communications.cloud.google.com) and sign in with your Business Messages Google account.
+1.  Click **Account settings**.
+1.  Make sure the correct partner account is selected.
+1.  Enter your **Business Messages webhook URL** as *https://YOUR_WEB_SEVER/api/business-messages* where `YOUR_WEB_SEVER` is the domain where you are hosting the backend of the `dialogflow-ccai-omnichannel` project.
+1.  Click **Save**.
+
+### Create your Business Messages agent
+Once you've registered, it's time to create your agent.
+
+1.  Open the [Business Communications Developer Console](https://business-communications.cloud.google.com) and sign in with your Business Messages Google account.
+1.  Click **Create agent**.
+1.  If you're prompted for **Agent type**, choose **Business Messages**.
+1.  Enter values for **Brand name** and **Agent name**.
+1.  Click **Create agent**.
+1.  When your agent is available, click your agent.
+
+### Test your Business Messages agent
+
+Each agent has test URLs that let you see how a conversation with that agent
+appears to users. Use a test URL to verify that messages sent by users interacting with your agent are being received by your webhook and automatically responded to by the Dialogflow agent you've set up.
+
+To test an agent,
+
+1.  Open the [Business Communications Developer Console](https://business-communications.cloud.google.com) and sign in with your Business Messages Google account.
+1.  Choose your agent.
+1.  Under **Agent test URLs** on the **Overview** page, click the **Android** button or **iOS** button to copy the test URL to your device's clipboard and send to your mobile device or use the **Send** to email feature.
+1.  Open the test URL on your mobile device and send a message to the Business Messages agent.
+
+## Business Messages AdLingo
+
+[AdLingo Dialogflow Docs](https://docs.adlingo.com/adlingo-api/v2/dialogflow/)
+
+1. Login into your AdLingo environment: https://adsbuilder.adlingo.com/
+2. Create a [conversational agent](https://adsbuilder.adlingo.com/agents/add-new/dialogflow_service_account?activeWorkgroupId=5739925852913664):
+   - Specify the GCS bucket name and path to service account (it will be gs://[project-name]-bucket/ccai-360-key.json)
+   - Event name: `WELCOME-ADLINGO`
+3. Create a creative
+   - Upload an background image 600x1200 hi-res PNG
+   - Upload a logo
+   - Upload an avatar
+4. For this demo we are integrating an iframe with the preview of the add in the external website interface. In a real world application, this will be provided through an ads platform.
+
+## Business Messages Verified Calls
+With Verified Calls, you can upgrade a regular phone call from a business to a consumer. When a user receives a call from a business, the user sees who is calling, the logo of the business, that the business has been verified, and the reason for the call. See the [Verified Calls](https://developers.google.com/business-communications/verified-calls/guides/learn) documentation for more information.
+
+### Before you begin
+
+1.  [Register with Verified Calls](https://developers.google.com/business-communications/verified-calls/guides/set-up/partner).
+
+### Configure your webhook
+You must specify your webhook URL in order to start receiving messages for the Business Messages agent you create.
+
+1.  Open the [Business Communications Developer Console](https://business-communications.cloud.google.com) and sign in with your Business Messages Google account.
+1.  Click **Account settings**.
+1.  Make sure the correct partner account is selected.
+1.  Enter your **Business Messages webhook URL** as *https://YOUR_WEB_SEVER/api/business-messages* where `YOUR_WEB_SEVER` is the domain where you are hosting the backend of the `dialogflow-ccai-omnichannel` project.
+1.  Click **Save**.
+
+### Create your Verified Calls agent
+Once you've registered, it's time to create your agent.
+
+1.  Open the [Business Communications Developer Console](https://business-communications.cloud.google.com) and sign in with your Verified Calls Google account.
+1.  Click **Create agent**.
+1.  If you're prompted for **Agent type**, choose **Verified Calls**.
+1.  Enter values for **Brand name**, **Agent name**, and **Agent logo**.
+1.  Click **Next**.
+1.  Enter the phone number of the business.
+1.  Click **Next**.
+1.  Enter the call reasons.
+1.  Click **Next**.
+1.  Enter values for the brand contact, brand website, and yourself.
+1.  Click **Finish setup**.
+
+Once your agent has been verified by Google, when your business makes a call to a user, the user will see the business information. Note that this only works for Android users.
 
 ## Deploy to GKE
 
@@ -180,91 +287,19 @@ To deploy another deployment:
 
 The following steps will guide you to run all the various channels. These steps are optionally, in case you want to run it from your own machine.
 
-### Business Messages
-With Business Messages, you can place messaging buttons for brands within organic Google search results. When a user clicks on a messaging button, they start a conversation with an entity representing the brand—the brand's agent. See the [Business Messages](https://developers.google.com/business-communications/business-messages/guides) documentation for more information.
-
-#### Before you begin
-
-1.  [Register with Business Messages](https://developers.google.com/business-communications/business-messages/guides/set-up/register).
-
-#### Configure your webhook
-You must specify your webhook URL in order to start receiving messages for the Business Messages agent you create.
-
-1.  Open the [Business Communications Developer Console](https://business-communications.cloud.google.com) and sign in with your Business Messages Google account.
-1.  Click **Account settings**.
-1.  Make sure the correct partner account is selected.
-1.  Enter your **Business Messages webhook URL** as *https://YOUR_WEB_SEVER/api/business-messages* where `YOUR_WEB_SEVER` is the domain where you are hosting the backend of the `dialogflow-ccai-omnichannel` project.
-1.  Click **Save**.
-
-#### Create your Business Messages agent
-Once you've registered, it's time to create your agent.
-
-1.  Open the [Business Communications Developer Console](https://business-communications.cloud.google.com) and sign in with your Business Messages Google account.
-1.  Click **Create agent**.
-1.  If you're prompted for **Agent type**, choose **Business Messages**.
-1.  Enter values for **Brand name** and **Agent name**.
-1.  Click **Create agent**.
-1.  When your agent is available, click your agent.
-
-#### Test your Business Messages agent
-Each agent has test URLs that let you see how a conversation with that agent
-appears to users. Use a test URL to verify that messages sent by users interacting with your agent are being received by your webhook and automatically responded to by the Dialogflow agent you've set up.
-
-To test an agent,
-
-1.  Open the [Business Communications Developer Console](https://business-communications.cloud.google.com) and sign in with your Business Messages Google account.
-1.  Choose your agent.
-1.  Under **Agent test URLs** on the **Overview** page, click the **Android** button or **iOS** button to copy the test URL to your device's clipboard and send to your mobile device or use the **Send** to email feature.
-1.  Open the test URL on your mobile device and send a message to the Business Messages agent.
-
-### Business Messages AdLingo
-
-[AdLingo Dialogflow Docs](https://docs.adlingo.com/adlingo-api/v2/dialogflow/)
-
-1. Login into your AdLingo environment: https://adsbuilder.adlingo.com/
-2. Create a [conversational agent](https://adsbuilder.adlingo.com/agents/add-new/dialogflow_service_account?activeWorkgroupId=5739925852913664):
-   - Specify the GCS bucket name and path to service account (it will be gs://[project-name]-bucket/ccai-360-key.json)
-   - Event name: `WELCOME-ADLINGO`
-3. Create a creative
-   - Upload an background image 600x1200 hi-res PNG
-   - Upload a logo
-   - Upload an avatar
-4. For this demo we are integrating an iframe with the preview of the add in the external website interface. In a real world application, this will be provided through an ads platform.
-
-### Business Messages Verified Calls
-With Verified Calls, you can upgrade a regular phone call from a business to a consumer. When a user receives a call from a business, the user sees who is calling, the logo of the business, that the business has been verified, and the reason for the call. See the [Verified Calls](https://developers.google.com/business-communications/verified-calls/guides/learn) documentation for more information.
-
-#### Before you begin
-
-1.  [Register with Verified Calls](https://developers.google.com/business-communications/verified-calls/guides/set-up/partner).
-
-#### Configure your webhook
-You must specify your webhook URL in order to start receiving messages for the Business Messages agent you create.
-
-1.  Open the [Business Communications Developer Console](https://business-communications.cloud.google.com) and sign in with your Business Messages Google account.
-1.  Click **Account settings**.
-1.  Make sure the correct partner account is selected.
-1.  Enter your **Business Messages webhook URL** as *https://YOUR_WEB_SEVER/api/business-messages* where `YOUR_WEB_SEVER` is the domain where you are hosting the backend of the `dialogflow-ccai-omnichannel` project.
-1.  Click **Save**.
-
-#### Create your Verified Calls agent
-Once you've registered, it's time to create your agent.
-
-1.  Open the [Business Communications Developer Console](https://business-communications.cloud.google.com) and sign in with your Verified Calls Google account.
-1.  Click **Create agent**.
-1.  If you're prompted for **Agent type**, choose **Verified Calls**.
-1.  Enter values for **Brand name**, **Agent name**, and **Agent logo**.
-1.  Click **Next**.
-1.  Enter the phone number of the business.
-1.  Click **Next**.
-1.  Enter the call reasons.
-1.  Click **Next**.
-1.  Enter values for the brand contact, brand website, and yourself.
-1.  Click **Finish setup**.
-
-Once your agent has been verified by Google, when your business makes a call to a user, the user will see the business information. Note that this only works for Android users.
-
 ### Node JS Backend Server
+
+As seen in the below architecture, all channels talk to the Node JS backend server.
+[index.ts](https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel/blob/main/backend/src/index.ts) is the entry point. It sets all the API POST/GET routes.
+Each individual middleware script takes care of the implementation per channel
+((Business Messages)[https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel/blob/main/backend/src/business-messages.ts],
+(Twilio)[https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel/blob/main/backend/src/twilio.ts], (Web)[https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel/blob/main/backend/src/web.ts], (AoG)[https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel/blob/main/backend/src/aog.ts]).
+
+They are all handled the same way, as they talk to the [Dialogflow ES](https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel/blob/main/backend/src/dialogflow-v2beta1.ts)/(Dialogflow CX)[https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel/blob/main/backend/src/dialogflow-cx.ts] environment depending on the version that was set in (config.ts)[https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel/blob/main/backend/src/config.ts]. 
+No matter which Dialogflow version you are using, the responses are flattent and normalized, so you can switch between versions. See [dialogflow-bot-responses.ts](https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel/blob/main/backend/src/dialogflow-bot-responses.ts).
+
+<img src="https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel/blob/main/images/architecture.png" width="800" />
+
 
 1. In order to run this demo on your local machine. You will need to have Node installed.
 
@@ -280,7 +315,12 @@ nano env.txt
 cp env.txt .env
 ```
 
-3. You can start the back-end server with the below command. It will start your app in development mode at http://localhost:8080
+3. Please review the following configurations that are unique for your environment:
+
+* `backend/.env`
+* `backend/config.ts`
+
+4. You can start the back-end server with the below command. It will start your app in development mode at http://localhost:8080
 
 ```
 cd backend && npm run watch
