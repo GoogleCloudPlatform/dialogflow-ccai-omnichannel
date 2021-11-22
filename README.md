@@ -81,6 +81,8 @@ https://dialogflow.cloud.google.com/#/newAgent
 
 2. Go into Settings, and make sure Speech > Speech adaptation is enabled.
 
+3. Import the ES agent into Dialogflow: https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel/tree/main/dialogflow/es-agent.zip
+
 #### Dialogflow CX
 
 1. Create a new agent:
@@ -91,6 +93,8 @@ https://dialogflow.cloud.google.com/cx/projects
 * Choose a region
 * Choose a timezone
 * Language: English
+
+2. Import the ES agent into Dialogflow: https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel/tree/main/dialogflow/cx-agent.blob
 
 ## Twilio Phone/SMS
 
