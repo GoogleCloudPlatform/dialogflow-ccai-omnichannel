@@ -94,7 +94,7 @@ https://dialogflow.cloud.google.com/cx/projects
 * Choose a timezone
 * Language: English
 
-2. Import the ES agent into Dialogflow: https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel/tree/main/dialogflow/cx-agent.blob
+2. Import the CX agent into Dialogflow CX: https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel/tree/main/dialogflow/cx-agent.blob
 
 ## Twilio Phone/SMS
 
