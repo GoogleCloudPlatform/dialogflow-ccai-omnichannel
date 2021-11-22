@@ -9,9 +9,34 @@ It should meet your customers, where they are, 24/7 and be proactive, ubiquitous
 
 What you will see in the next minute, is an early demo, built by DevRel on how we can reimagine customer experience. A true omnichannel approach!
 
-[Video Demo](https://sites.google.com/corp/google.com/rce/all-demos-in-one?authuser=0)
+[![Omnichannel Demo Video](https://img.youtube.com/vi/ToYM8R0wW1I/0.jpg)](https://youtu.be/ToYM8R0wW1I)
+
+## Table of Contents
 
 <img src="https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel/blob/main/images/architecture.png" width="800" />
+
+Setup to the various parts:
+
+* [Google Cloud](https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel#google-cloud-setup)
+* [Dialogflow](https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel#dialogflow)
+* [Twilio Phone & SMS](https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel#twilio-phonesms)
+* [Firebase](https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel#firebase)
+* [Deploy to GKE](https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel#deploy-to-gke)
+  
+To run this environment locally use these setup guides:
+
+* [Business Messages](https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel#business-messages)
+* [Business Messages Adlingo](https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel#business-messages-adlingo)
+* [Verified Calls](https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel#business-messages-verified-calls)
+* [Node JS Backend Server](https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel#node-js-backend-server)
+* [Angular Website](https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel#angular-website)
+* [Flutter Mobile App](https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel#flutter-mobile-app)
+* [Actions on Google (Google Assistant)](https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel#aog-google-assistant-action)
+
+Once everything is installed you can run the Demo Script:
+
+* [Demo script](https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel#prepare-for-demo)
+
 
 ## Google Cloud Setup
 
@@ -95,6 +120,17 @@ https://ccai.ngrok.io/twiml
 NOTE: For outbound calls you will need to whitelist the geo permissions you can call:
 https://console.twilio.com/us1/develop/voice/settings/geo-permissions
 
+## Firebase
+
+You will need an account on Firebase as we will store authentication data
+in Firebase auth.
+
+1. https://firebase.google.com/docs/auth/admin
+
+To install the Firebase command-line tools use:
+
+2. `npm install firebase-admin --save`
+
 ## Deploy to GKE
 
 This script will create a GKE cluster with the backend container and the client website.
@@ -136,7 +172,7 @@ To deploy another deployment:
 `cat _cloudbuilder/chatserver-deployment.yaml | envsubst | kubectl apply -f -`
 `cat _cloudbuilder/web-deployment.yaml | envsubst | kubectl apply -f -`
 
-## Local Components & Channels Setup
+## Local Components and Channels
 
 The following steps will guide you to run all the various channels. These steps are optionally, in case you want to run it from your own machine.
 
@@ -177,7 +213,7 @@ To test an agent,
 1.  Under **Agent test URLs** on the **Overview** page, click the **Android** button or **iOS** button to copy the test URL to your device's clipboard and send to your mobile device or use the **Send** to email feature.
 1.  Open the test URL on your mobile device and send a message to the Business Messages agent.
 
-### AdLingo
+### Business Messages AdLingo
 
 [AdLingo Dialogflow Docs](https://docs.adlingo.com/adlingo-api/v2/dialogflow/)
 
@@ -191,7 +227,7 @@ To test an agent,
    - Upload an avatar
 4. For this demo we are integrating an iframe with the preview of the add in the external website interface. In a real world application, this will be provided through an ads platform.
 
-### Verified Calls
+### Business Messages Verified Calls
 With Verified Calls, you can upgrade a regular phone call from a business to a consumer. When a user receives a call from a business, the user sees who is calling, the logo of the business, that the business has been verified, and the reason for the call. See the [Verified Calls](https://developers.google.com/business-communications/verified-calls/guides/learn) documentation for more information.
 
 #### Before you begin
@@ -260,20 +296,9 @@ You can start the Angular site with the below command. It will start your websit
 cd web && ng serve
 ```
 
-### Firebase
-
-Using the Admin SDK for Node.js
-
-1. `npm install firebase-admin --save`
-
-2. https://firebase.google.com/docs/auth/admin
-
-
-
 ### Flutter Mobile App
 
-1. In order to run this demo on your local machine. You will need to have Flutter installed.
-Follow the install steps from: https://flutter.dev/docs/get-started/install
+1. In order to run this demo on your local machine. You will need to have Flutter installed. Follow the install steps from: https://flutter.dev/docs/get-started/install
 
 2. You will need have a service account key copied into the **mobile/assets/** folder, and it should be named **credentials.json**. Download the service account key:
    
