@@ -1,0 +1,11 @@
+{
+    "name": "callme",
+    "description": "make call with twilio",
+    "version": "0.0.1",
+    "private": true,
+    "license": "Apache Version 2.0",
+    "author": "Lee Boonstra",
+    "dependencies": {
+        "axios": "0.24.0"
+    }
+}

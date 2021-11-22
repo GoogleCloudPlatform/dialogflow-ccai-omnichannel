@@ -34,8 +34,10 @@ export interface GlobalConfig {
             cx_agent_id?: string // UUID ID of agent
             cx_location?: string // 'global' || ... https://cloud.google.com/dialogflow/cx/docs/concept/region
             language_code: string // 'en-US' || ... https://cloud.google.com/dialogflow/cx/docs/reference/language
+            timezone: string // 'Europe/Madrid' || 'America/New_York' ...
         },
         web?: {
+            welcome_event?: string,
             encoding?: string, // 'AUDIO_ENCODING_LINEAR_16' ||
             // https://cloud.google.com/dialogflow/cx/docs/reference/rpc/google.cloud.dialogflow.cx.v3
             // #google.cloud.dialogflow.cx.v3.AudioEncoding
@@ -108,15 +110,17 @@ const globalConfig: GlobalConfig = {
         node_port: 8080,
         vertical: '.ENV',
         dialogflow: {
-            version: 'v2beta1', // 'v2beta1' || 'cx',
+            version: 'cx', // 'v2beta1' || 'cx',
             cx_agent_id: '.ENV',
             cx_location: '.ENV',
-            language_code: 'en-US'
+            language_code: 'en-US',
+            timezone: 'Europe/Madrid'
         },
         web: {
             encoding: 'AUDIO_ENCODING_LINEAR_16',
             sample_rate_hertz: 16000,
-            single_utterance: false
+            single_utterance: false,
+            welcome_event: 'APPOINTMENT_SCHEDULING',
         },
         pubsub: {
             topic_name: '.ENV'
@@ -129,7 +133,7 @@ const globalConfig: GlobalConfig = {
             sample_rate_hertz: 8000,
             single_utterance: true,
             interim_results: false,
-            welcome_event: 'WELCOME-PHONE',
+            welcome_event: 'OUTBOUND_SUPPORT',
             speaking_rate: 1.0,
             pitch: 1.0,
             volume_gain_db: 0.0,

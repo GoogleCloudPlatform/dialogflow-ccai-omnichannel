@@ -140,10 +140,29 @@ gcloud functions deploy chatanalytics --region=$REGION_ALTERNATIVE \
 --entry-point=subscribe \
 --set-env-vars GCLOUD_PROJECT=$PROJECT_ID,DATASET=$DATASET,TABLE=$TABLE
 
+gcloud functions deploy cx-sms-webhook --region=$REGION_ALTERNATIVE \
+--memory=512MB \
+--runtime=nodejs14 \
+--trigger-http \
+--source=webhooks/cx-sms-webhook \
+--stage-bucket=$BUCKET_NAME \
+--timeout=60s \
+--allow-unauthenticated \
+--entry-point=sendConfirmation
+
+gcloud functions deploy cx-call-webhook --region=$REGION_ALTERNATIVE \
+--memory=512MB \
+--runtime=nodejs14 \
+--trigger-http \
+--source=webhooks/cx-call-webhook \
+--stage-bucket=$BUCKET_NAME \
+--timeout=60s \
+--allow-unauthenticated \
+--entry-point=callUser
+
 ## CREATE PUBSUB TOPIC
 bold "Create PubSub Topic..."
 gcloud pubsub topics create projects/$PROJECT_ID/topics/$PUBSUB_TOPIC
-
 
 ## CREATE BQ DATASET & TABLE
 bold "Creating BQ dataset..."

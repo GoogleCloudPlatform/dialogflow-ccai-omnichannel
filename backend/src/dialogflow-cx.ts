@@ -101,7 +101,7 @@ export class DialogflowCX extends EventEmitter {
             languageCode: this.config.dialogflow['language_code']
         };
 
-        return this.detectIntent(qInput, eventName,{timeZone: 'Europe/Madrid'});
+        return this.detectIntent(qInput, eventName,{timeZone: this.config.dialogflow['timezone']});
     }
 
     detectIntentAudioStream(stream, lang = this.config.dialogflow['language_code']){
