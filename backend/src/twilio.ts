@@ -63,7 +63,7 @@ export class ContactCenterAi {
 
     async sms(query:string, user:any, cb){
       const me = this;
-      const botResponse = await this.dialogflow.detectIntentText(query);
+      const botResponse = await this.dialogflow.detectIntentEvent(query);
 
       this.debug.log(user);
 
@@ -72,23 +72,27 @@ export class ContactCenterAi {
         // Message to Recipient
         var msg = botResponse.fulfillmentText;
         msg = msg.replace('[NAME]', user.displayName);
+        msg = msg.replace('[TIMESLOT]', user.timeslot);
 
-        // https://www.twilio.com/docs/sms/send-messages
-        me.twilio.messages.create(
-          {
-            to: user.phoneNumber,
-            from: me.config.bot['phone_number'],
-            body: msg
-          }).then(function(message){
-            botResponse.platform = 'sms';
-            var data = {...botResponse, ...user};
-            me.pubsub.pushToChannel(data);
-            me.debug.log(message);
-            cb({ success: true, message});
-          }).catch(function(error){
-            me.debug.error(error);
-            cb({ success: false, error });
-          });
+        var messages = msg.split('\n');
+        messages.forEach(function(m){
+          // https://www.twilio.com/docs/sms/send-messages
+          me.twilio.messages.create(
+            {
+              to: user.phoneNumber,
+              from: me.config.bot['phone_number'],
+              body: m
+            }).then(function(message){
+              botResponse.platform = 'sms';
+              var data = {...botResponse, ...user};
+              me.pubsub.pushToChannel(data);
+              me.debug.log(message);
+              cb({ success: true, message});
+            }).catch(function(error){
+              me.debug.error(error);
+              cb({ success: false, error });
+            });
+        });
       }
    }
 

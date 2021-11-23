@@ -78,8 +78,9 @@ Look into the other Insights
 1. TODO set CX parameters instead of Context, and do this in the backend channel
 2. See if we also can pass timeslot parameter, this is not working now
 3. APPOINTMENT_CONFIRMED is the message that will be used as detectIntentText ?
-   The reason why this breaks might be because conv.dev hasnt deployed the CX agent
-4. Deploy backendd
+   CX is deployed but the deeplink is not working
+4. The CX call doesnt pick up the phone
+5. Meet link in the SMS
 
 
 //  fulfillmentInfo: { tag: 'call.support' },

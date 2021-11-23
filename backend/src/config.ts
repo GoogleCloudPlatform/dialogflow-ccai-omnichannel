@@ -164,7 +164,7 @@ const globalConfig: GlobalConfig = {
     production: {
         config_id: 'production',
         debug: false,
-        server_url: 'https://'
+        server_url: '.ENV'
     }
 };
 
@@ -180,6 +180,10 @@ const finalConfig = {...defaultConfig, ...envConfig};
 // it will override the config.json
 const projectId = process.env.npm_config_GC_PROJECT_ID || process.env.GC_PROJECT_ID || envConfig.gc_project_id;
 finalConfig.gc_project_id = projectId;
+
+const serverUrl = process.env.npm_config_DOMAIN1 || process.env.DOMNAIN1 || envConfig.server_url;
+finalConfig.server_url = serverUrl;
+
 const pubsub = process.env.npm_config_PUBSUB_TOPIC || process.env.PUBSUB_TOPIC || envConfig.pubsub.topic_name;
 finalConfig.pubsub.topic_name = pubsub;
 const port = process.env.npm_config_PORT || process.env.PORT || envConfig.node_port;

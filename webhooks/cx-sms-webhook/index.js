@@ -3,7 +3,6 @@
 const axios = require('axios');
 
 async function doRequest(user, country, timeslot){
-    console.log(timeslot);
     var resp;
     try {
         if(!user) console.error(`No user, so can't send SMS.`);
@@ -13,7 +12,7 @@ async function doRequest(user, country, timeslot){
             data: {
                 Uid: user,
                 FromCountry: country,
-                timeslot: timeslot,
+                Timeslot: timeslot,
                 Body: 'APPOINTMENT_CONFIRMED'
             }
         }
@@ -30,21 +29,19 @@ async function doRequest(user, country, timeslot){
 async function handleRequest(request){
     let user, country, timeslot;  
     let body = request.body;
+    let sessionInfo = body.sessionInfo;
+    let fulfillmentInfo = body.fulfillmentInfo;
     let response;
 
-    if(body && body.sessionInfo && body.sessionInfo.parameters && body.fulfillmentInfo && body.fulfillmentInfo.tag){
-      if(body.fulfillmentInfo.tag == 'sms.confirmation'){
-          console.log(body.sessionInfo);
-          user = body.sessionInfo.parameters.user;
-          country = body.sessionInfo.parameters.country;
+    if(sessionInfo && sessionInfo.parameters && fulfillmentInfo && fulfillmentInfo.tag){
+      if(fulfillmentInfo.tag == 'sms.confirmation'){
+          console.log(sessionInfo);
+          user = sessionInfo.parameters.user;
+          country = sessionInfo.parameters.country;
 
-        if(body.sessionInfo.parameters.timeslot.hours && body.sessionInfo.parameters.timeslot.minutes){
-            timeslot = `${body.sessionInfo.parameters.timeslot.hours}:${body.sessionInfo.parameters.timeslot.minutes}`;
-            console.log('Timeslot');
-            console.log(timeslot);
-        }
+        timeslot = getFormattedTimeString(sessionInfo.parameters.timeslot);
 
-          response = await doRequest(user, country, timeslot);
+        response = await doRequest(user, country, timeslot);
       }
     } else {
         console.error('The tag: sms.confirmation is required in the Dialogflow CX webhook fulfillment settings.')
@@ -57,3 +54,27 @@ exports.sendConfirmation = async function sendConfirmation(request, response) {
     let webhookResponse = await handleRequest(request); 
     response.json('OK');
 };
+
+function getFormattedTimeString(timeObj){
+    if(!timeObj) console.error('timeslot missing');
+    var h = timeObj.hours;
+    var m = timeObj.minutes;
+    var fM = ''; var formattedTime = '';
+
+    if(h > 12) h = h-12;
+
+    if(m == '30') {
+        fM = '30';
+    } else {
+        fM = '00';
+    }
+
+    formattedTime = `for ${h}:${fM} `;
+    if(h <= 12) {
+        formattedTime = formattedTime + 'AM';
+    } else {
+        formattedTime = formattedTime + 'PM';
+    }
+
+    return formattedTime;
+}

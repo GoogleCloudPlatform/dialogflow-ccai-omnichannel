@@ -254,6 +254,10 @@ export class App {
             const body = req.body;
             const query = body.Body;
             const uid = body.Uid;
+            const country = body.FromCountry;
+            const timeslot = body.Timeslot;
+
+            console.log(body);
 
             var userRecord;
             if(body && body.From && body.FromCountry) {
@@ -267,6 +271,7 @@ export class App {
                 userRecord = await me.firebase.getUser({uid});
                 me.debug.log(userRecord);
             }
+            userRecord['timeslot'] = timeslot;
 
             me.botPhoneRouter(userRecord['country'], userRecord.phoneNumber[0]);
             if(userRecord){
