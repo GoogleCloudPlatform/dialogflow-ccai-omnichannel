@@ -59,17 +59,21 @@ function getFormattedTimeString(timeObj){
     if(!timeObj) console.error('timeslot missing');
     var h = timeObj.hours;
     var m = timeObj.minutes;
-    var fM = ''; var formattedTime = '';
+    var fM = ''; var fH = ''; var formattedTime = '';
 
-    if(h > 12) h = h-12;
-
+    if(h > 12) {
+        fH = h-12;
+    } else {
+        fH = h;
+    }
+    
     if(m == '30') {
         fM = '30';
     } else {
         fM = '00';
     }
 
-    formattedTime = `for ${h}:${fM} `;
+    formattedTime = `for ${fH}:${fM} `;
     if(h <= 12) {
         formattedTime = formattedTime + 'AM';
     } else {

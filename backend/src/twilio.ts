@@ -73,15 +73,16 @@ export class ContactCenterAi {
         var msg = botResponse.fulfillmentText;
         msg = msg.replace('[NAME]', user.displayName);
         msg = msg.replace('[TIMESLOT]', user.timeslot);
+        // Make sure you add the line breaks into CX
+        // You can do this by writing the text in an editor first and
+        // then copy it with the linebreaks to CX
 
-        var messages = msg.split('\n');
-        messages.forEach(function(m){
           // https://www.twilio.com/docs/sms/send-messages
           me.twilio.messages.create(
             {
               to: user.phoneNumber,
               from: me.config.bot['phone_number'],
-              body: m
+              body: msg
             }).then(function(message){
               botResponse.platform = 'sms';
               var data = {...botResponse, ...user};
@@ -92,7 +93,6 @@ export class ContactCenterAi {
               me.debug.error(error);
               cb({ success: false, error });
             });
-        });
       }
    }
 

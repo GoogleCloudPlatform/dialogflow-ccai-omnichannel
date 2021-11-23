@@ -191,7 +191,7 @@ export class App {
                 const queryParameters = {};
                 queryParameters['user'] = userId;
                 queryParameters['country'] = country;
-                contexts.push(queryParameters);
+                contexts.push(queryParameters); // we are pushing context from the web interface to DF
 
                 switch(Object.keys(clientObj)[0]) {
                     case 'web-text-message':
