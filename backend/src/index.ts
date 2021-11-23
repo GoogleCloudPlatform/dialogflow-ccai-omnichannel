@@ -174,15 +174,20 @@ export class App {
             ws.onclose = function(e) {
                 console.log('Socket is closed.');
             };
-            ws.on('request', function(request) {
+            // ws.on('request', function(request) {
                 // console.log('!!!!');
                 // console.log(request.resourceURL.query);
-            });
+            // });
             ws.onerror = function(err) {
                 console.error('Socket encountered error: ', err.message, 'Closing socket');
                 ws.close();
             };
             ws.on('message', async (msg) => {
+                // the web interface always knows the firebase UID
+                // because you are logged in, the front-end gives you this
+                // see web/src/chat.component.ts
+                // the detectIntent calls in this method, add the user data to the Dialogflow
+                // session
                 const clientObj = JSON.parse(msg);
                 const userId = clientObj['user'];
                 const country = clientObj['country'];
@@ -254,17 +259,16 @@ export class App {
             const body = req.body;
             const query = body.Body;
             const uid = body.Uid;
-            const country = body.FromCountry;
             const timeslot = body.Timeslot;
             var userRecord;
             if(body && body.From && body.FromCountry) {
-                // when you start the flow directly by contacting the phonenumber
-                // instead of the web interface
+                // when you start the flow directly by texting the phonenumber
+                // instead of starting the flow from the web channel
                 userRecord = {};
                 userRecord['phoneNumber'] = body.From;
                 userRecord['country'] = body.FromCountry;
             } else if(uid){
-                // the web interface has the user.uid stored in the DF conversation
+                // the web interface has the user.uid stored the Dialogflow response session
                 userRecord = await me.firebase.getUser({uid});
                 me.debug.log(userRecord);
             }
@@ -289,11 +293,12 @@ export class App {
 
             var userRecord;
             if(body && body.From) {
-                // when you start the flow directly by contacting the phonenumber
-                // instead of the web interface
+                // when you start the flow directly by calling the phonenumber
+                // instead of starting the flow from the web channel
                 userRecord = {};
                 userRecord['phoneNumber'] = body.From;
                 userRecord['country'] = body.FromCountry;
+                // you can start the call by filling in the call me form on the website
                 if(body.Name) userRecord['displayName'] = body.Name;
                 me.debug.log(userRecord);
             } else if(uid){
@@ -402,7 +407,6 @@ export class App {
             const email = body.email;
             const password = body.password;
 
-            // TODO test against password and work with JWT
             var userRecord = await me.firebase.getUser({
                 email
             }).then((u) => {
@@ -411,14 +415,6 @@ export class App {
             .catch((error) => {
                 me.debug.error(error);
             });
-
-            res.send('OK');
-        });
-        this.app.post('/api/auth/reset/', async function(req, res) {
-            const body = req.body;
-            const email = body.email;
-
-            // Password reset email
 
             res.send('OK');
         });

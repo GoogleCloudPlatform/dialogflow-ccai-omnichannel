@@ -1,5 +1,4 @@
 'use strict';
-
 const axios = require('axios');
 
 async function doRequest(user, country, timeslot){
@@ -20,7 +19,6 @@ async function doRequest(user, country, timeslot){
         });
         
     } catch (err) {
-        // Handle Error Here
         console.error(err);
         return err;
     }
