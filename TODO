@@ -74,29 +74,5 @@ More suggestions
 Look into the other Insights 
 
 
-
-1. TODO set CX parameters instead of Context, and do this in the backend channel
-This is now preset hardcoded in the CX message
-
 1. The CX call doesnt pick up the phone
 
-
-
-//  fulfillmentInfo: { tag: 'call.support' },
-    // parameters: { country: 'NL', user: 's3yu5kclUShispfcjXgvqbul7dA3' }
-    
-Setting a param
-
-    request.body.sessionInfo.parameters = params; //add the parameter changes in the sessionInfo that will be sent back to the agent
-    
-    // reading the session info
-    let fulfillmentResponse = {
-      fulfillmentResponse: {
-        messages: [{
-          text: {
-            text: []
-          }
-        }]
-      },
-      sessionInfo: request.body.sessionInfo
-    };

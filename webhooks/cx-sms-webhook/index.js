@@ -6,24 +6,25 @@ async function doRequest(user, country, timeslot){
     var resp;
     try {
         if(!user) console.error(`No user, so can't send SMS.`);
-        const options = {
-            method: 'POST',
-            url: `https://www.conv.dev/api/sms/`,
-            data: {
-                Uid: user,
-                FromCountry: country,
-                Timeslot: timeslot,
-                Body: 'APPOINTMENT_CONFIRMED'
-            }
-        }
-        resp = axios(options);
+        
+        axios.post('https://www.conv.dev/api/sms/', {
+            Uid: user,
+            FromCountry: country,
+            Timeslot: timeslot,
+            Body: 'APPOINTMENT_CONFIRMED'
+        })
+        .then(function (response) {
+            return response;
+        })
+        .catch(function (error) {
+            return error;
+        });
+        
     } catch (err) {
         // Handle Error Here
         console.error(err);
-        resp = err;
+        return err;
     }
-
-    return resp;
 }
 
 async function handleRequest(request){
@@ -35,9 +36,9 @@ async function handleRequest(request){
 
     if(sessionInfo && sessionInfo.parameters && fulfillmentInfo && fulfillmentInfo.tag){
       if(fulfillmentInfo.tag == 'sms.confirmation'){
-          console.log(sessionInfo);
-          user = sessionInfo.parameters.user;
-          country = sessionInfo.parameters.country;
+          console.log(sessionInfo.parameters['0']);
+          user = sessionInfo.parameters['0'].user;
+          country = sessionInfo.parameters['0'].country;
 
         timeslot = getFormattedTimeString(sessionInfo.parameters.timeslot);
 
@@ -52,7 +53,8 @@ async function handleRequest(request){
 
 exports.sendConfirmation = async function sendConfirmation(request, response) {
     let webhookResponse = await handleRequest(request); 
-    response.json('OK');
+    console.log(webhookResponse);
+    response.json(webhookResponse);
 };
 
 function getFormattedTimeString(timeObj){

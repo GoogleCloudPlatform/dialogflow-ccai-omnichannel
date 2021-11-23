@@ -63,12 +63,13 @@ export class ContactCenterAi {
 
     async sms(query:string, user:any, cb){
       const me = this;
-      const botResponse = await this.dialogflow.detectIntentEvent(query);
-
-      this.debug.log(user);
+      me.debug.log(user);
+      const botResponse = await this.dialogflow.detectIntentEvent(query, {
+        user: user.uid,
+        country: user.country
+      });
 
       if(user){
-
         // Message to Recipient
         var msg = botResponse.fulfillmentText;
         msg = msg.replace('[NAME]', user.displayName);

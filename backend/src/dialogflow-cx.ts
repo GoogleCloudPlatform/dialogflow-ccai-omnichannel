@@ -156,9 +156,18 @@ export class DialogflowCX extends EventEmitter {
         return botResponse;
     }
 
-    getSessionParam(response, sessionParam) {
-        var sessionParams = struct.structProtoToJson(response['queryResult'].parameters);
-        return sessionParams[0][sessionParam];
+    getSessionParam(res, sessionParam) {
+        var sessionParams = struct.structProtoToJson(res.parameters);
+        // this.debug.log(sessionParams);
+        if(sessionParams['0']){
+            // web channel messages will get & set the user data
+            // through session params, which is a struct.
+            return sessionParams['0'][sessionParam];
+        } else {
+            // When the SMS webhook POSTs to the /api/sms URL
+            // you will get the user data from the session request
+            return sessionParams[sessionParam];
+        }
     }
 
     beautifyResponses(response: any, input: string, e?: any): BotResponse{
@@ -177,11 +186,11 @@ export class DialogflowCX extends EventEmitter {
             dialogflowConfig['error'] = e.message;
         }
 
-        var uid = this.getSessionParam(response, 'user');
-        var country = this.getSessionParam(response, 'country');
-        this.debug.log(uid, country);
-
         if(response && response.queryResult){
+
+            var uid = this.getSessionParam(response.queryResult, 'user');
+            var country = this.getSessionParam(response.queryResult, 'country');
+            this.debug.log(uid, country);
 
             var dialogflowResponses = {
                 uid,
