@@ -31,11 +31,14 @@ ended the call. - Which was an error in the MediaStream, we will log now.
 * Can I rewrite the websockets observable in Angular, it seems to reconnect https://livebook.manning.com/book/angular-development-with-typescript-second-edition/chapter-13/86
 
 
--- WEB
+### Web
+
 Website will show time slots options, maybe this can become a carousel with buttons.
 How does the GA show this.
 
--- LOOKER
+
+### Looker
+
 1) Improve Bot - Negative Customer Responses
 * Get the top 10 most negative sentiment scores
 * Read the full transcript what went wrong

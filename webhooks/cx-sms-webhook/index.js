@@ -3,7 +3,6 @@
 const axios = require('axios');
 
 async function doRequest(user, country, timeslot){
-    var resp;
     try {
         if(!user) console.error(`No user, so can't send SMS.`);
         
@@ -36,7 +35,6 @@ async function handleRequest(request){
 
     if(sessionInfo && sessionInfo.parameters && fulfillmentInfo && fulfillmentInfo.tag){
       if(fulfillmentInfo.tag == 'sms.confirmation'){
-          console.log(sessionInfo.parameters['0']);
           user = sessionInfo.parameters['0'].user;
           country = sessionInfo.parameters['0'].country;
 
@@ -53,7 +51,6 @@ async function handleRequest(request){
 
 exports.sendConfirmation = async function sendConfirmation(request, response) {
     let webhookResponse = await handleRequest(request); 
-    console.log(webhookResponse);
     response.json(webhookResponse);
 };
 
