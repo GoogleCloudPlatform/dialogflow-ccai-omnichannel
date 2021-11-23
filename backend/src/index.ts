@@ -187,16 +187,16 @@ export class App {
                 const userId = clientObj['user'];
                 const country = clientObj['country'];
                 me.debug.log(msg);
-                const contexts = [];
+                const sessionParams = [];
                 const queryParameters = {};
                 queryParameters['user'] = userId;
                 queryParameters['country'] = country;
-                contexts.push(queryParameters); // we are pushing context from the web interface to DF
+                sessionParams.push(queryParameters);
 
                 switch(Object.keys(clientObj)[0]) {
                     case 'web-text-message':
                         var webObjectTextMsg = clientObj['web-text-message'];
-                        dialogflowResponses = await this.web.detectIntentText(webObjectTextMsg, contexts);
+                        dialogflowResponses = await this.web.detectIntentText(webObjectTextMsg, sessionParams);
                         ws.send(JSON.stringify(dialogflowResponses));
                       break;
                     case 'web-event':
@@ -206,7 +206,7 @@ export class App {
                             // Set the event name based on the FUNNEL STEP
                             e = me.getFunnelStep(2); /// flows/714e1bfd-b510-40ea-817d-a6b76029089b/
                         }
-                        dialogflowResponses = await this.web.detectIntentEvent(e, contexts);
+                        dialogflowResponses = await this.web.detectIntentEvent(e, sessionParams);
                         ws.send(JSON.stringify(dialogflowResponses));
                       break;
                     case 'disconnect':
@@ -256,9 +256,6 @@ export class App {
             const uid = body.Uid;
             const country = body.FromCountry;
             const timeslot = body.Timeslot;
-
-            console.log(body);
-
             var userRecord;
             if(body && body.From && body.FromCountry) {
                 // when you start the flow directly by contacting the phonenumber

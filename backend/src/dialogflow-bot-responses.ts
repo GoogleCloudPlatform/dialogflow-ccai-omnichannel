@@ -33,6 +33,10 @@ export interface BotResponse {
         transcript: string,
         confidence: number
     },
+    sessionInfo?: {
+        user?: string,
+        uCountry?:string
+    },
     intentDetection?: {
         intent: {
             displayName: string,

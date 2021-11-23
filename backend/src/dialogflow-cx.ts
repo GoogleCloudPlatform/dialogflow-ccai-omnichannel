@@ -82,7 +82,7 @@ export class DialogflowCX extends EventEmitter {
         );
     }
 
-    detectIntentText(query: string, queryParams?: any, contexts?: Array<string>) {
+    detectIntentText(query: string, queryParams?: any, sessionParams?: Array<string>) {
         const qInput:QueryInputCX = {
             text: {
                 text: query,
@@ -90,10 +90,17 @@ export class DialogflowCX extends EventEmitter {
             languageCode: this.config.dialogflow['language_code']
         };
 
-        return this.detectIntent(qInput, query, contexts);
+        var timeZone = {}
+        timeZone['timeZone'] = this.config.dialogflow['timezone'];
+        let session = {
+            ...timeZone,
+            ...sessionParams
+        };
+
+        return this.detectIntent(qInput, query, session);
     }
 
-    detectIntentEvent(eventName: string) {
+    detectIntentEvent(eventName: string, sessionParams?: Array<string>) {
         const qInput:QueryInputCX = {
             event: {
                 event: eventName,
@@ -101,7 +108,14 @@ export class DialogflowCX extends EventEmitter {
             languageCode: this.config.dialogflow['language_code']
         };
 
-        return this.detectIntent(qInput, eventName,{timeZone: this.config.dialogflow['timezone']});
+        var timeZone = {}
+        timeZone['timeZone'] = this.config.dialogflow['timezone'];
+        let session = {
+            ...timeZone,
+            ...sessionParams
+        };
+
+        return this.detectIntent(qInput, eventName, session);
     }
 
     detectIntentAudioStream(stream, lang = this.config.dialogflow['language_code']){
@@ -118,32 +132,33 @@ export class DialogflowCX extends EventEmitter {
         return this.detectIntent(qInput, 'audio');
     }
 
-    async detectIntent(qInput:QueryInputCX, input?: string, queryParams?: any, contexts?: Array<string>) {
+    async detectIntent(qInput:QueryInputCX, routeInput?: string, sessionParams?: any) {
         const request = {
             session: this.sessionPath,
-            queryInput: qInput
+            queryInput: qInput,
+            queryParams: {}
         };
 
-        if(queryParams) {
-            // if (contexts && contexts.length > 0) {
-            //    request.queryParams.contexts = contexts;
-            // }
-            request['queryParams'] = queryParams;
+        if(sessionParams) {
+            request.queryParams['parameters'] = struct.jsonToStructProto(sessionParams);
         }
-
-        console.log(request);
 
         var botResponse;
         try {
             const [response] = await this.sessionClient.detectIntent(request);
             this.debug.log(response);
-            botResponse = this.beautifyResponses(response, input);
+            botResponse = this.beautifyResponses(response, routeInput);
         } catch(e) {
             this.debug.error(e);
-            botResponse = this.beautifyResponses(null, input, e);
+            botResponse = this.beautifyResponses(null, routeInput, e);
         }
         this.debug.log(botResponse);
         return botResponse;
+    }
+
+    getSessionParam(response, sessionParam) {
+        var sessionParams = struct.structProtoToJson(response['queryResult'].parameters);
+        return sessionParams[0][sessionParam];
     }
 
     beautifyResponses(response: any, input: string, e?: any): BotResponse{
@@ -162,18 +177,18 @@ export class DialogflowCX extends EventEmitter {
             dialogflowConfig['error'] = e.message;
         }
 
-        try {
-            // TODO
-            var uid = 'unknown';
-            var country;
-        } catch(e){
-            console.log('no contexts set');
-        }
+        var uid = this.getSessionParam(response, 'user');
+        var country = this.getSessionParam(response, 'country');
+        this.debug.log(uid, country);
 
         if(response && response.queryResult){
 
             var dialogflowResponses = {
                 uid,
+                sessionInfo: {
+                    uid,
+                    uCountry: country
+                },
                 languageCode: response.queryResult.languageCode, // override
                 sentiment: response.queryResult.sentimentAnalysisResult,
                 currentPage: response.queryResult.currentPage,
@@ -214,13 +229,11 @@ export class DialogflowCX extends EventEmitter {
                         }
                     }
                 };
+                // this might be duplicated
                 if(response.queryResult.parameters){
                     intentDetectionObj.intentDetection.intent['parameters'] = struct.structProtoToJson(
                         response.queryResult.parameters
                     );
-                }
-                if(country){
-                    dialogflowResponses['country'] = country;
                 }
                 dialogflowResponses = {...dialogflowResponses, ...intentDetectionObj }
             }

@@ -71,15 +71,15 @@ export class Web {
         return responses;
     }
 
-    async detectIntentText(query: string, contexts?: Array<any>) {
-        const webResponse = await this.dialogflow.detectIntentText(query, contexts);
+    async detectIntentText(query: string, userData?: Array<any>) {
+        const webResponse = await this.dialogflow.detectIntentText(query, userData);
         webResponse.platform = 'web';
 
         this.pubsub.pushToChannel(webResponse);
         return this.createRichMessages(webResponse);
     }
-    async detectIntentEvent(eventName: string, contexts?: Array<any>) {
-        const webResponse = await this.dialogflow.detectIntentEvent(eventName, contexts);
+    async detectIntentEvent(eventName: string, userData?: Array<any>) {
+        const webResponse = await this.dialogflow.detectIntentEvent(eventName, userData);
         webResponse.platform = 'web';
         this.pubsub.pushToChannel(webResponse);
         return this.createRichMessages(webResponse);
