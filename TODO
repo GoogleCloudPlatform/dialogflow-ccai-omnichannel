@@ -1,5 +1,8 @@
 ## TODOS
 
+* Fix the CX phone flow
+* Twilio Robocalls are blocked.
+
 * Build user management for GA / Account linking
 * Test GA, with logging UID
 
@@ -16,8 +19,6 @@
               // hello display-name
                 // please login
 
-* Dialogflow CX store user ID in form
-* ccaiWebhook should get the uid parameter for CX
 * Test BigQuery & PubSub & Funnel Step for CX
 * Build agent handover / Test it in ES and CX
 
@@ -64,7 +65,6 @@ so I can proactively call these users to confirm appointments
 5) TOPIC MINING
 * TODO Find a transcript based on a certain topic mined keyword
 
-
 More suggestions
 
 1) First idea, entity sentiment. (for example low interest rate)
@@ -73,6 +73,4 @@ More suggestions
 
 Look into the other Insights 
 
-
-1. The CX call doesnt pick up the phone
 
