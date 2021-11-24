@@ -132,7 +132,7 @@ const globalConfig: GlobalConfig = {
             output_encoding: 'OUTPUT_AUDIO_ENCODING_LINEAR_16',
             sample_rate_hertz: 8000,
             single_utterance: true,
-            interim_results: false,
+            interim_results: true,
             welcome_event: 'OUTBOUND_SUPPORT',
             speaking_rate: 1.0,
             pitch: 1.0,

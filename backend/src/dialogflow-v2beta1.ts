@@ -24,6 +24,7 @@ import { EventEmitter } from 'events';
 import { PassThrough, pipeline } from 'stream';
 import { Transform } from 'stream';
 import { WaveFile } from 'wavefile';
+
 const struct = require('./structjson');
 
  export interface QueryInputV2Beta1 {
@@ -294,6 +295,7 @@ export class DialogflowV2Beta1Stream extends DialogflowV2Beta1 {
 
         if (this.isFirst) this.isFirst = false;
         this.isInterrupted = false;
+
         // Pipeline is async....
         pipeline(
           this._requestStreamPassThrough,
@@ -324,9 +326,9 @@ export class DialogflowV2Beta1Stream extends DialogflowV2Beta1 {
               userCountry: msg.start.customParameters.userCountry
             });
 
-            // TODO DF2 - Need logic for CX
-            var me = this;
+            // DF ES Specific
             // me.debug.log('----------------------- SET CONTEXT');
+            var me = this;
             var user = {};
             var country = {};
             var streamId = {};

@@ -126,7 +126,7 @@ export class ContactCenterAi {
             intentDetection: {
               intent: {
                 parameters: {
-                  actions: 'OUTBOUND_SUPPORT'
+                  actions: this.config.twilio['welcome_event']
                 }
               }
             }
@@ -146,7 +146,7 @@ export class ContactCenterAi {
             intentDetection: {
               intent: {
                 parameters: {
-                  actions: 'OUTBOUND_SUPPORT'
+                  actions: this.config.twilio['welcome_event']
                 }
               }
             }
