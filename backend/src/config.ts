@@ -132,7 +132,7 @@ const globalConfig: GlobalConfig = {
             input_encoding: 'AUDIO_ENCODING_MULAW',
             output_encoding: 'OUTPUT_AUDIO_ENCODING_LINEAR_16',
             sample_rate_hertz: 8000,
-            tts_sample_rate_hertz: 44100,
+            tts_sample_rate_hertz: 8000,
             single_utterance: true,
             interim_results: true,
             welcome_event: 'OUTBOUND_SUPPORT',

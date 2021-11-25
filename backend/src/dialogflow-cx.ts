@@ -368,6 +368,7 @@ export class DialogflowCXStream extends DialogflowCX {
                           this.finish();
                         }
                     } else {
+                        this.debug.trace('dialogflow-cs.ts', 'Pipeline succeed. Close streams start next conv turn.');
                         this.closingDetectStreams();
                         this.closingResponseStreams();
                     }
@@ -397,9 +398,8 @@ export class DialogflowCXStream extends DialogflowCX {
                     // this.setSessionParams(request, sessionParams);
 
                 }
-                me.debug.trace('dialogflow-cx.ts', 'startPipeline mark:', msg.event);
+                // me.debug.trace('dialogflow-cx.ts', 'startPipeline mark:', msg.event);
                 if (msg.event === 'mark') {
-                    me.debug.trace('dialogflow-cx.ts', 'startPipeline Mark received:', msg.mark.name);
                     if (msg.mark.name === 'endOfInteraction') {
                         this.emit('endOfInteraction', this.getFinalQueryResult());
                     } else if (msg.mark.name === 'endOfTurnMediaPlayback') {
@@ -426,9 +426,9 @@ export class DialogflowCXStream extends DialogflowCX {
                     // me.debug.trace('dialogflow-cx.ts',
                     // 'startPipeline _requestStreamPassThrough/data event incoming media isInputAudioTriggered (should be false):',
                     // this.isInputAudioTriggered);
-                     me.debug.trace('dialogflow-cx.ts',
-                     'startPipeline _requestStreamPassThrough/data event incoming media isRequestAudio:',
-                      this.isRequestAudio);
+                    // me.debug.trace('dialogflow-cx.ts',
+                    // 'startPipeline _requestStreamPassThrough/data event incoming media isRequestAudio:',
+                    //  this.isRequestAudio);
 
                     // only process input audio and trigger once
                     if (this.isRequestAudio && !this.isInputAudioTriggered) {
