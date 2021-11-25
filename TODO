@@ -82,5 +82,7 @@ More suggestions
 Look into the other Insights 
 
 
-
-// How does the msg.event go to mark? it now stays at media
+// IT LOOKS LIKE THE RESTARTING WEBSOCKETS CLOSES THE TWILIO CALL?
+// ANOTHER SOLUTION IS TO CREATE A LOCAL TWILIO NUMBER
+// POINT THAT TO NGROK
+// CREATE A TEST CLOUD SCRIPT THATS FIRES A CALL
