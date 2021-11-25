@@ -11,12 +11,14 @@ spec:
   ports:
   - name: my-http-port
     port: 8080
-    targetPort: 8080
+    #targetPort: 8080
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: web-service
+  annotations:
+    beta.cloud.google.com/backend-config: '{"ports": {"80":"ccai-backendconfig"}}'
 spec:
   type: LoadBalancer
   selector:
@@ -26,4 +28,4 @@ spec:
     - name: my-http-port
       port: 80
       #port on target pods (multi-client pod) service talks 
-      targetPort: 80
+      #targetPort: 80

@@ -251,6 +251,7 @@ export class ContactCenterAi {
             mediaStream.write(markJSON);
           } else {
             // send mark to get notification of end of media
+            // audio event
             const markMessage = {
               streamSid,
               event: 'mark',
@@ -338,6 +339,8 @@ export class ContactCenterAi {
         });
 
         mediaStream.on('finish', () => {
+          // TODO on my live server this gets triggered by Twilio code
+          // and it's likely done by the websockets library.
           this.debug.trace('twilio.ts', 'MediaStream has finished');
           this.dialogflow.finish();
         });

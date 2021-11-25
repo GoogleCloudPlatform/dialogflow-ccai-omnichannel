@@ -39,7 +39,7 @@ export class Debug {
     /**
      * Logging
      */
-     public trace(fileName:string, msg:string, obj: object): void{
+     public trace(fileName:string, msg:string, obj: any): void{
         if(this.debug){
             if(obj && typeof obj === 'boolean'){
                 console.log(`DEBUG ${fileName}: ${msg} - ${obj}`);

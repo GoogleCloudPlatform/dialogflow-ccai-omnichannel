@@ -28,6 +28,8 @@ bold "Eval the templates & deploy the containers..."
 cat _cloudbuilder/chatserver-deployment.yaml | envsubst | kubectl apply -f -
 cat _cloudbuilder/web-deployment.yaml | envsubst | kubectl apply -f -
 
+kubectl apply -f _cloudbuilder/backendconfig.yaml
+
 bold "Create services..."
 kubectl delete -f _cloudbuilder/services.yaml
 kubectl apply -f _cloudbuilder/services.yaml

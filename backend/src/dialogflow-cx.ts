@@ -334,6 +334,8 @@ export class DialogflowCXStream extends DialogflowCX {
 
     startPipeline(queryInputObj, welcomeEvent:string, outputAudioConfig) {
         if (!this.isReady && !this.isStopped) {
+            // isReady = is ready for next conversation turn
+            // isStopped = is the conversation stopped
 
             if (!this.isFirst) {
                 this.debug.trace('dialogflow-cx.ts', 'Streaming startPipeline !isFirst. If there are more pipelines open in the first go, close all.');
@@ -408,13 +410,16 @@ export class DialogflowCXStream extends DialogflowCX {
                         me.debug.trace('dialogflow-cx.ts',
                             'startPipeline _requestStreamPassThrough/data endOfTurnMediaPlayback mark:', msg.mark.name);
 
-                        this.isReady = false;
+                        this.isReady = false; // get ready for the next turn
 
                         if (this.isStopped) {
                           this.emit('endOfInteraction', this.getFinalQueryResult());
                         }
                         // else set to listening
                         this.isRequestAudio = true;
+                        this.debug.trace('dialogflow-cx.ts', 'endOfTurnMediaPlayback isFirst:', this.isFirst);
+                        this.debug.trace('dialogflow-cx.ts', 'endOfTurnMediaPlayback isReady:', this.isReady);
+                        this.debug.trace('dialogflow-cx.ts', 'endOfTurnMediaPlayback isFirst:', this.isStopped);
                     }
                 }
                 if (msg.event === 'stop') {
@@ -513,7 +518,8 @@ export class DialogflowCXStream extends DialogflowCX {
                           'startPipeline _responseStreamPassThrough/data detectIntentResponse outputAudio:',
                           data.detectIntentResponse.outputAudio);
 
-                      // all other intermediate responses
+                      // the final response
+                      // but you could also use the END SINGLE RESPONSE
                       if (data.detectIntentResponse.queryResult.responseMessages &&
                         data.detectIntentResponse.queryResult.responseMessages[0] &&
                         data.detectIntentResponse.queryResult.responseMessages[0].text &&
@@ -570,16 +576,18 @@ export class DialogflowCXStream extends DialogflowCX {
                     this.finalQueryResult = data.queryResult;
                     this.stop();
 
-                    if (!this.isFirst) {
-                        if(this.detectStream && this.audioRequestStream){
-                            this.closingDetectStreams();
-                            this.closingResponseStreams();
-                        }
-                    }
+                    // TODO remove this part
+                    // if (!this.isFirst) {
+                    //    if(this.detectStream && this.audioRequestStream){
+                    //        this.closingDetectStreams();
+                    //        this.closingResponseStreams();
+                    //    }
+                    // }
                 }
             });
             this.audioResponseStream.on('data', (data) => {
                 var me = this;
+                // TODO
                 me.debug.trace('dialogflow-cx.ts', 'startPipeline audioResponseStream/data isStopped (should be false)', me.isStopped);
                 me.debug.trace('dialogflow-cx.ts', 'startPipeline audioResponseStream/data isBargeIn', me.isBargeIn);
                 if(!me.isStopped){
@@ -691,8 +699,8 @@ export class DialogflowCXStream extends DialogflowCX {
     processInputAudioChunk(chunk) {
         var count = (chunk.media.payload.match(/\//g) || []).length;
         // this.debug.trace('dialogflow-cx.ts', '_requestStream handler audio request chunk / count:', count);
-        // this.debug.trace('dialogflow-cx.ts', 
-            //'_requestStream audio request chunk / inputAudioTriggerLevel:', this.inputAudioTriggerLevel);
+        // this.debug.trace('dialogflow-cx.ts',
+            // '_requestStream audio request chunk / inputAudioTriggerLevel:', this.inputAudioTriggerLevel);
         if (count < this.inputAudioTriggerLevel) {
             this.inputAudioTriggerCounter++;
             this.debug.trace('dialogflow-cx.ts', '_requestStream audio request chunk / update inputAudioTriggerCounter',
