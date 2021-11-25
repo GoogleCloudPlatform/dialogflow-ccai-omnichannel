@@ -431,6 +431,8 @@ export class DialogflowCXStream extends DialogflowCX {
                     //  this.isRequestAudio);
 
                     // only process input audio and trigger once
+                    /*
+                    // checking media chunks of twilio
                     if (this.isRequestAudio && !this.isInputAudioTriggered) {
                       this.processInputAudioChunk(msg);
                       this.updateInputAudioState();
@@ -439,7 +441,7 @@ export class DialogflowCXStream extends DialogflowCX {
                       if (this.isInputAudioTriggered) {
                         this.resetInputAudioState();
                       }
-                    }
+                    }*/
                   }
             });
 
@@ -688,8 +690,9 @@ export class DialogflowCXStream extends DialogflowCX {
     // processes input audio chunks to detect speech trigger
     processInputAudioChunk(chunk) {
         var count = (chunk.media.payload.match(/\//g) || []).length;
-        this.debug.trace('dialogflow-cx.ts', '_requestStream handler audio request chunk / count:', count);
-        this.debug.trace('dialogflow-cx.ts', '_requestStream audio request chunk / inputAudioTriggerLevel:', this.inputAudioTriggerLevel);
+        // this.debug.trace('dialogflow-cx.ts', '_requestStream handler audio request chunk / count:', count);
+        // this.debug.trace('dialogflow-cx.ts', 
+            //'_requestStream audio request chunk / inputAudioTriggerLevel:', this.inputAudioTriggerLevel);
         if (count < this.inputAudioTriggerLevel) {
             this.inputAudioTriggerCounter++;
             this.debug.trace('dialogflow-cx.ts', '_requestStream audio request chunk / update inputAudioTriggerCounter',
