@@ -37,11 +37,44 @@ export class Debug {
     }
 
     /**
+     * Logging
+     */
+     public trace(fileName:string, msg:string, obj: object): void{
+        if(this.debug){
+            if(obj && typeof obj === 'object'){
+                console.log(`Debugger ${fileName}: ${msg} - ${JSON.stringify(obj)}`);
+                console.dir(obj);
+            } if(obj) {
+                console.log(`Debugger ${fileName}: ${msg} - ${obj}`);
+            } else {
+                console.log(`Debugger ${fileName}: ${msg}`);
+            }
+        }
+    }
+
+    /**
+     * Logging
+     */
+    public traceError(msg:string, fileName:string, e: object): void{
+        if(this.debug){
+            if(e){
+                console.error(`Error ${fileName}: ${msg} ${JSON.stringify(e)}`);
+            } else {
+                console.error(`Error ${fileName}: ${msg}`);
+            }
+        }
+    }
+
+    /**
      * Error Logging
      */
      public error(msg): void{
         if(this.debug){
-            console.error(msg);
+            if (typeof msg === 'string' || msg instanceof String) {
+                console.error(msg);
+            } else {
+                console.dir(msg);
+            }
         }
     }
 }

@@ -144,10 +144,10 @@ export class DialogflowCX extends EventEmitter {
         var botResponse;
         try {
             const [response] = await this.sessionClient.detectIntent(request);
-            this.debug.log(response);
+            this.debug.trace('dialogflow-cx.ts', 'detectIntent botresponse: ', response);
             botResponse = this.beautifyResponses(response, routeInput);
         } catch(e) {
-            this.debug.error(e);
+            this.debug.traceError('dialogflow-cx.ts', 'detectIntent botresponse error: ', e);
             botResponse = this.beautifyResponses(null, routeInput, e);
         }
         this.debug.log(botResponse);
@@ -161,7 +161,7 @@ export class DialogflowCX extends EventEmitter {
 
     getSessionParam(res, sessionParam) {
         var sessionParams = struct.structProtoToJson(res.parameters);
-        // this.debug.log(sessionParams);
+        // this.debug.trace('dialogflow-cx.ts', 'getSessionParam sessionParams: ', sessionParams);
         if(sessionParams['0']){
             // web channel messages will get & set the user data
             // through session params, which is a struct.
@@ -185,7 +185,7 @@ export class DialogflowCX extends EventEmitter {
             languageCode: this.config.dialogflow['language_code'], // in case DF doesn't respond anything, we can still capture these
         }
         if(e) {
-            this.debug.error(e);
+            this.debug.traceError('dialogflow-cx.ts', 'beautifyResponses: ', e);
             dialogflowConfig['error'] = e.message;
         }
 
@@ -193,7 +193,8 @@ export class DialogflowCX extends EventEmitter {
 
             var uid = this.getSessionParam(response.queryResult, 'user');
             var country = this.getSessionParam(response.queryResult, 'country');
-            this.debug.log(uid, country);
+            this.debug.trace('dialogflow-cx.ts', 'beautifyResponses uid: ', uid);
+            this.debug.trace('dialogflow-cx.ts', 'beautifyResponses country: ', country);
 
             var dialogflowResponses = {
                 uid,
@@ -255,14 +256,14 @@ export class DialogflowCX extends EventEmitter {
             botResponse = dialogflowConfig;
         }
 
-        this.debug.log(botResponse);
+        this.debug.trace('dialogflow-cx.ts', 'beautifyResponses botResponse: ', botResponse);
         return botResponse;
     }
 }
 
 export class DialogflowCXStream extends DialogflowCX {
     public isFirst: boolean;
-    public isBusy: boolean;
+    public isReady: boolean;
     public isStopped: boolean;
     public isRequestAudio: boolean;
     public isBargeIn: boolean;
@@ -276,6 +277,7 @@ export class DialogflowCXStream extends DialogflowCX {
     public inputAudioTriggerDuration: number;
     public inputAudioTriggerLevel: number;
     public noBargeInDuration: number;
+    public ttsRateAdjustment: number;
     public totalDuration: number;
     private _requestStreamPassThrough: PassThrough;
     private _responseStreamPassThrough: PassThrough;
@@ -285,11 +287,16 @@ export class DialogflowCXStream extends DialogflowCX {
 
       // State management
       this.isFirst = true;
-      this.isBusy = false;
+      this.isReady = false;
       this.isStopped = false;
       this.isInterrupted = false;
       this.isRequestAudio = false;
       this.isBargeIn = false;
+      this.ttsRateAdjustment = 0.0;
+
+      this.inputAudioTriggerLevel = 40; // number of chunks of audio that are silence
+      this.inputAudioTriggerDuration = 20; // duration in chunks below trigger level, each chunk is 20ms
+      this.inputAudioTriggerCounter = 0; // current counter
       this.isInputAudioTriggered = false;
     }
 
@@ -316,7 +323,12 @@ export class DialogflowCXStream extends DialogflowCX {
     }
 
     startPipeline(queryInputObj, welcomeEvent:string, outputAudioConfig) {
-        if (!this.isBusy && !this.isStopped) {
+        if (!this.isReady && !this.isStopped) {
+
+            if (!this.isFirst) {
+                this.debug.trace('dialogflow-cx.ts', 'Streaming startPipeline !isFirst. If there are more pipelines open in the first go, close all.');
+                this.closingDetectStreams();
+            }
 
             // Generate the streams
             this._requestStreamPassThrough = new PassThrough({ objectMode: true });
@@ -326,8 +338,9 @@ export class DialogflowCXStream extends DialogflowCX {
             this._responseStreamPassThrough = new PassThrough({ objectMode: true });
             this.audioResponseStream = this.createAudioResponseStream();
 
-            if (this.isFirst) this.isFirst = false;
             this.isInterrupted = false;
+            this.isReady = true;
+            this.isFirst = false;
 
             // Pipeline is async....
             pipeline(
@@ -340,14 +353,14 @@ export class DialogflowCXStream extends DialogflowCX {
                     if (err) {
                         this.emit('pipelineError', err);
                         if (err['code'] && err['code'] === '3') {
-                          this.debug.error('CXUtils: startPipeline handling CX API error code 3, shutting down pipeline');
+                          this.debug.traceError('dialogflow-cx.ts', 'Streaming startPipeline pipline: handling CX API error code 3, shutting down pipeline');
                           this.stop();
                           this.finish();
                         }
                     } else {
                         this.closingDetectStreams();
                     }
-                    this.isBusy = false;
+                    this.isReady = false;
                 }
             );
 
@@ -358,7 +371,7 @@ export class DialogflowCXStream extends DialogflowCX {
                 const msg = JSON.parse(data.toString('utf8'));
                 var me = this;
                 if (msg.event === 'start') {
-                    this.debug.log(`Captured call ${msg.start.callSid}`);
+                    me.debug.trace('dialogflow-cx.ts', 'startPipeline Captured call:', msg.start.callSid);
                     var sessionParams = {
                         callSid: msg.start.callSid,
                         streamSid: msg.start.streamSid,
@@ -366,25 +379,26 @@ export class DialogflowCXStream extends DialogflowCX {
                         userCountry: msg.start.customParameters.userCountry
                     };
                     this.emit('callStarted', sessionParams);
+                    me.debug.trace('dialogflow-cx.ts', 'startPipeline callStarted:', sessionParams);
 
                     // TODO DF CX Specific
                     // For storing data in BQ
                     // this.setSessionParams(request, sessionParams);
 
                 }
+                me.debug.trace('dialogflow-cx.ts', 'startPipeline mark:', msg.event);
                 if (msg.event === 'mark') {
-                    this.debug.log(`Mark received ${msg.mark.name}`);
+                    me.debug.trace('dialogflow-cx.ts', 'startPipeline Mark received:', msg.mark.name);
                     if (msg.mark.name === 'endOfInteraction') {
                         this.emit('endOfInteraction', this.getFinalQueryResult());
                     } else if (msg.mark.name === 'endOfTurnMediaPlayback') {
-                        this.debug.log('CXUtils: _requestStreamPassThrough/data endOfTurnMediaPlayback mark');
+                        me.debug.trace('dialogflow-cx.ts',
+                            'startPipeline _requestStreamPassThrough/data endOfTurnMediaPlayback mark:', msg.mark.name);
                         if (!this.isBargeIn) {
                             // when you don't interupt wait till the audio playback is over
-                            // and then set isBusy to falls
-                            this.isBusy = false;
-                        } else {
-                            this.isBusy = true;
+                            this.isReady = false;
                         }
+
                         if (this.isStopped) {
                           this.emit('endOfInteraction', this.getFinalQueryResult());
                         }
@@ -393,9 +407,18 @@ export class DialogflowCXStream extends DialogflowCX {
                     }
                 }
                 if (msg.event === 'stop') {
-                    me.debug.log('CXUtils: _requestStreamPassThrough/data event Call stopped');
+                    me.debug.trace('dialogflow-cx.ts',
+                    'startPipeline _requestStreamPassThrough/data event call stopped.');
                 }
                 if (msg.event === 'media') {
+
+                    // me.debug.trace('dialogflow-cx.ts',
+                    // 'startPipeline _requestStreamPassThrough/data event incoming media isInputAudioTriggered (should be false):',
+                    // this.isInputAudioTriggered);
+                     me.debug.trace('dialogflow-cx.ts',
+                     'startPipeline _requestStreamPassThrough/data event incoming media isRequestAudio:',
+                      this.isRequestAudio); // TODO is null
+
                     // only process input audio and trigger once
                     if (this.isRequestAudio && !this.isInputAudioTriggered) {
                       this.processInputAudioChunk(msg);
@@ -410,17 +433,21 @@ export class DialogflowCXStream extends DialogflowCX {
             });
 
             this._responseStreamPassThrough.on('data', async (data) => {
+                var me = this;
                 var botResponse;
                 var mergeObj = {};
 
                 if (data.recognitionResult &&
                     data.recognitionResult.messageType) {
-                        this.debug.log('CXUtils: _responseStreamPassThrough/data event : recognitionResult of '
-                            + JSON.stringify(data.recognitionResult.messageType));
+                        me.debug.trace('dialogflow-cx.ts',
+                        'startPipeline _responseStreamPassThrough/data recognitionResult:', data.recognitionResult);
+
                       if (data.recognitionResult.messageType === 'END_OF_SINGLE_UTTERANCE') {
-                        this.debug.log('CXUtils: _responseStreamPassThrough/data event : END_OF_SINGLE_UTTERANCE detected.');
+                        me.debug.trace('dialogflow-cx.ts',
+                        'startPipeline _responseStreamPassThrough/data recognitionResult END_OF_SINGLE_UTTERANCE detected.');
                       } else if (data.recognitionResult.messageType === 'TRANSCRIPT') {
-                        this.debug.log('CXUtils: _responseStreamPassThrough/data event :  TRANSCRIPT detected.');
+                        me.debug.trace('dialogflow-cx.ts',
+                        'startPipeline _responseStreamPassThrough/data recognitionResult TRANSCRIPT detected.');
                       }
                   }
 
@@ -429,10 +456,11 @@ export class DialogflowCXStream extends DialogflowCX {
                   data.recognitionResult.transcript &&
                   data.recognitionResult.transcript.length > 0
                 ) {
-                  this.emit('interrupted', data.recognitionResult.transcript);
-                  this.debug.log(`CXUtils: Recognize: ${JSON.stringify(data.recognitionResult)}`);
-                  this.isRequestAudio = false;
-                  this.isInputAudioTriggered = true; // stop all audio triggers
+                  me.emit('interrupted', data.recognitionResult.transcript);
+                  me.debug.trace('dialogflow-cx.ts',
+                        'startPipeline _responseStreamPassThrough/data interrupted event, recognitionResult:', data.recognitionResult);
+                  me.isRequestAudio = false;
+                  me.isInputAudioTriggered = true; // stop all audio triggers
                 }
 
                 // get the transcript to write in BQ
@@ -446,7 +474,8 @@ export class DialogflowCXStream extends DialogflowCX {
                     mergeObj['recognitionResult']['confidence'] = data.recognitionResult.confidence;
                 }*/
 
-                this.debug.log(`CXUtils: Here are the data results: ${JSON.stringify(data)}`);
+                me.debug.trace('dialogflow-cx.ts',
+                'startPipeline _responseStreamPassThrough/data data:', data);
 
                 if (data.detectIntentResponse &&
                     data.detectIntentResponse.queryResult &&
@@ -454,48 +483,61 @@ export class DialogflowCXStream extends DialogflowCX {
 
                     if (data.detectIntentResponse.queryResult.currentPage.displayName === 'End Session') {
                       // handle end session
-                      this.debug.log(
-                        `CXUtils: _responseStreamPassThrough/data event : Dialogflow CX ending interaction on ${JSON.stringify(data.detectIntentResponse.queryResult.intent.displayName)}`
-                      );
-                      this.finalQueryResult = data.detectIntentResponse.queryResult;
-                      this.stop();
+                      me.debug.trace('dialogflow-cx.ts',
+                      'startPipeline _responseStreamPassThrough/data Dialogflow CX points to End Session',
+                        data.detectIntentResponse.queryResult.intent.displayName);
+
+                      me.finalQueryResult = data.detectIntentResponse.queryResult;
+                      me.stop();
                     } else {
 
-                        this.debug.log(`CXUtils: Here are the query results: ${JSON.stringify(data.detectIntentResponse.queryResult)}`);
-                        this.debug.log(`CXUtils: Here are the audio results: ${JSON.stringify(data.detectIntentResponse.outputAudio)}`);
+                        me.debug.trace('dialogflow-cx.ts',
+                        'startPipeline _responseStreamPassThrough/data detectIntentResponse Text QueryResult:',
+                        data.detectIntentResponse.queryResult);
+                        me.debug.trace('dialogflow-cx.ts',
+                          'startPipeline _responseStreamPassThrough/data detectIntentResponse outputAudio:',
+                          data.detectIntentResponse.outputAudio);
 
                       // all other intermediate responses
                       if (data.detectIntentResponse.queryResult.responseMessages &&
                         data.detectIntentResponse.queryResult.responseMessages[0] &&
                         data.detectIntentResponse.queryResult.responseMessages[0].text &&
                         data.detectIntentResponse.queryResult.responseMessages[0].text.text) {
-                        this.debug.log(
-                          `CXUtils: _responseStreamPassThrough/data event : Dialogflow CX turn response with: ${data.detectIntentResponse.queryResult.responseMessages[0].text.text}`
-                        );
-                        this.finalQueryResult = data.detectIntentResponse.queryResult;
+
+                        me.debug.trace('dialogflow-cx.ts',
+                            'startPipeline _responseStreamPassThrough/data intermedia responses:',
+                            data.detectIntentResponse.queryResult.responseMessages[0].text.text);
+
+                        me.finalQueryResult = data.detectIntentResponse.queryResult;
                       }
 
                       // calculate duration of audio to delay Telephony signalling
                       if (data.detectIntentResponse.outputAudio) {
                         // reset counters
-                        this.noBargeInDuration = 0;
-                        this.totalDuration = 0;
+                        me.noBargeInDuration = 0;
+                        me.totalDuration = 0;
                         // data.detectIntentResponse.outputAudio is audio buffer
-                        this.debug.log('CXUtils: _responseStreamPassThrough/data calculating audio playback time');
-                        this.noBargeInDuration =
-                            this.getLengthOfWAV(Buffer.from(data.detectIntentResponse.outputAudio).length, this.config.twilio['sample_rate_hertz'], 16, 1);
-                        this.totalDuration =
-                            this.getLengthOfWAV(Buffer.from(data.detectIntentResponse.outputAudio).length, this.config.twilio['sample_rate_hertz'], 16, 1);
-                        this.debug.log('CXUtils: _responseStreamPassThrough/data computed noBargeInDuration ' + this.noBargeInDuration);
-                        this.debug.log('CXUtils: _responseStreamPassThrough/data computed totalDuration ' + this.totalDuration);
+
+                        me.debug.trace('dialogflow-cx.ts',
+                            'startPipeline _responseStreamPassThrough/data intermediate calculating audio playback time.');
+
+                        me.noBargeInDuration =
+                            me.getLengthOfWAV(Buffer.from(data.detectIntentResponse.outputAudio).length, me.config.twilio['sample_rate_hertz'], 16, 1);
+                        me.totalDuration =
+                            me.getLengthOfWAV(Buffer.from(data.detectIntentResponse.outputAudio).length, me.config.twilio['sample_rate_hertz'], 16, 1);
+
+                        me.debug.trace('dialogflow-cx.ts',
+                            'startPipeline _responseStreamPassThrough/data computed noBargeInDuration', me.noBargeInDuration);
+                        me.debug.trace('dialogflow-cx.ts',
+                            'startPipeline _responseStreamPassThrough/data computed totalDuration', me.totalDuration);
+
                       }
                     }
-                    this.emit('endTurn', this.finalQueryResult);
+                    me.emit('endTurn', this.finalQueryResult);
                     botResponse = await this.beautifyResponses(data, 'audio');
                     botResponse = {...botResponse, ...mergeObj};
-                    this.debug.log(`CXUtils: botResponse + ${JSON.stringify(botResponse)}`);
-                    this.emit('botResponse', botResponse);
-                    this.isBusy = true;
+                    me.debug.trace('dialogflow-cx.ts', 'startPipeline _responseStreamPassThrough/data botResponse', botResponse);
+                    me.emit('botResponse', botResponse);
                   }
 
                 // TODO PAK does not have this part of code
@@ -520,26 +562,30 @@ export class DialogflowCXStream extends DialogflowCX {
                 }*/
             });
             this.audioResponseStream.on('data', (data) => {
-                if(!this.isStopped){
-                    this.emit('audio', data.toString('base64'));
+                var me = this;
+                me.debug.trace('dialogflow-cx.ts', 'startPipeline audioResponseStream/data isStopped (should be false)', me.isStopped);
+                me.debug.trace('dialogflow-cx.ts', 'startPipeline audioResponseStream/data isBargeIn', me.isBargeIn);
+                if(!me.isStopped){
+                    me.emit('audio', data.toString('base64'));
                 }
 
-                console.log(`CXUtils: Barge in: ${this.isBargeIn}`);
-                if (!this.isBargeIn) {
-                    this.isBusy = false;
-                } // TODO
+                if (this.isBargeIn) {
+                    this.isReady = false;
+                }
             });
 
             this.audioResponseStream.on('error', (err) => {
-                this.debug.log('CXUtils: audioResponseStream/error Error on response stream ... ignoring. ' + err);
+                var me = this;
+                me.debug.traceError('dialogflow-cx.ts', 'startPipeline audioResponseStream/error ignoring:', err);
+
                 // this.stop();
                 // handle error 3, need to shut down pipeline
                 if (err === undefined) {
-                  this.debug.log('CXUtils: audioResponseStream/error Handling undefined error, shutting down pipeline');
+                  me.debug.traceError('dialogflow-cx.ts', 'startPipeline audioResponseStream/error Handling undefined error, shutting down pipeline');
                   this.stop();
                   this.finish();
                 } else if (err['code'] && err['code'] === 3) {
-                  this.debug.error('CXUtils: audioResponseStream/error Handling CX API error code 3, shutting down pipeline');
+                  me.debug.traceError('dialogflow-cx.ts', 'startPipeline audioResponseStream/error Handling CX API error code 3, shutting down pipeline');
                   this.stop();
                   this.finish();
                 }
@@ -549,13 +595,14 @@ export class DialogflowCXStream extends DialogflowCX {
   }
 
     createDetectStream(queryInputObj, welcomeEvent:string, outputAudioConfig){
+        var me = this;
         let queryInput = {};
-        if (this.isFirst) {
-            this.debug.log(`CXUtils: Welcome event: ${welcomeEvent}`);
+        if (me.isFirst) {
+            me.debug.trace('dialogflow-cx.ts', 'createDetectStream Welcome Event to trigger Dialogflow CX', welcomeEvent);
             queryInput['event'] = {
                 event: welcomeEvent
             };
-            queryInput['languageCode'] = this.config.dialogflow['language_code'];
+            queryInput['languageCode'] = me.config.dialogflow['language_code'];
         }
 
         queryInput = {...queryInput, ...queryInputObj }
@@ -569,7 +616,7 @@ export class DialogflowCXStream extends DialogflowCX {
             outputAudioConfig
         };
 
-        const detectStream = this.sessionClient.streamingDetectIntent();
+        const detectStream = me.sessionClient.streamingDetectIntent();
         detectStream.write(initialStreamRequest);
         return detectStream;
     }
@@ -610,25 +657,44 @@ export class DialogflowCXStream extends DialogflowCX {
         });
     }
 
+    processUpdatedTTSRate() {
+        if (this.ttsRateAdjustment !== 0) {
+          // set hard limits on ttsRateAdjustment
+          if (this.ttsRateAdjustment + this.config.speakingRate > 4.0) {
+            this.ttsRateAdjustment = 4.0;
+          } else if (this.ttsRateAdjustment + this.config.twilio['speaking_rate'] < 0.25) {
+            this.ttsRateAdjustment = 0.25;
+          }
+          this.config.twilio['speaking_rate'] = this.config.twilio['speaking_rate'] + this.ttsRateAdjustment;
+        }
+        this.debug.trace('twilio.ts', 'new TTS rate is:', this.config.twilio['speaking_rate']);
+      }
+
     // processes input audio chunks to detect speech trigger
     processInputAudioChunk(chunk) {
         var count = (chunk.media.payload.match(/\//g) || []).length;
+        this.debug.trace('dialogflow-cx.ts', '_requestStream handler audio request chunk / count:', count);
+        this.debug.trace('dialogflow-cx.ts', '_requestStream audio request chunk / inputAudioTriggerLevel:', this.inputAudioTriggerLevel);
         if (count < this.inputAudioTriggerLevel) {
-        // logger.trace('CCAIUtils: _requestStream heandler audio request chunk / count : ' + count);
-        this.inputAudioTriggerCounter++;
+            this.inputAudioTriggerCounter++;
+            this.debug.trace('dialogflow-cx.ts', '_requestStream audio request chunk / update inputAudioTriggerCounter',
+                 this.inputAudioTriggerCounter);
         }
         if (this.inputAudioTriggerCounter > this.inputAudioTriggerDuration) {
-        this.isInputAudioTriggered = true;
+            this.isInputAudioTriggered = true;
+            this.debug.trace('dialogflow-cx.ts', '_requestStream audio request chunk / update isInputAudioTriggered',
+            this.isInputAudioTriggered);
         }
     }
 
     // detects and handles input audio trigger and resets counters and state
     updateInputAudioState() {
+        this.debug.trace('dialogflow-cx.ts', 'updateInputAudioState isInputAudioTriggered', this.isInputAudioTriggered);
         if (this.isInputAudioTriggered) {
-        this.debug.log('CXUtils: updateInputAudioState Input Audio triggered, user utterance detected.');
-        // reset here not required, but defensive to pick up miscues
-        this.inputAudioTriggerCounter = 0;
-        this.isInputAudioTriggered = false;
+            this.debug.trace('dialogflow-cx.ts', 'updateInputAudioState Input Audio triggered, user utterance detected.');
+            // reset here not required, but defensive to pick up miscues
+            this.inputAudioTriggerCounter = 0;
+            this.isInputAudioTriggered = false;
         }
     }
 
@@ -640,12 +706,12 @@ export class DialogflowCXStream extends DialogflowCX {
 
 
     stop() {
-        this.debug.log('CXUtils: Stopping Dialogflow CX');
+        this.debug.trace('dialogflow-cx.ts', 'Stopping Dialogflow CX');
         this.isStopped = true;
     }
 
     finish() {
-        this.debug.log('CXUtils: Disconnecting from Dialogflow CX');
+        this.debug.trace('dialogflow-cx.ts', 'Disconnecting Dialogflow CX and destroying streams');
         this.isStopped = true;
         this.isInterrupted = true;
         this.closingDetectStreams();
@@ -654,7 +720,7 @@ export class DialogflowCXStream extends DialogflowCX {
     }
 
     closingDetectStreams(){
-        this.debug.log('CXUtils: half closing detect streams');
+        this.debug.trace('dialogflow-cx.ts', 'Half closing detect streams');
         if (this.detectStream && this.audioRequestStream) {
             this.detectStream.end();
             this.audioRequestStream.end();
@@ -662,7 +728,7 @@ export class DialogflowCXStream extends DialogflowCX {
     }
 
     closingResponseStreams(){
-        this.debug.log('CXUtils: half closing response streams');
+        this.debug.trace('dialogflow-cx.ts', 'Half closing response streams');
         if (this._responseStreamPassThrough && this.audioResponseStream) {
             this._responseStreamPassThrough.end();
             this.audioResponseStream.end();

@@ -53,8 +53,7 @@ export class ContactCenterAi {
           }
       } catch(err) {
         if (global.twilio['account_sid'] === undefined) {
-          this.debug.error('Ensure that you have set your environment variable TWILIO_ACCOUNT_SID. This can be copied from https://twilio.com/console');
-          this.debug.log('Exiting');
+          this.debug.traceError('twilio.ts', 'Twilio: Ensure that you have set your environment variable TWILIO_ACCOUNT_SID. This can be copied from https://twilio.com/console. Exiting');
           return;
         }
         this.debug.error(err);
@@ -210,6 +209,12 @@ export class ContactCenterAi {
 
         // EVENT LISTENERS
 
+        // 1) Kick off the Dialogflow Integration, we will start the pipeline with a welcome event
+        mediaStream.on('data', data => {
+          this.dialogflow.send(data, queryInputObj, welcomeEvent, outputAudioConfig);
+        });
+
+        // 2) The Call Started we will get the call ID and stream ID
         this.dialogflow.on('callStarted', function(data){
           var me = this;
           me.debug.log('call started');
@@ -217,10 +222,8 @@ export class ContactCenterAi {
           streamSid = data.streamSid;
         });
 
-        mediaStream.on('data', data => {
-          this.dialogflow.send(data, queryInputObj, welcomeEvent, outputAudioConfig);
-        });
-
+        // 3) The Dialogflow integration received audio from Dialogflow CX (TTS)
+        // We will need to return this to the Twilio call.
         this.dialogflow.on('audio', audio => {
           const mediaMessage = {
             streamSid,
@@ -230,9 +233,8 @@ export class ContactCenterAi {
             }
           };
           const mediaJSON = JSON.stringify(mediaMessage);
-          this.debug.log(`Sending audio (${audio.length} characters)`);
+          this.debug.trace('twilio.ts', `Sending audio (${audio.length} characters)`);
           mediaStream.write(mediaJSON);
-
 
           // If this is the last message
           if (this.dialogflow.isStopped) {
@@ -244,15 +246,27 @@ export class ContactCenterAi {
               }
             };
             const markJSON = JSON.stringify(markMessage);
-            this.debug.log('Sending end of interaction mark', markJSON);
+            this.debug.trace('twilio.ts', 'Sending end of endOfInteraction mark', markJSON);
+            mediaStream.write(markJSON);
+          } else {
+            // send mark to get notification of end of media
+            const markMessage = {
+              streamSid,
+              event: 'mark',
+              mark: {
+                name: 'endOfTurnMediaPlayback'
+              }
+            };
+            const markJSON = JSON.stringify(markMessage);
+            this.debug.trace('twilio.ts', 'Sending end of endOfTurnMediaPlayback mark', markJSON);
             mediaStream.write(markJSON);
           }
         });
 
         this.dialogflow.on('interrupted', transcript => {
-          this.debug.log(`Interrupted with "${transcript}"`);
+          this.debug.trace('twilio.ts', 'Interrupted with ', transcript);
             if (!this.dialogflow.isInterrupted) {
-              this.debug.log('Clearing...');
+              this.debug.trace('twilio.ts', 'Clearing...');
               const clearMessage = {
                 event: 'clear',
                 streamSid
@@ -264,8 +278,7 @@ export class ContactCenterAi {
 
         this.dialogflow.on('botResponse', botResponse => {
           botResponse['platform'] = 'phone';
-          // this.debug.log('--------------- LOG THE RESPONSE');
-          // this.debug.log(botResponse);
+          this.debug.trace('twilio.ts', 'Bot Response: ', botResponse);
           // store first bot response
           if(previousBotResponse === null) previousBotResponse = botResponse;
           // only push to pubsub if there is a different timestamp
@@ -273,53 +286,129 @@ export class ContactCenterAi {
           // don't log messages that are the same
           const oldTime = new Date(previousBotResponse.dateTimeStamp).getTime();
           const newTime = new Date(botResponse.dateTimeStamp).getTime();
-          // this.debug.log(newTime - oldTime);
+          // this.debug.trace('twilio.ts', 'New Time - Old Time: ', newTime-oldTime);
           if((newTime - oldTime) > 1500){
             this.pubsub.pushToChannel(botResponse);
             previousBotResponse = null;
           }
         });
 
-        // TODO THE END OF INTERACTION SHOULD DO SOMETHING SIMILAR BUT IN A CLOUD FUNCTION
-        // SEE THE EXAMPLE https://github.com/twilio/media-streams/tree/master/node/dialogflow-integration
-        // this.dialogflow.on('isHandOver', () => {
-        //  const response = new Twilio.twiml.VoiceResponse();
-        //  return response.dial(this.config.employee['phone_number']);
-        // });
+        this.dialogflow.on('endTurn', queryResult => {
+          this.debug.trace('twilio.ts', 'endTurn event', queryResult);
 
-        // TODO
-        this.dialogflow.on('endOfInteraction', (queryResult) => {
-            const response = new Twilio.twiml.VoiceResponse();
-            const url = process.env.END_OF_INTERACTION_URL;
-            if (url) {
-              const qs = JSON.stringify(queryResult);
-              // In case the URL has a ?, use an ampersand
-              const appendage = url.includes('?') ? '&' : '?';
-              response.redirect(
-                `${url}${appendage}dialogflowJSON=${encodeURIComponent(qs)}`
-              );
-            } else {
-              response.hangup();
-            }
-            const twiml = response.toString();
-            return this.twilio
-              .calls(callSid)
-              .update({ twiml })
-              .then(call =>
-                this.debug.log(`Updated Call(${callSid}) with twiml: ${twiml}`)
-              )
-              .catch(err => this.debug.error(err));
+          if (queryResult.responseMessages && queryResult.responseMessages[0]
+            && queryResult.responseMessages[0].text && queryResult.responseMessages[0].text.text
+            && queryResult.responseMessages[0].text.text) {
+              /*
+              let tempParams = {};
+              logger.info(`ServerUnifiedRouterCX: media-unified-cx/dialogflowService/endTurn event:
+              "${dialogflowService.sessionId}}" turn ended with "${queryResult.responseMessages[0].text.text}"`);
+              if (queryResult.parameters) {
+                  tempParams = queryResult.parameters;
+              }
+              conversations.push({
+                  participant: "AUTOMATED_AGENT",
+                  responseMessage: queryResult.responseMessages[0].text.text,
+                  parameters: tempParams
+              });*/
+          }
+
+          const response = new Twilio.twiml.VoiceResponse();
+          // handle cxiActions mid-call where next transition is not End Session
+          // these actions need to occur at the end of media playback - use duration to calculate sleep time
+          if (queryResult.parameters && queryResult.parameters.fields &&
+              queryResult.parameters.fields.cxiAction &&
+              queryResult.parameters.fields.cxiAction.stringValue) {
+              this.debug.trace('twilio.ts', 'media-unified-cx/dialogflowService/endTurn, cxiAction:',
+               queryResult.parameters.fields.cxiAction);
+              var sendTwimlFlag = true;
+              // actions to continue with next turn
+              if (queryResult.parameters.fields.cxiAction.stringValue === 'ttsFaster') {
+                  this.dialogflow.ttsRateAdjustment = this.dialogflow.ttsRateAdjustment + 0.1;
+                  this.dialogflow.processUpdatedTTSRate();
+                  sendTwimlFlag = false;
+                  this.debug.trace('twilio.ts', 'media-unified-cx/dialogflowService/endTurn ttsSlower, new rate',
+                  this.dialogflow.synthesizeSpeechConfig.speakingRate);
+              } else if (queryResult.parameters.fields.cxiAction.stringValue === 'ttsSlower') {
+                  this.dialogflow.ttsRateAdjustment = this.dialogflow.ttsRateAdjustment - 0.1;
+                  this.dialogflow.processUpdatedTTSRate();
+                  sendTwimlFlag = false;
+                  this.debug.trace('twilio.ts', 'media-unified-cx/dialogflowService/endTurn ttsFaster, new rate:',
+                  this.dialogflow.synthesizeSpeechConfig.speakingRate);
+              }
+              // implement other cxiActions here   -- TODO: need to find event to trigger this at end of utterance
+              if (queryResult.parameters.fields.cxiAction.stringValue === 'hangup') {
+                  this.debug.trace('twilio.ts', 'media-unified-cx/dialogflowService/endTurn cxiAction hangup');
+                  response.hangup();
+              } else if (queryResult.parameters.fields.cxiAction.stringValue === 'DTMF') {
+                  this.debug.trace('twilio.ts', 'media-unified-cx/dialogflowService/endTurn cxiAction DTMF gather');
+                  // TODO implementation for DTMF
+                  // configure twiml response
+                  // response.gather({
+                  //    action: `https://${req.hostname}/v1/dtmf-gather/${userUid}/${routerUuid}/${callLogDocId}/${isOutbound}`,
+                  //    method: 'POST',
+                  //    actionOnEmptyResult: true
+                  // });
+              } else {
+                  this.debug.trace('twilio.ts','media-unified-cx/dialogflowService/endTurn, to be handled at endOfInteraction, not sending telephony signal');
+                  sendTwimlFlag = false;
+              }
+
+              if (sendTwimlFlag === true) {
+                  const twiml = response.toString();
+                  this.debug.trace('twilio.ts','dialogflowService/endTurn, waiting for audio playback before signalling telephony sleeping (ms)', this.dialogflow.totalDuration);
+                  sleep(this.dialogflow.totalDuration).then((sleepResponse) => {
+                      return this.twilio
+                          .calls(callSid)
+                          .update({
+                              twiml
+                          })
+                          .then(call =>
+                              this.debug.trace('twilio.ts',`media-unified-cx/dialogflowService/endTurn updated Call(${callSid}) with twiml: ${twiml}`)
+                          )
+                          .catch(err => this.debug.error(err));
+                  });
+              }
+          }
+      });
+
+      this.dialogflow.on('endOfInteraction', (queryResult) => {
+        this.debug.trace('twilio.ts', 'Virtual Agent hangs up, end of call, endOfInteraction');
+        this.debug.trace('twilio.ts', `media-unified-cx/dialogflowService/endOfInteraction Event: ${this.dialogflow.sessionId}} Interaction ended with query result:`, queryResult.responseMessages);
+        const response = new Twilio.twiml.VoiceResponse();
+        const url = process.env.END_OF_INTERACTION_URL;
+        // TODO you could put logics here, to transfer calls etc, but we jsut hangup.
+        response.hangup();
+        const twimlConst = response.toString();
+        return this.twilio
+          .calls(callSid)
+          .update({ twimlConst })
+          .then(call =>
+            this.debug.trace('twilio.ts', `Updated Call(${callSid}) with twiml: ${twimlConst}`)
+          )
+          .catch(err => this.debug.error(err));
+      });
+
+        // Customer hangs up: cleanup stream
+        this.dialogflow.on('hangup', message => {
+            this.debug.trace('twilio.ts', `media-unified-cx/dialogflowService/hangup Event. Customer hangs up the phone: `,
+            this.dialogflow.sessionId);
+            this.dialogflow.isInterrupted = true;
         });
 
-        // TODO
+        // Error in audio pipeline: error handling, you can comment this out if you don't want to handle this.
+        this.dialogflow.on('pipelineError', error => {
+            this.debug.error('twilio.ts', `media-unified-cx/dialogflowService/pipelineError Dialogflow CX Pipeline Error:`, error);
+            this.dialogflow.isInterrupted = true;
+        });
+
         mediaStream.on('error', (e) => {
-          this.debug.log('MediaStream had an error');
-          this.debug.error(e);
+          this.debug.traceError('twilio.ts', 'MediaStream had an error:', e);
           this.dialogflow.finish();
         });
 
         mediaStream.on('finish', () => {
-          this.debug.log('MediaStream has finished');
+          this.debug.trace('twilio.ts', 'MediaStream has finished');
           this.dialogflow.finish();
         });
     }
@@ -365,4 +454,10 @@ export class ContactCenterAi {
 
 module.exports = {
     ContactCenterAi
+}
+
+function sleep(ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
 }

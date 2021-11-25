@@ -83,20 +83,4 @@ Look into the other Insights
 
 
 
-
-// streamingDetect calls after 10 open streams, it will auto close,
-// so use this to fix the bug.
- 
-if (!this.isFirst) {
-       logger.trace('CXUtils: closing old detect streams first');
-       this.halfCloseDetectStreams();
-     }
-// close detect streams only
- halfCloseDetectStreams() {
-   logger.trace('CXUtils: halfCloseDetectStreams requested');
-   if(this.detectStream && this.audioRequestStream){
-     logger.trace('CXUtils: half closing detect streams');
-     this.detectStream.end();
-     this.audioRequestStream.end();
-   }
- }
+// How does the msg.event go to mark? it now stays at media
