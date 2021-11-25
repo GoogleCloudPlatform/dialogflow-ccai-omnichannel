@@ -293,83 +293,11 @@ export class ContactCenterAi {
           }
         });
 
-        this.dialogflow.on('endTurn', queryResult => {
-          this.debug.trace('twilio.ts', 'endTurn event', queryResult);
-
-          if (queryResult.responseMessages && queryResult.responseMessages[0]
-            && queryResult.responseMessages[0].text && queryResult.responseMessages[0].text.text
-            && queryResult.responseMessages[0].text.text) {
-              /*
-              let tempParams = {};
-              logger.info(`ServerUnifiedRouterCX: media-unified-cx/dialogflowService/endTurn event:
-              "${dialogflowService.sessionId}}" turn ended with "${queryResult.responseMessages[0].text.text}"`);
-              if (queryResult.parameters) {
-                  tempParams = queryResult.parameters;
-              }
-              conversations.push({
-                  participant: "AUTOMATED_AGENT",
-                  responseMessage: queryResult.responseMessages[0].text.text,
-                  parameters: tempParams
-              });*/
-          }
-
-          const response = new Twilio.twiml.VoiceResponse();
-          // handle cxiActions mid-call where next transition is not End Session
-          // these actions need to occur at the end of media playback - use duration to calculate sleep time
-          if (queryResult.parameters && queryResult.parameters.fields &&
-              queryResult.parameters.fields.cxiAction &&
-              queryResult.parameters.fields.cxiAction.stringValue) {
-              this.debug.trace('twilio.ts', 'media-unified-cx/dialogflowService/endTurn, cxiAction:',
-               queryResult.parameters.fields.cxiAction);
-              var sendTwimlFlag = true;
-              // actions to continue with next turn
-              if (queryResult.parameters.fields.cxiAction.stringValue === 'ttsFaster') {
-                  this.dialogflow.ttsRateAdjustment = this.dialogflow.ttsRateAdjustment + 0.1;
-                  this.dialogflow.processUpdatedTTSRate();
-                  sendTwimlFlag = false;
-                  this.debug.trace('twilio.ts', 'media-unified-cx/dialogflowService/endTurn ttsSlower, new rate',
-                  this.dialogflow.synthesizeSpeechConfig.speakingRate);
-              } else if (queryResult.parameters.fields.cxiAction.stringValue === 'ttsSlower') {
-                  this.dialogflow.ttsRateAdjustment = this.dialogflow.ttsRateAdjustment - 0.1;
-                  this.dialogflow.processUpdatedTTSRate();
-                  sendTwimlFlag = false;
-                  this.debug.trace('twilio.ts', 'media-unified-cx/dialogflowService/endTurn ttsFaster, new rate:',
-                  this.dialogflow.synthesizeSpeechConfig.speakingRate);
-              }
-              // implement other cxiActions here   -- TODO: need to find event to trigger this at end of utterance
-              if (queryResult.parameters.fields.cxiAction.stringValue === 'hangup') {
-                  this.debug.trace('twilio.ts', 'media-unified-cx/dialogflowService/endTurn cxiAction hangup');
-                  response.hangup();
-              } else if (queryResult.parameters.fields.cxiAction.stringValue === 'DTMF') {
-                  this.debug.trace('twilio.ts', 'media-unified-cx/dialogflowService/endTurn cxiAction DTMF gather');
-                  // TODO implementation for DTMF
-                  // configure twiml response
-                  // response.gather({
-                  //    action: `https://${req.hostname}/v1/dtmf-gather/${userUid}/${routerUuid}/${callLogDocId}/${isOutbound}`,
-                  //    method: 'POST',
-                  //    actionOnEmptyResult: true
-                  // });
-              } else {
-                  this.debug.trace('twilio.ts','media-unified-cx/dialogflowService/endTurn, to be handled at endOfInteraction, not sending telephony signal');
-                  sendTwimlFlag = false;
-              }
-
-              if (sendTwimlFlag === true) {
-                  const twiml = response.toString();
-                  this.debug.trace('twilio.ts','dialogflowService/endTurn, waiting for audio playback before signalling telephony sleeping (ms)', this.dialogflow.totalDuration);
-                  sleep(this.dialogflow.totalDuration).then((sleepResponse) => {
-                      return this.twilio
-                          .calls(callSid)
-                          .update({
-                              twiml
-                          })
-                          .then(call =>
-                              this.debug.trace('twilio.ts',`media-unified-cx/dialogflowService/endTurn updated Call(${callSid}) with twiml: ${twiml}`)
-                          )
-                          .catch(err => this.debug.error(err));
-                  });
-              }
-          }
+      this.dialogflow.on('endTurn', queryResult => {
+        this.debug.trace('twilio.ts', 'endTurn event', queryResult);
+        sleep(this.dialogflow.totalDuration).then((sleepResponse) => {
+            return;
+        });
       });
 
       this.dialogflow.on('endOfInteraction', (queryResult) => {

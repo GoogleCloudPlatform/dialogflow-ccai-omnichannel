@@ -41,13 +41,13 @@ export class Debug {
      */
      public trace(fileName:string, msg:string, obj: object): void{
         if(this.debug){
-            if(obj && typeof obj === 'object'){
-                console.log(`Debugger ${fileName}: ${msg} - ${JSON.stringify(obj)}`);
-                console.dir(obj);
-            } if(obj) {
+            if(obj && typeof obj === 'boolean'){
+                console.log(`Debugger ${fileName}: ${msg} - ${obj}`);
+            } else if(obj && typeof obj === 'string') {
                 console.log(`Debugger ${fileName}: ${msg} - ${obj}`);
             } else {
-                console.log(`Debugger ${fileName}: ${msg}`);
+                console.log(`Debugger ${fileName}: ${msg} - ${JSON.stringify(obj)}`);
+                console.dir(obj);
             }
         }
     }

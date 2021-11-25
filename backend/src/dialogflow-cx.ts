@@ -392,12 +392,11 @@ export class DialogflowCXStream extends DialogflowCX {
                     if (msg.mark.name === 'endOfInteraction') {
                         this.emit('endOfInteraction', this.getFinalQueryResult());
                     } else if (msg.mark.name === 'endOfTurnMediaPlayback') {
+                        // the audio played
+                        // now you will have to finish this stream and go over to the next stream.
                         me.debug.trace('dialogflow-cx.ts',
                             'startPipeline _requestStreamPassThrough/data endOfTurnMediaPlayback mark:', msg.mark.name);
-                        if (!this.isBargeIn) {
-                            // when you don't interupt wait till the audio playback is over
-                            this.isReady = false;
-                        }
+                        this.isReady = false;
 
                         if (this.isStopped) {
                           this.emit('endOfInteraction', this.getFinalQueryResult());
@@ -513,6 +512,13 @@ export class DialogflowCXStream extends DialogflowCX {
 
                       // calculate duration of audio to delay Telephony signalling
                       if (data.detectIntentResponse.outputAudio) {
+
+                        me.emit('endTurn', this.finalQueryResult);
+                        botResponse = await this.beautifyResponses(data, 'audio');
+                        botResponse = {...botResponse, ...mergeObj};
+                        me.debug.trace('dialogflow-cx.ts', 'startPipeline _responseStreamPassThrough/data botResponse', botResponse);
+                        me.emit('botResponse', botResponse);
+
                         // reset counters
                         me.noBargeInDuration = 0;
                         me.totalDuration = 0;
@@ -533,11 +539,6 @@ export class DialogflowCXStream extends DialogflowCX {
 
                       }
                     }
-                    me.emit('endTurn', this.finalQueryResult);
-                    botResponse = await this.beautifyResponses(data, 'audio');
-                    botResponse = {...botResponse, ...mergeObj};
-                    me.debug.trace('dialogflow-cx.ts', 'startPipeline _responseStreamPassThrough/data botResponse', botResponse);
-                    me.emit('botResponse', botResponse);
                   }
 
                 // TODO PAK does not have this part of code
