@@ -81,8 +81,10 @@ More suggestions
 
 Look into the other Insights 
 
+// 1. TODO End Session should hangup the call
+// 2. I want to change my job doesnt fix it.
+// 3. Clean up code
+// 4. Test code for ES
 
-// IT LOOKS LIKE THE RESTARTING WEBSOCKETS CLOSES THE TWILIO CALL?
-// ANOTHER SOLUTION IS TO CREATE A LOCAL TWILIO NUMBER
-// POINT THAT TO NGROK
-// CREATE A TEST CLOUD SCRIPT THATS FIRES A CALL
+
+k8s-be-30278--c4bca24a4b2e7581

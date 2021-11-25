@@ -1,5 +1,5 @@
 #https://medium.com/johnjjung/how-to-use-gcp-loadbalancer-with-websockets-on-kubernetes-using-services-ingresses-and-backend-16a5565e4702
-apiVersion: cloud.google.com/v1beta1
+apiVersion: cloud.google.com/v1
 kind: BackendConfig
 metadata:
   name: ccai-backendconfig
