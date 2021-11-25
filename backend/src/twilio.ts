@@ -180,6 +180,7 @@ export class ContactCenterAi {
 
         const outputAudioConfig = {
           audioEncoding: this.config.twilio['output_encoding'],
+          sampleRateHertz: this.config.twilio['tts_sample_rate_hertz'],
           synthesizeSpeechConfig
         };
 
@@ -295,6 +296,7 @@ export class ContactCenterAi {
 
       this.dialogflow.on('endTurn', queryResult => {
         this.debug.trace('twilio.ts', 'endTurn event', queryResult);
+        this.debug.trace('twilio.ts', 'total duration:', this.dialogflow.totalDuration);
         sleep(this.dialogflow.totalDuration).then((sleepResponse) => {
             return;
         });

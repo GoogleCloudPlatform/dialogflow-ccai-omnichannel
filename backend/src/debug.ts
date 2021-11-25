@@ -42,12 +42,13 @@ export class Debug {
      public trace(fileName:string, msg:string, obj: object): void{
         if(this.debug){
             if(obj && typeof obj === 'boolean'){
-                console.log(`Debugger ${fileName}: ${msg} - ${obj}`);
+                console.log(`DEBUG ${fileName}: ${msg} - ${obj}`);
             } else if(obj && typeof obj === 'string') {
-                console.log(`Debugger ${fileName}: ${msg} - ${obj}`);
+                console.log(`DEBUG ${fileName}: ${msg} - ${obj}`);
+            } else if(obj){
+                console.log(`DEBUG ${fileName}: ${msg} - ${JSON.stringify(obj)}`);
             } else {
-                console.log(`Debugger ${fileName}: ${msg} - ${JSON.stringify(obj)}`);
-                console.dir(obj);
+                console.log(`DEBUG ${fileName}: ${msg}`);
             }
         }
     }
@@ -58,9 +59,9 @@ export class Debug {
     public traceError(msg:string, fileName:string, e: object): void{
         if(this.debug){
             if(e){
-                console.error(`Error ${fileName}: ${msg} ${JSON.stringify(e)}`);
+                console.error(`ERR ${fileName}: ${msg} ${JSON.stringify(e)}`);
             } else {
-                console.error(`Error ${fileName}: ${msg}`);
+                console.error(`ERR ${fileName}: ${msg}`);
             }
         }
     }

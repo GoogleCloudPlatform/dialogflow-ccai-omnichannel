@@ -269,6 +269,7 @@ export class DialogflowCXStream extends DialogflowCX {
     public isBargeIn: boolean;
     public isInputAudioTriggered: boolean;
     public isInterrupted: boolean;
+    public isOutboundCall: boolean;
     public audioResponseStream: Transform;
     public audioRequestStream: Transform;
     public detectStream: any;
@@ -290,9 +291,18 @@ export class DialogflowCXStream extends DialogflowCX {
       this.isReady = false;
       this.isStopped = false;
       this.isInterrupted = false;
-      this.isRequestAudio = false;
       this.isBargeIn = false;
       this.ttsRateAdjustment = 0.0;
+
+      // isRequestAudio depends on trigger start page
+      // do you want the VA to start or the user
+      // depends on outbound or inbound call
+      this.isOutboundCall = false;
+      if (this.isOutboundCall) {
+        this.isRequestAudio = false;
+      } else {
+        this.isRequestAudio = true;
+      }
 
       this.inputAudioTriggerLevel = 40; // number of chunks of audio that are silence
       this.inputAudioTriggerDuration = 20; // duration in chunks below trigger level, each chunk is 20ms
@@ -340,7 +350,7 @@ export class DialogflowCXStream extends DialogflowCX {
 
             this.isInterrupted = false;
             this.isReady = true;
-            this.isFirst = false;
+            this.isFirst = false; // after calling detectStream for the first time
 
             // Pipeline is async....
             pipeline(
@@ -359,6 +369,7 @@ export class DialogflowCXStream extends DialogflowCX {
                         }
                     } else {
                         this.closingDetectStreams();
+                        this.closingResponseStreams();
                     }
                     this.isReady = false;
                 }
@@ -396,6 +407,7 @@ export class DialogflowCXStream extends DialogflowCX {
                         // now you will have to finish this stream and go over to the next stream.
                         me.debug.trace('dialogflow-cx.ts',
                             'startPipeline _requestStreamPassThrough/data endOfTurnMediaPlayback mark:', msg.mark.name);
+
                         this.isReady = false;
 
                         if (this.isStopped) {
@@ -416,7 +428,7 @@ export class DialogflowCXStream extends DialogflowCX {
                     // this.isInputAudioTriggered);
                      me.debug.trace('dialogflow-cx.ts',
                      'startPipeline _requestStreamPassThrough/data event incoming media isRequestAudio:',
-                      this.isRequestAudio); // TODO is null
+                      this.isRequestAudio);
 
                     // only process input audio and trigger once
                     if (this.isRequestAudio && !this.isInputAudioTriggered) {
@@ -457,7 +469,9 @@ export class DialogflowCXStream extends DialogflowCX {
                 ) {
                   me.emit('interrupted', data.recognitionResult.transcript);
                   me.debug.trace('dialogflow-cx.ts',
-                        'startPipeline _responseStreamPassThrough/data interrupted event, recognitionResult:', data.recognitionResult);
+                        'startPipeline _responseStreamPassThrough/data interrupted event, recognitionResult:',
+                        data.recognitionResult.transcript);
+
                   me.isRequestAudio = false;
                   me.isInputAudioTriggered = true; // stop all audio triggers
                 }
@@ -504,7 +518,7 @@ export class DialogflowCXStream extends DialogflowCX {
                         data.detectIntentResponse.queryResult.responseMessages[0].text.text) {
 
                         me.debug.trace('dialogflow-cx.ts',
-                            'startPipeline _responseStreamPassThrough/data intermedia responses:',
+                            'startPipeline _responseStreamPassThrough/data intermediate responses:',
                             data.detectIntentResponse.queryResult.responseMessages[0].text.text);
 
                         me.finalQueryResult = data.detectIntentResponse.queryResult;
@@ -513,12 +527,7 @@ export class DialogflowCXStream extends DialogflowCX {
                       // calculate duration of audio to delay Telephony signalling
                       if (data.detectIntentResponse.outputAudio) {
 
-                        me.emit('endTurn', this.finalQueryResult);
-                        botResponse = await this.beautifyResponses(data, 'audio');
-                        botResponse = {...botResponse, ...mergeObj};
-                        me.debug.trace('dialogflow-cx.ts', 'startPipeline _responseStreamPassThrough/data botResponse', botResponse);
-                        me.emit('botResponse', botResponse);
-
+                        // this.isReady = false;
                         // reset counters
                         me.noBargeInDuration = 0;
                         me.totalDuration = 0;
@@ -528,9 +537,15 @@ export class DialogflowCXStream extends DialogflowCX {
                             'startPipeline _responseStreamPassThrough/data intermediate calculating audio playback time.');
 
                         me.noBargeInDuration =
-                            me.getLengthOfWAV(Buffer.from(data.detectIntentResponse.outputAudio).length, me.config.twilio['sample_rate_hertz'], 16, 1);
+                            me.getLengthOfWAV(Buffer.from(data.detectIntentResponse.outputAudio).length, me.config.twilio['tts_sample_rate_hertz'], 16, 1);
                         me.totalDuration =
-                            me.getLengthOfWAV(Buffer.from(data.detectIntentResponse.outputAudio).length, me.config.twilio['sample_rate_hertz'], 16, 1);
+                            me.getLengthOfWAV(Buffer.from(data.detectIntentResponse.outputAudio).length, me.config.twilio['tts_sample_rate_hertz'], 16, 1);
+
+                        me.emit('endTurn', this.finalQueryResult);
+                        botResponse = await this.beautifyResponses(data, 'audio');
+                        botResponse = {...botResponse, ...mergeObj};
+                        me.debug.trace('dialogflow-cx.ts', 'startPipeline _responseStreamPassThrough/data botResponse', botResponse);
+                        me.emit('botResponse', botResponse);
 
                         me.debug.trace('dialogflow-cx.ts',
                             'startPipeline _responseStreamPassThrough/data computed noBargeInDuration', me.noBargeInDuration);
@@ -541,26 +556,25 @@ export class DialogflowCXStream extends DialogflowCX {
                     }
                   }
 
-                // TODO PAK does not have this part of code
-                /*
                 if (
                     data.queryResult &&
                     data.queryResult.intent &&
-                    data.queryResult.intent.endInteraction // TODO response.queryResult.responseMessages[0].endInteraction
+                    data.queryResult.intent.endInteraction
+                    // TODO response.queryResult.responseMessages[0].endInteraction
                 ) {
-                    this.debug.log(
-                    `Ending interaction with: ${data.queryResult.fulfillmentText}`
+                    this.debug.trace('dialogflow-cx.ts',
+                        `Ending interaction with:`, data.queryResult.fulfillmentText
                     );
                     this.finalQueryResult = data.queryResult;
                     this.stop();
 
-                    // TODO PAK
                     if (!this.isFirst) {
                         if(this.detectStream && this.audioRequestStream){
-                            this.closingStreams();
+                            this.closingDetectStreams();
+                            this.closingResponseStreams();
                         }
                     }
-                }*/
+                }
             });
             this.audioResponseStream.on('data', (data) => {
                 var me = this;
@@ -570,8 +584,8 @@ export class DialogflowCXStream extends DialogflowCX {
                     me.emit('audio', data.toString('base64'));
                 }
 
-                if (this.isBargeIn) {
-                    this.isReady = false;
+                if (me.isBargeIn) {
+                    me.isReady = false;
                 }
             });
 
