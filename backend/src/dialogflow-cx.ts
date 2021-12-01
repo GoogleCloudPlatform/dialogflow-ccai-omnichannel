@@ -262,9 +262,9 @@ export class DialogflowCX extends EventEmitter {
 }
 
 export class DialogflowCXStream extends DialogflowCX {
-    public isFirst: boolean;
-    public isReady: boolean;
-    public isStopped: boolean;
+    public isFirst: boolean; // is it the first turn in the conversation
+    public isReady: boolean; // is ready for next conversation turn
+    public isStopped: boolean; // isStopped = is the conversation stopped
     public isRequestAudio: boolean;
     public isBargeIn: boolean;
     public isInputAudioTriggered: boolean;
@@ -334,9 +334,6 @@ export class DialogflowCXStream extends DialogflowCX {
 
     startPipeline(queryInputObj, welcomeEvent:string, outputAudioConfig) {
         if (!this.isReady && !this.isStopped) {
-            // isReady = is ready for next conversation turn
-            // isStopped = is the conversation stopped
-
             if (!this.isFirst) {
                 this.debug.trace('dialogflow-cx.ts', 'Streaming startPipeline !isFirst. If there are more pipelines open in the first go, close all.');
                 this.closingDetectStreams();
@@ -423,31 +420,11 @@ export class DialogflowCXStream extends DialogflowCX {
                     }
                 }
                 if (msg.event === 'stop') {
-                    me.debug.trace('dialogflow-cx.ts',
-                    'startPipeline _requestStreamPassThrough/data event call stopped.');
+                    // me.debug.trace('dialogflow-cx.ts', 'startPipeline _requestStreamPassThrough/data event call stopped.');
                 }
                 if (msg.event === 'media') {
-
-                    // me.debug.trace('dialogflow-cx.ts',
-                    // 'startPipeline _requestStreamPassThrough/data event incoming media isInputAudioTriggered (should be false):',
-                    // this.isInputAudioTriggered);
-                    // me.debug.trace('dialogflow-cx.ts',
-                    // 'startPipeline _requestStreamPassThrough/data event incoming media isRequestAudio:',
-                    //  this.isRequestAudio);
-
-                    // only process input audio and trigger once
-                    /*
-                    // checking media chunks of twilio
-                    if (this.isRequestAudio && !this.isInputAudioTriggered) {
-                      this.processInputAudioChunk(msg);
-                      this.updateInputAudioState();
-                    } else {
-                      // reset trigger and counters
-                      if (this.isInputAudioTriggered) {
-                        this.resetInputAudioState();
-                      }
-                    }*/
-                  }
+                    // me.debug.trace('dialogflow-cx.ts', 'startPipeline _requestStreamPassThrough/data event media.');
+                }
             });
 
             this._responseStreamPassThrough.on('data', async (data) => {
@@ -575,14 +552,6 @@ export class DialogflowCXStream extends DialogflowCX {
                     );
                     this.finalQueryResult = data.queryResult;
                     this.stop();
-
-                    // TODO remove this part
-                    // if (!this.isFirst) {
-                    //    if(this.detectStream && this.audioRequestStream){
-                    //        this.closingDetectStreams();
-                    //        this.closingResponseStreams();
-                    //    }
-                    // }
                 }
             });
             this.audioResponseStream.on('data', (data) => {
