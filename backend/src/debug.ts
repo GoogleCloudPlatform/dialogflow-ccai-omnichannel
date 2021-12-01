@@ -41,8 +41,8 @@ export class Debug {
      */
      public trace(fileName:string, msg:string, obj: any): void{
         if(this.debug){
-            if(obj && typeof obj === 'boolean'){
-                console.log(`DEBUG ${fileName}: ${msg} - ${obj}`);
+            if(this.isBoolean(obj) || typeof obj === 'number') {
+                console.log(`DEBUG ${fileName}: ${msg} - ${obj.toString()}`);
             } else if(obj && typeof obj === 'string') {
                 console.log(`DEBUG ${fileName}: ${msg} - ${obj}`);
             } else if(obj){
@@ -77,5 +77,9 @@ export class Debug {
                 console.dir(msg);
             }
         }
+    }
+
+    private isBoolean(val) {
+        return val === false || val === true;
     }
 }

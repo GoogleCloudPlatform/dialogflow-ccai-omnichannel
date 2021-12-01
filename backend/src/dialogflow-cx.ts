@@ -173,7 +173,8 @@ export class DialogflowCX extends EventEmitter {
         }
     }
 
-    beautifyResponses(response: any, input: string, e?: any): BotResponse{
+    beautifyResponses(response: any, input: string, e?: any): BotResponse {
+        console.log('---- BEAUTIFY');
         var botResponse: BotResponse;
         const dialogflowConfig = {
             sessionId: this.sessionId,
@@ -375,7 +376,7 @@ export class DialogflowCXStream extends DialogflowCX {
                 }
             );
 
-            this._requestStreamPassThrough.on('data', (data) => {
+            this._requestStreamPassThrough.on('data', async (data) => {
                 // At the start of the call, we can capture
                 // the call ID, and the USER INFO
                 // We will need to store this in a session parameter
@@ -391,13 +392,8 @@ export class DialogflowCXStream extends DialogflowCX {
                     };
                     this.emit('callStarted', sessionParams);
                     me.debug.trace('dialogflow-cx.ts', 'startPipeline callStarted:', sessionParams);
-
-                    // TODO DF CX Specific
-                    // For storing data in BQ
-                    // this.setSessionParams(request, sessionParams);
-
                 }
-                // me.debug.trace('dialogflow-cx.ts', 'startPipeline mark:', msg.event);
+
                 if (msg.event === 'mark') {
                     if (msg.mark.name === 'endOfInteraction') {
                         this.emit('endOfInteraction', this.getFinalQueryResult());
@@ -416,7 +412,7 @@ export class DialogflowCXStream extends DialogflowCX {
                         this.isRequestAudio = true;
                         this.debug.trace('dialogflow-cx.ts', 'endOfTurnMediaPlayback isFirst:', this.isFirst);
                         this.debug.trace('dialogflow-cx.ts', 'endOfTurnMediaPlayback isReady:', this.isReady);
-                        this.debug.trace('dialogflow-cx.ts', 'endOfTurnMediaPlayback isFirst:', this.isStopped);
+                        this.debug.trace('dialogflow-cx.ts', 'endOfTurnMediaPlayback isStopped:', this.isStopped);
                     }
                 }
                 if (msg.event === 'stop') {
@@ -429,9 +425,9 @@ export class DialogflowCXStream extends DialogflowCX {
 
             this._responseStreamPassThrough.on('data', async (data) => {
                 var me = this;
-                var botResponse;
                 var mergeObj = {};
 
+                /*
                 if (data.recognitionResult &&
                     data.recognitionResult.messageType) {
                         me.debug.trace('dialogflow-cx.ts',
@@ -445,6 +441,7 @@ export class DialogflowCXStream extends DialogflowCX {
                         'startPipeline _responseStreamPassThrough/data recognitionResult TRANSCRIPT detected.');
                       }
                   }
+                */
 
                 if (
                   data.recognitionResult &&
@@ -459,20 +456,6 @@ export class DialogflowCXStream extends DialogflowCX {
                   me.isRequestAudio = false;
                   me.isInputAudioTriggered = true; // stop all audio triggers
                 }
-
-                // get the transcript to write in BQ
-                /*if(data.recognitionResult && data.recognitionResult.isFinal) {
-                    if(data.recognitionResult.transcript){
-                    mergeObj['query'] = data.recognitionResult.transcript;
-                    }
-
-                    mergeObj['recognitionResult'] = {};
-                    mergeObj['recognitionResult']['transcript'] = data.recognitionResult.transcript;
-                    mergeObj['recognitionResult']['confidence'] = data.recognitionResult.confidence;
-                }*/
-
-                me.debug.trace('dialogflow-cx.ts',
-                'startPipeline _responseStreamPassThrough/data data:', data);
 
                 if (data.detectIntentResponse &&
                     data.detectIntentResponse.queryResult &&
@@ -491,9 +474,9 @@ export class DialogflowCXStream extends DialogflowCX {
                         me.debug.trace('dialogflow-cx.ts',
                         'startPipeline _responseStreamPassThrough/data detectIntentResponse Text QueryResult:',
                         data.detectIntentResponse.queryResult);
-                        me.debug.trace('dialogflow-cx.ts',
-                          'startPipeline _responseStreamPassThrough/data detectIntentResponse outputAudio:',
-                          data.detectIntentResponse.outputAudio);
+                        // me.debug.trace('dialogflow-cx.ts',
+                          // 'startPipeline _responseStreamPassThrough/data detectIntentResponse outputAudio:',
+                          // data.detectIntentResponse.outputAudio);
 
                       // the final response
                       // but you could also use the END SINGLE RESPONSE
@@ -507,16 +490,27 @@ export class DialogflowCXStream extends DialogflowCX {
                             data.detectIntentResponse.queryResult.responseMessages[0].text.text);
 
                         me.finalQueryResult = data.detectIntentResponse.queryResult;
+
+                        try {
+                            // detected an intent, so lets log it.
+                            var botResponse = await this.beautifyResponses(me.finalQueryResult, 'audio');
+                            // TODO include sessionParams
+                            // botResponse = {...botResponse, ...mergeObj};
+                            me.debug.trace('dialogflow-cx.ts',
+                            'botResponse', botResponse);
+                            me.emit('botResponse', botResponse);
+                        } catch(e){
+                            this.debug.traceError('dialogflow-cx.ts', 'BotResponse Emit failed.', e);
+                            console.error(this.getFinalQueryResult());
+                        }
+
                       }
 
                       // calculate duration of audio to delay Telephony signalling
                       if (data.detectIntentResponse.outputAudio) {
 
-                        // this.isReady = false;
-                        // reset counters
                         me.noBargeInDuration = 0;
                         me.totalDuration = 0;
-                        // data.detectIntentResponse.outputAudio is audio buffer
 
                         me.debug.trace('dialogflow-cx.ts',
                             'startPipeline _responseStreamPassThrough/data intermediate calculating audio playback time.');
@@ -527,10 +521,6 @@ export class DialogflowCXStream extends DialogflowCX {
                             me.getLengthOfWAV(Buffer.from(data.detectIntentResponse.outputAudio).length, me.config.twilio['tts_sample_rate_hertz'], 16, 1);
 
                         me.emit('endTurn', this.finalQueryResult);
-                        botResponse = await this.beautifyResponses(data, 'audio');
-                        botResponse = {...botResponse, ...mergeObj};
-                        me.debug.trace('dialogflow-cx.ts', 'startPipeline _responseStreamPassThrough/data botResponse', botResponse);
-                        me.emit('botResponse', botResponse);
 
                         me.debug.trace('dialogflow-cx.ts',
                             'startPipeline _responseStreamPassThrough/data computed noBargeInDuration', me.noBargeInDuration);
@@ -572,7 +562,6 @@ export class DialogflowCXStream extends DialogflowCX {
                 var me = this;
                 me.debug.traceError('dialogflow-cx.ts', 'startPipeline audioResponseStream/error ignoring:', err);
 
-                // this.stop();
                 // handle error 3, need to shut down pipeline
                 if (err === undefined) {
                   me.debug.traceError('dialogflow-cx.ts', 'startPipeline audioResponseStream/error Handling undefined error, shutting down pipeline');
@@ -715,7 +704,7 @@ export class DialogflowCXStream extends DialogflowCX {
     }
 
     closingDetectStreams(){
-        this.debug.trace('dialogflow-cx.ts', 'Half closing detect streams');
+        // this.debug.trace('dialogflow-cx.ts', 'Half closing detect streams');
         if (this.detectStream && this.audioRequestStream) {
             this.detectStream.end();
             this.audioRequestStream.end();
@@ -723,7 +712,7 @@ export class DialogflowCXStream extends DialogflowCX {
     }
 
     closingResponseStreams(){
-        this.debug.trace('dialogflow-cx.ts', 'Half closing response streams');
+        // this.debug.trace('dialogflow-cx.ts', 'Half closing response streams');
         if (this._responseStreamPassThrough && this.audioResponseStream) {
             this._responseStreamPassThrough.end();
             this.audioResponseStream.end();

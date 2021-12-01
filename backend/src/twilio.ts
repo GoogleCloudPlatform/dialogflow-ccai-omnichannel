@@ -301,8 +301,15 @@ export class TwilioIntegration {
         this.dialogflow.on('botResponse', botResponse => {
           botResponse['platform'] = 'phone';
           this.debug.trace('twilio.ts', 'Bot Response: ', botResponse);
+          console.log('----');
+          console.log(botResponse);
+          console.log('----');
+          // this.pubsub.pushToChannel(botResponse);
+
+
+          // ----- NOT SURE IF WE NEED THIS WHOLE PART
           // store first bot response
-          if(previousBotResponse === null) previousBotResponse = botResponse;
+          /*if(previousBotResponse === null) previousBotResponse = botResponse;
           // only push to pubsub if there is a different timestamp
           // else we can assume it's the same
           // don't log messages that are the same
@@ -310,13 +317,16 @@ export class TwilioIntegration {
           const newTime = new Date(botResponse.dateTimeStamp).getTime();
           // this.debug.trace('twilio.ts', 'New Time - Old Time: ', newTime-oldTime);
           if((newTime - oldTime) > 1500){
-            this.pubsub.pushToChannel(botResponse);
+            console.log('----');
+            console.log('PUSH IT!!');
+            console.log('----');
+            // this.pubsub.pushToChannel(botResponse);
             previousBotResponse = null;
-          }
+          }*/
         });
 
       this.dialogflow.on('endTurn', queryResult => {
-        this.debug.trace('twilio.ts', 'endTurn event', queryResult);
+        // this.debug.trace('twilio.ts', 'endTurn event', queryResult);
         this.debug.trace('twilio.ts', 'total duration:', this.dialogflow.totalDuration);
         sleep(this.dialogflow.totalDuration).then((sleepResponse) => {
             return;
@@ -324,8 +334,9 @@ export class TwilioIntegration {
       });
 
       this.dialogflow.on('endOfInteraction', (queryResult) => {
-        this.debug.trace('twilio.ts', 'Virtual Agent hangs up, end of call, endOfInteraction');
-        this.debug.trace('twilio.ts', `media-unified-cx/dialogflowService/endOfInteraction Event: ${this.dialogflow.sessionId}} Interaction ended with query result:`, queryResult.responseMessages);
+        // this.debug.trace('twilio.ts', 'Virtual Agent hangs up, end of call, endOfInteraction');
+        // this.debug.trace('twilio.ts', `media-unified-cx/dialogflowService/endOfInteraction Event:
+         // ${this.dialogflow.sessionId}} Interaction ended with query result:`, queryResult.responseMessages);
         const response = new Twilio.twiml.VoiceResponse();
         const url = process.env.END_OF_INTERACTION_URL;
         // TODO you could put logics here, to transfer calls etc, but we jsut hangup.
