@@ -26,7 +26,7 @@ import { global } from './config';
 import { Aog } from './aog';
 import { BusinessMessages } from './business-messages';
 import { Web, WebStream } from './web';
-import { ContactCenterAi } from './twilio';
+import { TwilioIntegration } from './twilio';
 import * as fb from './firebase';
 
 
@@ -38,7 +38,7 @@ export class App {
     private server: http.Server;
     private web: Web;
     private webStream: WebStream;
-    private ccai: ContactCenterAi;
+    private twilioIntegration: TwilioIntegration;
     private aog: Aog;
     private businessMessages: BusinessMessages;
     private firebase: fb.FirebaseUsers;
@@ -47,7 +47,7 @@ export class App {
     constructor() {
         this.web = new Web(global);
         this.webStream = new WebStream(global);
-        this.ccai = new ContactCenterAi(global);
+        this.twilioIntegration = new TwilioIntegration(global);
         this.firebase = new fb.FirebaseUsers(global);
         this.aog = new Aog(global);
         this.businessMessages = new BusinessMessages(global);
@@ -142,7 +142,7 @@ export class App {
             res.json({
                 success: true,
                 vertical: global.vertical,
-                twilio: global.employee['phone_number']
+                twilio: global.bot['phone_number']
             });
         });
         this.app.get('/api/', function(req, res) {
@@ -276,7 +276,7 @@ export class App {
 
             me.botPhoneRouter(userRecord['country'], userRecord.phoneNumber[0]);
             if(userRecord){
-                await me.ccai.sms(query, userRecord, function(data){
+                await me.twilioIntegration.sms(query, userRecord, function(data){
                     res.json(data);
                 });
             }
@@ -285,11 +285,7 @@ export class App {
         this.app.post('/api/callme/', async function(req, res){
             const body = req.body;
             const uid = body.Uid;
-
-            console.log('------------callme-now');
-            console.log(uid);
-            console.log(body.From);
-            console.log(body.FromCountry);
+            me.debug.trace('index.ts', `Call Me Now. From: ${body.Form}, Country: ${body.FromCountry}, UID: ${uid}`, body)
 
             var userRecord;
             if(body && body.From) {
@@ -313,7 +309,7 @@ export class App {
             // get param phoneNr required
             if(userRecord && userRecord.phoneNumber){
                 me.botPhoneRouter(userRecord['country'], userRecord.phoneNumber[0]);
-                await me.ccai.streamOutbound(userRecord, host, function(data){
+                await me.twilioIntegration.streamOutbound(userRecord, host, function(data){
                     console.log(data);
                     res.json(data);
                 });
@@ -321,6 +317,33 @@ export class App {
                 res.status(500);
             }
         });
+
+        this.app.get('/api/callme/dev/', async function(req, res){
+            var userRecord;
+            var testUser = global.devConfig.bot['test_user'];
+            me.debug.trace('index.ts', `Call Me Now Dev.`);
+
+            if(req.headers.host.indexOf('ccai.ngrok.io') !== -1){
+                me.debug.trace('index.ts', `Call Me Now Dev. Running script locally. Headers: ${req.headers.host}`);
+                userRecord = await me.firebase.getUser({ uid: testUser });
+                me.debug.log(userRecord);
+
+                const protocol = req.secure? 'https://' : 'http://';
+                const host = protocol + req.hostname;
+
+                // get param phoneNr required
+                if(userRecord && userRecord.phoneNumber){
+                    me.botPhoneRouter(userRecord['country'], userRecord.phoneNumber[0]);
+                    await me.twilioIntegration.streamOutboundDev(userRecord, host, function(data){
+                        console.log(data);
+                        res.json(data);
+                    });
+                } else {
+                    res.status(500);
+                }
+            }
+        });
+
 
         // The endpoint set in the Twilio console
         this.app.post('/api/twiml/', async (req, res) => {
@@ -368,7 +391,7 @@ export class App {
         this.app.ws('/api/phone/', (ws, req) => {
             // me.debug.log('ws phone connected');
             console.log(req.body);
-            me.ccai.stream(ws, req);
+            me.twilioIntegration.stream(ws, req);
         });
 
 

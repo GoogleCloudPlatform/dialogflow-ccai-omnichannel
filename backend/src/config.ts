@@ -93,12 +93,19 @@ export interface GlobalConfig {
             bot_phone_number?: string,
             bot_phone_number_us?: string,
             phone_number?: string
+            test_user?: string
         }
     }
     production?: {
         config_id: string,
         debug: boolean,
-        server_url: string
+        server_url: string,
+        bot: {
+            bot_phone_number?: string,
+            bot_phone_number_us?: string,
+            phone_number?: string,
+            test_user?: string
+        }
     }
 }
 
@@ -166,7 +173,11 @@ const globalConfig: GlobalConfig = {
     production: {
         config_id: 'production',
         debug: false,
-        server_url: '.ENV'
+        server_url: '.ENV',
+        bot: {
+            bot_phone_number: '.ENV',
+            bot_phone_number_us: '.ENV',
+        }
     }
 };
 
@@ -225,8 +236,16 @@ const liveAgentDisplayNameUS = process.env.npm_config_LIVE_AGENT_DISPLAY_NAME_US
 || process.env.LIVE_AGENT_DISPLAY_NAME_US || envConfig.employee.live_agent_display_name_us;
 finalConfig.employee.live_agent_display_name_us = liveAgentDisplayNameUS;
 
+const testUserDev = process.env.npm_config_TEST_USER_DEV ||
+process.env.TEST_USER_DEV || envConfig.bot.test_user;
+const botPhoneNumberDev = process.env.npm_config_BOT_PHONE_NUMBER_DEV
+|| process.env.BOT_PHONE_NUMBER_DEV || envConfig.bot.bot_phone_number;
 const botPhoneNumber = process.env.npm_config_BOT_PHONE_NUMBER
 || process.env.BOT_PHONE_NUMBER || envConfig.bot.bot_phone_number;
+defaultConfig.bot.bot_phone_number = botPhoneNumberDev; // Development PhoneNumber only stored in Dev Configs
+defaultConfig.bot.bot_phone_number_us = botPhoneNumberDev; // Development PhoneNumber only stored in Dev Configs
+defaultConfig.bot.test_user = testUserDev; // Development User ID only stored in Dev Configs
+
 finalConfig.bot.bot_phone_number = botPhoneNumber;
 const botPhoneNumberUS = process.env.npm_config_BOT_PHONE_NUMBER_US
 || process.env.BOT_PHONE_NUMBER_US || envConfig.bot.bot_phone_number_us;
@@ -245,8 +264,11 @@ finalConfig.bot.phone_number = finalConfig.bot.bot_phone_number;
 
 finalConfig.debugger = new Debug(finalConfig);
 
+finalConfig.devConfig = defaultConfig;
+
 // make the configs global available
 export const global = finalConfig;
+
 
 // 3) Test AOG
 // 4) Refactor CCAI

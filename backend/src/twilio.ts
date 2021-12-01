@@ -23,15 +23,17 @@ import { MyPubSub } from './pubsub';
 var df;
 const Twilio = require('twilio');
 
-export class ContactCenterAi {
+export class TwilioIntegration {
     private pubsub: MyPubSub;
     private dialogflow: any;
     private twilio: any;
     public config: any;
+    public devConfig: any;
     public debug: any;
 
     constructor(global) {
       this.config = global;
+      this.devConfig = this.config.devConfig;
       this.debug = global.debugger;
       df = this.config.dialogflow['version'] || 'v2beta1';
       if(df === 'cx') {
@@ -94,6 +96,22 @@ export class ContactCenterAi {
               cb({ success: false, error });
             });
       }
+   }
+
+   async streamOutboundDev(user:any, host, cb){
+     const me = this;
+     this.twilio.calls
+     .create({
+       // record: true,
+       url: `${host}/api/twiml/`,
+       to: user.phoneNumber,
+       from: me.devConfig.bot['phone_number']
+     })
+     .then(function(call){
+       cb({ success: true, call});
+     }).catch(function(error){
+       cb({ success: false, error });
+     });
    }
 
     async streamOutbound(user:any, host: string, cb){
@@ -386,7 +404,7 @@ export class ContactCenterAi {
 }
 
 module.exports = {
-    ContactCenterAi
+  TwilioIntegration
 }
 
 function sleep(ms) {
