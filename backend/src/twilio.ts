@@ -286,7 +286,6 @@ export class TwilioIntegration {
         });
 
         this.dialogflow.on('interrupted', transcript => {
-          this.debug.trace('twilio.ts', 'Interrupted with ', transcript);
             if (!this.dialogflow.isInterrupted) {
               this.debug.trace('twilio.ts', 'Clearing...');
               const clearMessage = {
@@ -304,25 +303,7 @@ export class TwilioIntegration {
           console.log('----');
           console.log(botResponse);
           console.log('----');
-          // this.pubsub.pushToChannel(botResponse);
-
-
-          // ----- NOT SURE IF WE NEED THIS WHOLE PART
-          // store first bot response
-          /*if(previousBotResponse === null) previousBotResponse = botResponse;
-          // only push to pubsub if there is a different timestamp
-          // else we can assume it's the same
-          // don't log messages that are the same
-          const oldTime = new Date(previousBotResponse.dateTimeStamp).getTime();
-          const newTime = new Date(botResponse.dateTimeStamp).getTime();
-          // this.debug.trace('twilio.ts', 'New Time - Old Time: ', newTime-oldTime);
-          if((newTime - oldTime) > 1500){
-            console.log('----');
-            console.log('PUSH IT!!');
-            console.log('----');
-            // this.pubsub.pushToChannel(botResponse);
-            previousBotResponse = null;
-          }*/
+          this.pubsub.pushToChannel(botResponse);
         });
 
       this.dialogflow.on('endTurn', queryResult => {

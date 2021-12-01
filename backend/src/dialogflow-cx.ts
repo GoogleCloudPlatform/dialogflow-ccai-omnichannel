@@ -410,9 +410,9 @@ export class DialogflowCXStream extends DialogflowCX {
                         }
                         // else set to listening
                         this.isRequestAudio = true;
-                        this.debug.trace('dialogflow-cx.ts', 'endOfTurnMediaPlayback isFirst:', this.isFirst);
-                        this.debug.trace('dialogflow-cx.ts', 'endOfTurnMediaPlayback isReady:', this.isReady);
-                        this.debug.trace('dialogflow-cx.ts', 'endOfTurnMediaPlayback isStopped:', this.isStopped);
+                        // this.debug.trace('dialogflow-cx.ts', 'endOfTurnMediaPlayback isFirst:', this.isFirst);
+                        // this.debug.trace('dialogflow-cx.ts', 'endOfTurnMediaPlayback isReady:', this.isReady);
+                        // this.debug.trace('dialogflow-cx.ts', 'endOfTurnMediaPlayback isStopped:', this.isStopped);
                     }
                 }
                 if (msg.event === 'stop') {
@@ -471,9 +471,9 @@ export class DialogflowCXStream extends DialogflowCX {
                       me.stop();
                     } else {
 
-                        me.debug.trace('dialogflow-cx.ts',
-                        'startPipeline _responseStreamPassThrough/data detectIntentResponse Text QueryResult:',
-                        data.detectIntentResponse.queryResult);
+                        // me.debug.trace('dialogflow-cx.ts',
+                        // 'startPipeline _responseStreamPassThrough/data detectIntentResponse Text QueryResult:',
+                        // data.detectIntentResponse.queryResult);
                         // me.debug.trace('dialogflow-cx.ts',
                           // 'startPipeline _responseStreamPassThrough/data detectIntentResponse outputAudio:',
                           // data.detectIntentResponse.outputAudio);
@@ -485,15 +485,15 @@ export class DialogflowCXStream extends DialogflowCX {
                         data.detectIntentResponse.queryResult.responseMessages[0].text &&
                         data.detectIntentResponse.queryResult.responseMessages[0].text.text) {
 
-                        me.debug.trace('dialogflow-cx.ts',
-                            'startPipeline _responseStreamPassThrough/data intermediate responses:',
-                            data.detectIntentResponse.queryResult.responseMessages[0].text.text);
+                        // me.debug.trace('dialogflow-cx.ts',
+                        //    'startPipeline _responseStreamPassThrough/data intermediate responses:',
+                        //    data.detectIntentResponse.queryResult.responseMessages[0].text.text);
 
                         me.finalQueryResult = data.detectIntentResponse.queryResult;
 
                         try {
                             // detected an intent, so lets log it.
-                            var botResponse = await this.beautifyResponses(me.finalQueryResult, 'audio');
+                            var botResponse = await this.beautifyResponses(data.detectIntentResponse, 'audio');
                             // TODO include sessionParams
                             // botResponse = {...botResponse, ...mergeObj};
                             me.debug.trace('dialogflow-cx.ts',
