@@ -146,6 +146,10 @@ https://console.twilio.com/us1/develop/voice/settings/geo-permissions
 6. To link your Twilio instance with a local environment make sure
 the `TWILIO_ACCOUNT_SID` and `TWILIO_ACCOUNT_TOKEN` variables are correctly set in `backend/.env`. Also make sure you have set the correct phone numbers in this file.
 
+7. Optionally, you can also buy a seperate test number. Set in `backend/.env` `TEST_USER_DEV` that points to a Firebase UID of one of your own test phone numbers.
+You can execute the script by calling /api/callme/dev/ in the browser.
+
+
 ## Firebase
 
 You will need an account on Firebase as we will store authentication data

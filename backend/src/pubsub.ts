@@ -17,6 +17,45 @@
  */
 import { PubSub } from '@google-cloud/pubsub';
 
+export interface PubSubJson {
+    sessionId: string,
+    sessionPath: string,
+    platform: string,
+    vertical: string,
+    languageCode: string,
+    dateTimeStamp?: any, // TODO
+    query?: string,
+    fulfillmentText?: string,
+    responseMessages?: any,
+    uid: string,
+    country: string,
+    tool: string,
+    recognitionResult?: {
+        transcript?: string,
+        confidence?: number
+    },
+    sentiment?: {
+        magnitude?: number,
+        score?: number
+    },
+    intentDetection?: {
+        intent?: {
+            displayName?: string,
+            name?: string,
+            isFallback?: boolean,
+            iisEndInteraction?: boolean,
+            isLiveAgent?:boolean,
+            parameters?: any,
+            intentDetectionConfidence?: number
+        }
+    },
+    topicMining?: any,
+    nps?: number,
+    csat?: number,
+    ces?: number,
+    error?: any
+}
+
 export class MyPubSub {
     private pubsub: PubSub;
     public config: any;
@@ -30,7 +69,7 @@ export class MyPubSub {
         });
     }
 
-    public async pushToChannel(json: object, topicName = this.config.pubsub['topic_name']):Promise<any> {
+    public async pushToChannel(json: PubSubJson, topicName = this.config.pubsub['topic_name']):Promise<any> {
         const topic = this.pubsub.topic(`projects/${this.config['gc_project_id']}/topics/${topicName}`);
         const dataBuffer = Buffer.from(JSON.stringify(json), 'utf-8');
         const messageId = await topic.publish(dataBuffer);
