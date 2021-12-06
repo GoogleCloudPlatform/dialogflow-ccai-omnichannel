@@ -128,8 +128,6 @@ var getSentiment = function(text, callback){
     bqRow['TEXT_RESPONSE'] = buf.fulfillmentText;
     bqRow['RESPONSE_MESSAGES'] = JSON.stringify(buf.responseMessages);
 
-    bqRow['USER_UID'] = buf.uid;
-    bqRow['USER_COUNTRY'] = buf.country;
     bqRow['TOOL'] = buf.tool;
     bqRow['VERTICAL'] = buf.vertical;
 
@@ -167,6 +165,14 @@ var getSentiment = function(text, callback){
     } else {
         await getSentiment(buf.queryText);
     }
+
+    if(buf.sessionInfo){
+      bqRow['USER_UID'] = buf.sessionInfo.uid;
+      bqRow['USER_COUNTRY'] = buf.sessionInfo.country;
+      bqRow['STREAM_SID'] = buf.sessionInfo.streamSid;
+      bqRow['CALL_SID'] = buf.sessionInfo.callSid;
+    }
+
 
     await insertInBq(bqRow);
 

@@ -92,6 +92,7 @@ export class DialogflowCX extends EventEmitter {
         timeZone['timeZone'] = this.config.dialogflow['timezone'];
         let session = {
             ...timeZone,
+            analyzeQueryTextSentiment: true, // enable sentiment on text queries
             ...sessionParams
         };
 
@@ -127,7 +128,13 @@ export class DialogflowCX extends EventEmitter {
             languageCode: lang
         };
 
-        return this.detectIntent(qInput, 'audio');
+        var timeZone = {}
+        timeZone['timeZone'] = this.config.dialogflow['timezone'];
+        let session = {
+            ...timeZone,
+        };
+
+        return this.detectIntent(qInput, 'audio', session);
     }
 
     async detectIntent(qInput:QueryInputCX, routeInput?: string, sessionParams?: any) {
@@ -174,7 +181,6 @@ export class DialogflowCX extends EventEmitter {
     }
 
     beautifyResponses(response: any, input: string, e?: any): BotResponse {
-        console.log('---- BEAUTIFY');
         var botResponse: BotResponse;
         const dialogflowConfig = {
             sessionId: this.sessionId,
@@ -191,18 +197,9 @@ export class DialogflowCX extends EventEmitter {
         }
 
         if(response && response.queryResult){
-
-            var uid = this.getSessionParam(response.queryResult, 'user');
-            var country = this.getSessionParam(response.queryResult, 'country');
-            this.debug.trace('dialogflow-cx.ts', 'beautifyResponses uid: ', uid);
-            this.debug.trace('dialogflow-cx.ts', 'beautifyResponses country: ', country);
-
             var dialogflowResponses = {
-                uid,
-                sessionInfo: {
-                    uid,
-                    uCountry: country
-                },
+                uid: response.sessionInfo.uid,
+                sessionInfo: response.sessionInfo,
                 languageCode: response.queryResult.languageCode, // override
                 sentiment: response.queryResult.sentimentAnalysisResult,
                 currentPage: response.queryResult.currentPage,
@@ -280,6 +277,7 @@ export class DialogflowCXStream extends DialogflowCX {
     public detectStream: any;
     public finalQueryResult: any;
     public finalRecognitionResult: any;
+    public userInfo: any;
     public inputAudioTriggerCounter: number;
     public inputAudioTriggerDuration: number;
     public inputAudioTriggerLevel: number;
@@ -322,7 +320,7 @@ export class DialogflowCXStream extends DialogflowCX {
     }
 
     getFinalQueryResult() {
-      if (this.finalQueryResult) {
+      if (this.finalQueryResult && this.finalQueryResult.intent) {
         const queryResult = {
           intent: {
             name: this.finalQueryResult.intent.name,
@@ -349,6 +347,15 @@ export class DialogflowCXStream extends DialogflowCX {
           } else {
             return null;
           }
+    }
+
+    setUserInfo(callSid, streamSid, uid, country){
+        this.userInfo = {
+            uid,
+            country,
+            callSid,
+            streamSid,
+        };
     }
 
     startPipeline(queryInputObj, welcomeEvent:string, outputAudioConfig) {
@@ -409,6 +416,10 @@ export class DialogflowCXStream extends DialogflowCX {
                         userCountry: msg.start.customParameters.userCountry
                     };
                     this.emit('callStarted', sessionParams);
+                    me.setUserInfo(msg.start.callSid,
+                        msg.start.streamSid,
+                        msg.start.customParameters.userId,
+                        msg.start.customParameters.userCountry)
                     me.debug.trace('dialogflow-cx.ts', 'startPipeline callStarted:', sessionParams);
                 }
 
@@ -499,13 +510,10 @@ export class DialogflowCXStream extends DialogflowCX {
                         me.finalQueryResult = data.detectIntentResponse.queryResult;
 
                         try {
-
-                            console.log('********SPEECH CONFIDENCE*************************************************');
-                            console.log(me.getFinalRecognitionResult()) // doesnt exist anymore
-                            console.log('********************************************************');
                             // detected an intent, so lets log it.
                             var bR = data.detectIntentResponse;
                             bR['recognitionResult'] = me.getFinalRecognitionResult();
+                            bR['sessionInfo'] = me.userInfo;
                             var botResponse = await this.beautifyResponses(bR, 'audio');
                             // TODO include sessionParams
                             // botResponse = {...botResponse, ...mergeObj};
@@ -514,7 +522,6 @@ export class DialogflowCXStream extends DialogflowCX {
                             me.emit('botResponse', botResponse);
                         } catch(e){
                             this.debug.traceError('dialogflow-cx.ts', 'BotResponse Emit failed.', e);
-                            console.error(this.getFinalQueryResult());
                         }
 
                       }
@@ -607,7 +614,9 @@ export class DialogflowCXStream extends DialogflowCX {
             queryInput,
             session: this.sessionPath,
             queryParams: {
-            session: this.sessionPath
+                session: this.sessionPath,
+                timeZone: this.config.dialogflow['timezone'],
+                analyzeQueryTextSentiment: true, // enable sentiment on text queries
             },
             outputAudioConfig
         };

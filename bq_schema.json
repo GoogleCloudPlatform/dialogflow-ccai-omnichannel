@@ -102,6 +102,16 @@
     "mode": "NULLABLE"
     },
     {
+    "name": "CALL_SID",
+    "type": "STRING",
+    "mode": "NULLABLE"
+    },
+    {
+    "name": "STREAM_SID",
+    "type": "STRING",
+    "mode": "NULLABLE"
+    },
+    {
     "name": "NPS",
     "type": "FLOAT"
     },

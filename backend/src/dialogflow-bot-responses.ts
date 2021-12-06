@@ -34,8 +34,10 @@ export interface BotResponse {
         confidence: number
     },
     sessionInfo?: {
-        user?: string,
-        uCountry?:string
+        uid?: string,
+        country?: string,
+        callSid?: string,
+        streamSid?: string
     },
     intentDetection?: {
         intent: {
