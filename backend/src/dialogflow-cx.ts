@@ -197,9 +197,8 @@ export class DialogflowCX extends EventEmitter {
         }
 
         if(response && response.queryResult){
+
             var dialogflowResponses = {
-                uid: response.sessionInfo.uid,
-                sessionInfo: response.sessionInfo,
                 languageCode: response.queryResult.languageCode, // override
                 sentiment: response.queryResult.sentimentAnalysisResult,
                 currentPage: response.queryResult.currentPage,
@@ -211,6 +210,22 @@ export class DialogflowCX extends EventEmitter {
                 responseId: response.responseId,
                 tool: this.config.dialogflow['version'],
                 vertical: this.config.vertical
+            }
+
+            if(response.sessionInfo){
+                // for phone calls the stream needs to set this
+                // TODO same trick we need for FUNNEL_STEP
+                dialogflowResponses['uid'] = response.sessionInfo.uid;
+                dialogflowResponses['sessionInfo'] = response.sessionInfo;
+            } else {
+                // else get it from the session parameters
+                var uid = this.getSessionParam(response.queryResult, 'user');
+                var country = this.getSessionParam(response.queryResult, 'country');
+                dialogflowResponses['uid'] = uid;
+                dialogflowResponses['sessionInfo'] = {
+                    uid,
+                    country
+                }
             }
 
             if (response.queryResult.transcript) {
