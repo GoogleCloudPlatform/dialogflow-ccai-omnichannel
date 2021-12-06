@@ -251,6 +251,15 @@ export class DialogflowCX extends EventEmitter {
                     );
                 }
                 dialogflowResponses = {...dialogflowResponses, ...intentDetectionObj }
+            } else {
+                const intentDetectionObj = {
+                    intentDetection: {
+                        intent: {
+                            isFallback: true
+                        }
+                    }
+                };
+                dialogflowResponses = {...dialogflowResponses, ...intentDetectionObj }
             }
 
             botResponse = {...dialogflowConfig, ...dialogflowResponses }
