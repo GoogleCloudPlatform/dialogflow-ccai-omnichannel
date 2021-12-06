@@ -228,6 +228,10 @@ export class DialogflowCX extends EventEmitter {
                 dialogflowResponses['query'] = response.queryResult.text;
             }
 
+            if(response.recognitionResult){
+                dialogflowResponses['recognitionResult'] = response.recognitionResult;
+            }
+
             if(response.queryResult.match && response.queryResult.match.intent){
                 const intentDetectionObj = {
                     intentDetection: {
@@ -275,6 +279,7 @@ export class DialogflowCXStream extends DialogflowCX {
     public audioRequestStream: Transform;
     public detectStream: any;
     public finalQueryResult: any;
+    public finalRecognitionResult: any;
     public inputAudioTriggerCounter: number;
     public inputAudioTriggerDuration: number;
     public inputAudioTriggerLevel: number;
@@ -333,6 +338,19 @@ export class DialogflowCXStream extends DialogflowCX {
       }
     }
 
+    getFinalRecognitionResult(){
+        if (this.finalRecognitionResult) {
+            const recognitionResult = {
+                transcript: this.finalRecognitionResult.transcript,
+                confidence: this.finalRecognitionResult.confidence,
+                language: this.finalRecognitionResult.languageCode
+            };
+            return recognitionResult;
+          } else {
+            return null;
+          }
+    }
+
     startPipeline(queryInputObj, welcomeEvent:string, outputAudioConfig) {
         if (!this.isReady && !this.isStopped) {
             if (!this.isFirst) {
@@ -368,7 +386,7 @@ export class DialogflowCXStream extends DialogflowCX {
                           this.finish();
                         }
                     } else {
-                        this.debug.trace('dialogflow-cs.ts', 'Pipeline succeed. Close streams start next conv turn.');
+                        this.debug.trace('dialogflow-cx.ts', 'Pipeline succeed. Close streams start next conv turn.');
                         this.closingDetectStreams();
                         this.closingResponseStreams();
                     }
@@ -425,23 +443,6 @@ export class DialogflowCXStream extends DialogflowCX {
 
             this._responseStreamPassThrough.on('data', async (data) => {
                 var me = this;
-                var mergeObj = {};
-
-                /*
-                if (data.recognitionResult &&
-                    data.recognitionResult.messageType) {
-                        me.debug.trace('dialogflow-cx.ts',
-                        'startPipeline _responseStreamPassThrough/data recognitionResult:', data.recognitionResult);
-
-                      if (data.recognitionResult.messageType === 'END_OF_SINGLE_UTTERANCE') {
-                        me.debug.trace('dialogflow-cx.ts',
-                        'startPipeline _responseStreamPassThrough/data recognitionResult END_OF_SINGLE_UTTERANCE detected.');
-                      } else if (data.recognitionResult.messageType === 'TRANSCRIPT') {
-                        me.debug.trace('dialogflow-cx.ts',
-                        'startPipeline _responseStreamPassThrough/data recognitionResult TRANSCRIPT detected.');
-                      }
-                  }
-                */
 
                 if (
                   data.recognitionResult &&
@@ -455,6 +456,12 @@ export class DialogflowCXStream extends DialogflowCX {
 
                   me.isRequestAudio = false;
                   me.isInputAudioTriggered = true; // stop all audio triggers
+
+
+                    if(data.recognitionResult.isFinal){
+                        me.finalRecognitionResult = data.recognitionResult;
+                    }
+
                 }
 
                 if (data.detectIntentResponse &&
@@ -492,8 +499,14 @@ export class DialogflowCXStream extends DialogflowCX {
                         me.finalQueryResult = data.detectIntentResponse.queryResult;
 
                         try {
+
+                            console.log('********SPEECH CONFIDENCE*************************************************');
+                            console.log(me.getFinalRecognitionResult()) // doesnt exist anymore
+                            console.log('********************************************************');
                             // detected an intent, so lets log it.
-                            var botResponse = await this.beautifyResponses(data.detectIntentResponse, 'audio');
+                            var bR = data.detectIntentResponse;
+                            bR['recognitionResult'] = me.getFinalRecognitionResult();
+                            var botResponse = await this.beautifyResponses(bR, 'audio');
                             // TODO include sessionParams
                             // botResponse = {...botResponse, ...mergeObj};
                             me.debug.trace('dialogflow-cx.ts',

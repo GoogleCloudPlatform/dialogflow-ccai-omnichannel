@@ -69,6 +69,31 @@ Click the blue button, to clone in Cloud Shell:
 . setup.sh
 ```
 
+1. (Optional) For local usage download the service account to your machine:
+
+https://console.cloud.google.com
+Click IAM & Admin > Service Accounts
+Create a new JSON key, with Owner Role
+
+You can create a Service Account key file. This file can be used to authenticate to Google Cloud Platform services from any environment. To use the file, set the GOOGLE_APPLICATION_CREDENTIALS environment variable to the path to the key file, for example:
+
+```
+ export GOOGLE_APPLICATION_CREDENTIALS=/path/to/service_account.json
+```
+
+1. Initialize the Cloud SDK:
+
+```
+ $ gcloud init
+ 2 (Create a new configuration)
+ yourname-examples
+ (login)
+ list
+ #number-of-choice
+ y
+ gcloud auth login
+```
+
 ## Dialogflow
 
 #### Dialogflow Essentials
@@ -139,12 +164,11 @@ or manually (to only do this once)
 and modify the URL in the [Twilio console](https://console.twilio.com/develop/phone-numbers/manage/active) to:
 https://ccai.ngrok.io/twiml
 
-
 NOTE: For outbound calls you will need to whitelist the geo permissions you can call:
 https://console.twilio.com/us1/develop/voice/settings/geo-permissions
 
 6. To link your Twilio instance with a local environment make sure
-the `TWILIO_ACCOUNT_SID` and `TWILIO_ACCOUNT_TOKEN` variables are correctly set in `backend/.env`. Also make sure you have set the correct phone numbers in this file.
+the `TWILIO_ACCOUNT_SID` and `TWILIO_ACCOUNT_TOKEN` variables are correctly set in `backend/.env` (env.txt for first time users). Also make sure you have set the correct phone numbers in this file.
 
 7. Optionally, you can also buy a seperate test number. Set in `backend/.env` `TEST_USER_DEV` that points to a Firebase UID of one of your own test phone numbers.
 You can execute the script by calling /api/callme/dev/ in the browser.
@@ -318,6 +342,36 @@ sudo npm install -g npm@latestsudo
 nano env.txt
 cp env.txt .env
 ```
+
+Here's a brief explanation of what each setting does:
+
+`ENV` - development or production, it contains logging and dev settings
+`VERTICAL` - this demo has fsi assets
+`GC_PROJECT_ID` - you need to enter your google cloud project ID
+`AGENT_ID` - in case you are making use of an CX agent, you will need to enter the  agent id, you can find this in https://dialogflow.cloud.google.com/cx/projects/ccai-360/locations (options button right from the display name > copy agent name), the agent id, is the end string of numbers and characters (the part that's after /agents/)
+`CX_LOCATION` - the cx agent location
+`TWILIO_ACCOUNT_SID` - when you have followed the twilio steps in this guide, you should get the user SID from the CLI
+`TWILIO_ACCOUNT_TOKEN` - - when you have followed the twilio steps in this guide, you should get the password key secret from the CLI
+`DOMAIN1` - in case you plan to deploy this demo to a new bought domain
+`PUBSUB_TOPIC` - the pubsub topic for analytics
+`BQ_LOCATION` - the location of BigQuery
+`DATASET` - the BigQuery Dataset name
+`TABLE` - the BigQuery Table name
+`BOT_PHONE_NUMBER_US` - in case you make use of an USA Twilio number, get the phonenumber from your console.twilio.com
+`BOT_PHONE_NUMBER` - in case you make use of a non USA Twilio number, get the phonenumber from your console.twilio.com
+`BOT_PHONE_NUMBER_DEV` - in case you bought an additional phone number for testing purposes, get the phonenumber from your console.twilio.com
+`TEST_USER_DEV` - in case you want to test the Twilio phone gateway with a test user, without making use of the deployed website. Set this to the firebase Auth user ID that holds a phonenumber.
+`LIVE_AGENT_PHONE_NUMBER` - 
+`LIVE_AGENT_EMAIL`
+`LIVE_AGENT_PASS`
+`LIVE_AGENT_DISPLAY_NAME`
+`LIVE_AGENT_PHONE_NUMBER_US`
+`LIVE_AGENT_EMAIL_US`
+`LIVE_AGENT_PASS_US`
+`LIVE_AGENT_DISPLAY_NAME_US`
+
+
+
 
 3. Please review the following configurations that are unique for your environment:
 
