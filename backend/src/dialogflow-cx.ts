@@ -203,13 +203,16 @@ export class DialogflowCX extends EventEmitter {
                 sentiment: response.queryResult.sentimentAnalysisResult,
                 currentPage: response.queryResult.currentPage,
                 responseMessages: response.queryResult.responseMessages,
-                fulfillmentText: response.queryResult.responseMessages[0].text.text[0],
                 webhookPayloads: response.queryResult.webhookPayloads,
                 webhookStatuses: response.queryResult.webhookStatuses,
                 outputAudio: response.outputAudio,
                 responseId: response.responseId,
                 tool: this.config.dialogflow['version'],
                 vertical: this.config.vertical
+            }
+
+            if(response.queryResult.responseMessages[0] && response.queryResult.responseMessages[0].text){
+                dialogflowResponses['fulfillmentText'] =  response.queryResult.responseMessages[0].text.text[0];
             }
 
             if(response.sessionInfo){
@@ -236,8 +239,10 @@ export class DialogflowCX extends EventEmitter {
             }
             else if (response.queryResult.trigger_intent) {
                 dialogflowResponses['query'] = response.queryResult.trigger_intent;
-            } else {
+            } else if(response.queryResult.text){
                 dialogflowResponses['query'] = response.queryResult.text;
+            } else {
+                dialogflowResponses['query'] = '';
             }
 
             if(response.recognitionResult){

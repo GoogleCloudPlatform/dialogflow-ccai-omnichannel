@@ -8,7 +8,7 @@ async function doRequest(user, country){
         axios.post('https://www.conv.dev/api/callme/', {
             Uid: user,
             FromCountry: country,
-            Body: 'CALL ME' //TODO EVENT?
+            Body: 'CALL ME'
         })
         .then(function (response) {
             return response;

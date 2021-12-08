@@ -361,6 +361,8 @@ Here's a brief explanation of what each setting does:
 `BOT_PHONE_NUMBER` - in case you make use of a non USA Twilio number, get the phonenumber from your console.twilio.com
 `BOT_PHONE_NUMBER_DEV` - in case you bought an additional phone number for testing purposes, get the phonenumber from your console.twilio.com
 `TEST_USER_DEV` - in case you want to test the Twilio phone gateway with a test user, without making use of the deployed website. Set this to the firebase Auth user ID that holds a phonenumber.
+
+These settings don't do anything yet:
 `LIVE_AGENT_PHONE_NUMBER` - 
 `LIVE_AGENT_EMAIL`
 `LIVE_AGENT_PASS`
@@ -369,9 +371,6 @@ Here's a brief explanation of what each setting does:
 `LIVE_AGENT_EMAIL_US`
 `LIVE_AGENT_PASS_US`
 `LIVE_AGENT_DISPLAY_NAME_US`
-
-
-
 
 3. Please review the following configurations that are unique for your environment:
 

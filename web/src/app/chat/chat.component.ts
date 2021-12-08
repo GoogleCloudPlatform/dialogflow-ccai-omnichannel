@@ -22,7 +22,6 @@ import { takeUntil } from 'rxjs/operators';
 import { WebSocketService } from '../websocket.service';
 import { AngularFireAuth } from '@angular/fire/auth';
 import * as $ from 'jquery';
-import { FirebaseApp } from '@angular/fire';
 
 @Component({
   selector: 'app-chat',
