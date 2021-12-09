@@ -83,6 +83,8 @@ You can create a Service Account key file. This file can be used to authenticate
 
 1. Initialize the Cloud SDK:
 
+Install Cloud SDK on your local machine in case you want to use the project locally. https://cloud.google.com/sdk/docs/install
+
 ```
  $ gcloud init
  2 (Create a new configuration)
@@ -159,6 +161,7 @@ https://www.twilio.com/console/project/
 `twilio phone-numbers:update +3197010254316 --voice-url=http://localhost:8080/twiml`
 
 or manually (to only do this once)
+(this assumes you have ngrok installed: https://ngrok.com/download)
 
 `ngrok http -subdomain=ccai 8080`
 and modify the URL in the [Twilio console](https://console.twilio.com/develop/phone-numbers/manage/active) to:
