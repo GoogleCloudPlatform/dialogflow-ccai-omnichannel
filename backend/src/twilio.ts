@@ -181,7 +181,7 @@ export class TwilioIntegration {
         var previousBotResponse = null;
 
         // MediaStream coming from Twilio
-        const mediaStream = websocketStream(ws, {
+        var mediaStream = websocketStream(ws, {
           binary: false
         });
 

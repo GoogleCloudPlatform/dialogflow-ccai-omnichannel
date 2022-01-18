@@ -389,8 +389,7 @@ export class App {
 
         // Twilio Ws Media Stream Route
         this.app.ws('/api/phone/', (ws, req) => {
-            // me.debug.log('ws phone connected');
-            console.log(req.body);
+            me.debug.log('ws phone connected');
             me.twilioIntegration.stream(ws, req);
         });
 

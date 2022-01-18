@@ -388,7 +388,9 @@ export class DialogflowCXStream extends DialogflowCX {
     }
 
     startPipeline(queryInputObj, welcomeEvent:string, outputAudioConfig) {
+
         if (!this.isReady && !this.isStopped) {
+
             if (!this.isFirst) {
                 this.debug.trace('dialogflow-cx.ts', 'Streaming startPipeline !isFirst. If there are more pipelines open in the first go, close all.');
                 this.closingDetectStreams();
@@ -747,8 +749,11 @@ export class DialogflowCXStream extends DialogflowCX {
 
     finish() {
         this.debug.trace('dialogflow-cx.ts', 'Disconnecting Dialogflow CX and destroying streams');
-        this.isStopped = true;
+        this.isStopped = false;
         this.isInterrupted = true;
+        this.isReady = false;
+        this.isFirst = true;
+
         this.closingDetectStreams();
         this.closingResponseStreams();
         this._requestStreamPassThrough.destroy();
