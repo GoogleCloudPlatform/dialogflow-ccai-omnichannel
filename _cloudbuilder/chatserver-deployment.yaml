@@ -82,46 +82,6 @@ spec:
               configMapKeyRef:
                 name: chatserver-config
                 key: DOMAIN1
-          - name: "LIVE_AGENT_PHONE_NUMBER"
-            valueFrom:
-              configMapKeyRef:
-                name: chatserver-config
-                key: LIVE_AGENT_PHONE_NUMBER
-          - name: "LIVE_AGENT_EMAIL"
-            valueFrom:
-              configMapKeyRef:
-                name: chatserver-config
-                key: LIVE_AGENT_EMAIL
-          - name: "LIVE_AGENT_PASS"
-            valueFrom:
-              configMapKeyRef:
-                name: chatserver-config
-                key: LIVE_AGENT_PASS
-          - name: "LIVE_AGENT_DISPLAY_NAME"
-            valueFrom:
-              configMapKeyRef:
-                name: chatserver-config
-                key: LIVE_AGENT_DISPLAY_NAME
-          - name: "LIVE_AGENT_PHONE_NUMBER_US"
-            valueFrom:
-              configMapKeyRef:
-                name: chatserver-config
-                key: LIVE_AGENT_PHONE_NUMBER_US
-          - name: "LIVE_AGENT_EMAIL_US"
-            valueFrom:
-              configMapKeyRef:
-                name: chatserver-config
-                key: LIVE_AGENT_EMAIL_US
-          - name: "LIVE_AGENT_PASS_US"
-            valueFrom:
-              configMapKeyRef:
-                name: chatserver-config
-                key: LIVE_AGENT_PASS_US
-          - name: "LIVE_AGENT_DISPLAY_NAME_US"
-            valueFrom:
-              configMapKeyRef:
-                name: chatserver-config
-                key: LIVE_AGENT_DISPLAY_NAME_US
           - name: "BOT_PHONE_NUMBER"
             valueFrom:
               configMapKeyRef:
