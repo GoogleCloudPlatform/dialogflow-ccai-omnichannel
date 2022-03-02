@@ -11,9 +11,12 @@ What you will see in the next minute, is an early demo, built by DevRel on how w
 
 [![Omnichannel Demo Video](https://img.youtube.com/vi/ToYM8R0wW1I/0.jpg)](https://youtu.be/ToYM8R0wW1I)
 
+<img src="https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel/blob/main/images/experience.png" width="800" />
+
+
 ## Table of Contents
 
-<img src="https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel/blob/main/images/architecture.png" width="800" />
+<img src="https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel/blob/main/images/architecturenew.png" width="800" />
 
 Setup to the various parts:
 
