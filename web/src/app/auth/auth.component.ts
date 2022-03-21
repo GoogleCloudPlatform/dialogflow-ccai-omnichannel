@@ -39,8 +39,8 @@ export class AuthComponent {
   }
 
   async login() {
-    const email = 'lee.boonstra@gmail.com';
-    const password = 'g00gle12';
+    const email = 'TODO';
+    const password = 'TODO';
     const signInObj = await this.auth.signInWithEmailAndPassword(email, password);
     if(signInObj.user) {
       location.href = '/';
