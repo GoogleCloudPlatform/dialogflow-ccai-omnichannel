@@ -77,9 +77,11 @@ Click the blue button, to clone in Cloud Shell:
 
 3. Run the following install script to start the installation:
 
-```
-. setup.sh
-```
+  ```
+  . setup.sh
+  ```
+
+  *Choose 2: None, when prompted for bindings.*
 
 4. (Optional) In case you want to run this project locally on your machine, the `setup.sh` script will create a service-account with access rights, and download the key to your machine: `ccai-360-key.json`.
 
@@ -365,22 +367,22 @@ cp env.txt .env
 
 Here's a brief explanation of what each setting does:
 
-`ENV` - development or production, it contains logging and dev settings
-`VERTICAL` - this demo has fsi assets
-`GC_PROJECT_ID` - you need to enter your google cloud project ID
-`AGENT_ID` - in case you are making use of an CX agent, you will need to enter the  agent id, you can find this in https://dialogflow.cloud.google.com/cx/projects/ccai-360/locations (options button right from the display name > copy agent name), the agent id, is the end string of numbers and characters (the part that's after /agents/)
-`CX_LOCATION` - the cx agent location
-`TWILIO_ACCOUNT_SID` - when you have followed the twilio steps in this guide, you should get the user SID from the CLI
-`TWILIO_ACCOUNT_TOKEN` - - when you have followed the twilio steps in this guide, you should get the password key secret from the CLI
-`DOMAIN1` - in case you plan to deploy this demo to a new bought domain
-`PUBSUB_TOPIC` - the pubsub topic for analytics
-`BQ_LOCATION` - the location of BigQuery
-`DATASET` - the BigQuery Dataset name
-`TABLE` - the BigQuery Table name
-`BOT_PHONE_NUMBER_US` - in case you make use of an USA Twilio number, get the phonenumber from your console.twilio.com
-`BOT_PHONE_NUMBER` - in case you make use of a non USA Twilio number, get the phonenumber from your console.twilio.com
-`BOT_PHONE_NUMBER_DEV` - in case you bought an additional phone number for testing purposes, get the phonenumber from your console.twilio.com
-`TEST_USER_DEV` - in case you want to test the Twilio phone gateway with a test user, without making use of the deployed website. Set this to the firebase Auth user ID that holds a phonenumber.
+* `ENV` - development or production, it contains logging and dev settings
+* `VERTICAL` - this demo has fsi assets
+* `GC_PROJECT_ID` - you need to enter your google cloud project ID
+* `AGENT_ID` - in case you are making use of an CX agent, you will need to enter the  agent id, you can find this in https://dialogflow.cloud.google.com/cx/projects/ccai-360/locations (options button right from the display name > copy agent name), the agent id, is the end string of numbers and characters (the part that's after /agents/)
+* `CX_LOCATION` - the cx agent location
+* `TWILIO_ACCOUNT_SID` - when you have followed the twilio steps in this guide, you should get the user SID from the CLI
+* `TWILIO_ACCOUNT_TOKEN` - - when you have followed the twilio steps in this guide, you should get the password key secret from the CLI
+* `DOMAIN1` - in case you plan to deploy this demo to a new bought domain
+* `PUBSUB_TOPIC` - the pubsub topic for analytics
+* `BQ_LOCATION` - the location of BigQuery
+* `DATASET` - the BigQuery Dataset name
+* `TABLE` - the BigQuery Table name
+* `BOT_PHONE_NUMBER_US` - in case you make use of an USA Twilio number, get the phonenumber from your console.twilio.com
+* `BOT_PHONE_NUMBER` - in case you make use of a non USA Twilio number, get the phonenumber from your console.twilio.com
+* `BOT_PHONE_NUMBER_DEV` - in case you bought an additional phone number for testing purposes, get the phonenumber from your console.twilio.com
+* `TEST_USER_DEV` - in case you want to test the Twilio phone gateway with a test user, without making use of the deployed website. Set this to the firebase Auth user ID that holds a phonenumber.
 
 3. Please review the following configurations that are unique for your environment:
 
@@ -534,8 +536,4 @@ In that case I would suggest an adjustable rate mortgage. No sense in locking a 
 Thank you for contacting G-Mortgages. Have a nice day.
 ```
 
-6. TODO Business Messages Steps
-
-7. TODO Google Assistant Steps
-
-8. To view the Looker Dashboard go to /dashboard
+6. To view the Looker Dashboard go to /dashboard
