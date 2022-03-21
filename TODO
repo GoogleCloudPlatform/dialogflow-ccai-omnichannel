@@ -1,5 +1,9 @@
 ## TODOS
 
+* When you're not logged in, and you log in for the first time. 
+Sometimes you run into a websockets error, because the websocket is not open.
+Probably because it was closed, when no login was ready
+
 * Fix the CX phone flow
 - If I refresh, and ask "call me" - then somehow the uid isnt set
 
