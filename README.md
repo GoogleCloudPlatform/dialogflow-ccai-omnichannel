@@ -7,18 +7,27 @@ Customers ask us all the time. What's the future of customer care?
 We think your contact center shouldn't be a cost center but a revenue center.
 It should meet your customers, where they are, 24/7 and be proactive, ubiquitous, and scalable. It should become a trusted partner in your day to day life.
 
-What you will see in the next minute, is an early demo, built by DevRel on how we can reimagine customer experience. A true omnichannel approach!
+What you will see in the video below, is an early demo, built by DevRel on how we can reimagine customer experience. A true omnichannel approach!
 
 [![Omnichannel Demo Video](https://img.youtube.com/vi/ToYM8R0wW1I/0.jpg)](https://youtu.be/ToYM8R0wW1I)
 
+Conversational AI at Google Cloud:
+
 <img src="https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel/blob/main/images/experience.png" width="800" />
 
+<a href="https://cloud.google.com/conversational-ai/docs">Learn more, checkout the Conversational AI learning hub</a>
 
-## Table of Contents
+## Used Technology
+
+Here's an architecture diagram of the used technology:
 
 <img src="https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel/blob/main/images/architecturenew.png" width="800" />
 
-Setup to the various parts:
+## Setup
+
+This is a large guide on setting up all the seperate pieces. When possible things are automated through bash scripts. Please read carefully, through all the steps.
+
+Setup guides to the various parts:
 
 * [Google Cloud](https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel#google-cloud-setup)
 * [Dialogflow](https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel#dialogflow)
@@ -44,7 +53,7 @@ Once everything is installed you can run the Demo Script:
 * [Demo script](https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel#prepare-for-demo)
 
 
-## Google Cloud Setup
+### Google Cloud Setup
 
 The steps below, will help you to setup your Google Cloud Platform project and enable all the tools
 you will need for this demo.
@@ -54,37 +63,35 @@ you will need for this demo.
 
 https://console.cloud.google.com
 
-1. Either clone this Git repo on your local HD with the following command:
+2. Either clone this Git repo on your local HD with the following command:
 
 ```
-git clone https://github.com/savelee/ccai-360
+git clone https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel
 ```
 
 OR
 
 Click the blue button, to clone in Cloud Shell:
 
-[![Open in Cloud Shell](http://gstatic.com/cloudssh/images/open-btn.svg)](https://console.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fsavelee%2Fccai-360&cloudshell_tutorial=README.md)
+[![Open in Cloud Shell](http://gstatic.com/cloudssh/images/open-btn.svg)](https://console.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2FGoogleCloudPlatform%2Fdialogflow-ccai-omnichannel&cloudshell_tutorial=README.md)
 
-1. Run the following install script to start the installation:
+3. Run the following install script to start the installation:
 
 ```
 . setup.sh
 ```
 
-1. (Optional) For local usage download the service account to your machine:
+4. (Optional) In case you want to run this project locally on your machine, the `setup.sh` script will create a service-account with access rights, and download the key to your machine: `ccai-360-key.json`.
 
-https://console.cloud.google.com
-Click IAM & Admin > Service Accounts
-Create a new JSON key, with Owner Role
+   This file can be used to authenticate to Google Cloud Platform services from any environment. To use the file, set the `GOOGLE_APPLICATION_CREDENTIALS` *environment variable* to the path to the key file, for example:
 
-You can create a Service Account key file. This file can be used to authenticate to Google Cloud Platform services from any environment. To use the file, set the GOOGLE_APPLICATION_CREDENTIALS environment variable to the path to the key file, for example:
+   ```
+   export GOOGLE_APPLICATION_CREDENTIALS=/path/to/ccai-360-key.json
+   ```
 
-```
- export GOOGLE_APPLICATION_CREDENTIALS=/path/to/service_account.json
-```
+   You can run this command each time you run your local environment, or add it to your bash profile scripts which loads when starting the bash command line. On Mac OSX this is the `.bash_profile` file, a hidden file that can be found in your Mac OSX home directory.
 
-1. Initialize the Cloud SDK:
+5. Initialize the Cloud SDK:
 
 Install Cloud SDK on your local machine in case you want to use the project locally. https://cloud.google.com/sdk/docs/install
 
@@ -99,7 +106,7 @@ Install Cloud SDK on your local machine in case you want to use the project loca
  gcloud auth login
 ```
 
-## Dialogflow
+### Dialogflow
 
 #### Dialogflow Essentials
 
@@ -145,7 +152,7 @@ the `AGENT_ID` and `CX_LOCATION` variables are correctly set in `backend/.env`
 
 4. To make use of Dialogflow CX, make sure you have set this config in `backend/config.ts`. By default it's set to `cx`.
 
-## Twilio Phone/SMS
+### Twilio Phone/SMS
 
 1. Install Twilio CLI
 `npm install twilio-cli -g`
@@ -179,8 +186,7 @@ the `TWILIO_ACCOUNT_SID` and `TWILIO_ACCOUNT_TOKEN` variables are correctly set 
 7. Optionally, you can also buy a seperate test number. Set in `backend/.env` `TEST_USER_DEV` that points to a Firebase UID of one of your own test phone numbers.
 You can execute the script by calling /api/callme/dev/ in the browser.
 
-
-## Firebase
+### Firebase
 
 You will need an account on Firebase as we will store authentication data
 in Firebase auth.
@@ -191,14 +197,16 @@ To install the Firebase command-line tools use:
 
 2. `npm install firebase-admin --save`
 
-## Business Messages
+### Business Messages
+
 With Business Messages, you can place messaging buttons for brands within organic Google search results. When a user clicks on a messaging button, they start a conversation with an entity representing the brand—the brand's agent. See the [Business Messages](https://developers.google.com/business-communications/business-messages/guides) documentation for more information.
 
-### Before you begin
+#### Before you begin
 
 1.  [Register with Business Messages](https://developers.google.com/business-communications/business-messages/guides/set-up/register).
 
-### Configure your webhook
+#### Configure your webhook
+
 You must specify your webhook URL in order to start receiving messages for the Business Messages agent you create.
 
 1.  Open the [Business Communications Developer Console](https://business-communications.cloud.google.com) and sign in with your Business Messages Google account.
@@ -207,7 +215,8 @@ You must specify your webhook URL in order to start receiving messages for the B
 1.  Enter your **Business Messages webhook URL** as *https://YOUR_WEB_SEVER/api/business-messages* where `YOUR_WEB_SEVER` is the domain where you are hosting the backend of the `dialogflow-ccai-omnichannel` project.
 1.  Click **Save**.
 
-### Create your Business Messages agent
+#### Create your Business Messages agent
+
 Once you've registered, it's time to create your agent.
 
 1.  Open the [Business Communications Developer Console](https://business-communications.cloud.google.com) and sign in with your Business Messages Google account.
@@ -217,7 +226,7 @@ Once you've registered, it's time to create your agent.
 1.  Click **Create agent**.
 1.  When your agent is available, click your agent.
 
-### Test your Business Messages agent
+#### Test your Business Messages agent
 
 Each agent has test URLs that let you see how a conversation with that agent
 appears to users. Use a test URL to verify that messages sent by users interacting with your agent are being received by your webhook and automatically responded to by the Dialogflow agent you've set up.
@@ -229,7 +238,7 @@ To test an agent,
 1.  Under **Agent test URLs** on the **Overview** page, click the **Android** button or **iOS** button to copy the test URL to your device's clipboard and send to your mobile device or use the **Send** to email feature.
 1.  Open the test URL on your mobile device and send a message to the Business Messages agent.
 
-## Business Messages AdLingo
+### Business Messages AdLingo
 
 [AdLingo Dialogflow Docs](https://docs.adlingo.com/adlingo-api/v2/dialogflow/)
 
@@ -243,14 +252,15 @@ To test an agent,
    - Upload an avatar
 4. For this demo we are integrating an iframe with the preview of the add in the external website interface. In a real world application, this will be provided through an ads platform.
 
-## Business Messages Verified Calls
+### Business Messages Verified Calls
+
 With Verified Calls, you can upgrade a regular phone call from a business to a consumer. When a user receives a call from a business, the user sees who is calling, the logo of the business, that the business has been verified, and the reason for the call. See the [Verified Calls](https://developers.google.com/business-communications/verified-calls/guides/learn) documentation for more information.
 
-### Before you begin
+#### Before you begin
 
 1.  [Register with Verified Calls](https://developers.google.com/business-communications/verified-calls/guides/set-up/partner).
 
-### Configure your webhook
+#### Configure your webhook
 You must specify your webhook URL in order to start receiving messages for the Business Messages agent you create.
 
 1.  Open the [Business Communications Developer Console](https://business-communications.cloud.google.com) and sign in with your Business Messages Google account.
@@ -259,7 +269,7 @@ You must specify your webhook URL in order to start receiving messages for the B
 1.  Enter your **Business Messages webhook URL** as *https://YOUR_WEB_SEVER/api/business-messages* where `YOUR_WEB_SEVER` is the domain where you are hosting the backend of the `dialogflow-ccai-omnichannel` project.
 1.  Click **Save**.
 
-### Create your Verified Calls agent
+#### Create your Verified Calls agent
 Once you've registered, it's time to create your agent.
 
 1.  Open the [Business Communications Developer Console](https://business-communications.cloud.google.com) and sign in with your Verified Calls Google account.
