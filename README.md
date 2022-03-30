@@ -11,7 +11,8 @@ What you will see in the video below, is an early demo, built by DevRel on how w
 
 [![Omnichannel Demo Video](https://img.youtube.com/vi/ToYM8R0wW1I/0.jpg)](https://youtu.be/ToYM8R0wW1I)
 
-Conversational AI at Google Cloud:
+The big keypiece of my architecture is 
+<a href="https://cloud.google.com/conversational-ai">Google Cloud Conversational AI</a>. I am making use of the following components:
 
 <img src="https://github.com/GoogleCloudPlatform/dialogflow-ccai-omnichannel/blob/main/images/experience.png" width="800" />
 
