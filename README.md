@@ -559,7 +559,19 @@ Modify the `max` conversation count variable in **generate-questions.js**.
 
 5. Copy all conversations to a bucket `gsutil cp *.json gs://insights-data`
 
-Follow the steps in this [blog article](https://cloud.google.com/blog/topics/developers-practitioners/next-reaction-monitor-your-conversations-get-started-ccai-insights) to upload the conversations to the console, by pointing to the GCS bucket.
+6. You can use the batch import tool to import all the chat conversations: https://cloud.google.com/contact-center/insights/docs/import
+
+`gsutil cp -r gs://dialogflow-docs-downloads/contact-center-insights-preview .`
+`pip install virtualenv`
+`python3 -m venv .`
+`source bin/activate`
+
+Comment out (`#`) protobuf in requirements.txt:  `nano requirements.txt`
+
+`pip install protobuf`
+`pip install -r requirements.txt`
+
+`python3 import_conversations.py --source_chat_transcript_gcs_bucket insights-data my-project-id`
 
 ## Agent Assist
 
