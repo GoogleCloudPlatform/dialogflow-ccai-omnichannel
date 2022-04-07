@@ -538,3 +538,46 @@ Thank you for contacting G-Mortgages. Have a nice day.
 ```
 
 6. To view the Looker Dashboard go to /dashboard
+
+
+## Insights
+
+To demonstrate the Insights UI you will need to upload over 15K of conversations in the [console](https://ccai.cloud.google.com/insights/projects).
+To learn more about the configuration see this [blog article](https://cloud.google.com/blog/topics/developers-practitioners/next-reaction-monitor-your-conversations-get-started-ccai-insights).
+I've create a simple data generation script, that generates example mortgage conversations (questions), which can be used to upload in a GCS bucket.
+
+1. `cd _insights/data-generation/`
+2. `mkdir _temp`
+
+Modify the `max` conversation count variable in **generate-questions.js**.
+
+3. Generate example conversation data: `node generate-questions.js`
+
+4. Create a new GCS bucket, for example: **insights-data**
+
+5. Copy all conversations to a bucket `gsutil cp *.json gs://insights-data`
+
+Follow the steps in this [blog article](https://cloud.google.com/blog/topics/developers-practitioners/next-reaction-monitor-your-conversations-get-started-ccai-insights) to upload the conversations to the console, by pointing to the GCS bucket.
+
+## Agent Assist
+
+To demonstrate the Smart Reply feature in the Agent Assist UI you will need to upload over 30K of conversations in the [console](https://agentassist.cloud.google.com/projects).
+You will use this to train a conversation model from a dataset, and it will auto complete / provide suggestions for the agent.
+
+1. `cd _agentassist/data-generation/`
+2. `mkdir _temp`
+
+Modify the `max` conversation count variable in **generate-answers.js**.
+
+3. Generate example conversation data: `node generate-answers.js`
+
+4. Create a new GCS bucket, for example: **agentassist-data**
+
+5. Copy all [conversations](https://cloud.google.com/agent-assist/docs/conversation-data-format#conversation_transcript_data) to a bucket `gsutil cp *.json gs://agentassist-data`
+
+TODO we might not need this:
+
+6. Copy the data label CSV with paths to a bucket `gsutil cp *.json gs://agentassist-data`
+
+7. In the [Agent Assist Console](https://agentassist.cloud.google.com/projects/) navigate to **Create new**, and point to your GCS bucket, to import the dataset.
+It will make use of the Data Labeling API (which needs to be enabled).

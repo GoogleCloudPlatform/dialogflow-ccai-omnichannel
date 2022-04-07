@@ -87,6 +87,9 @@ gcloud projects add-iam-policy-binding $PROJECT_ID \
 gcloud projects add-iam-policy-binding $PROJECT_ID \
   --member serviceAccount:$SA_EMAIL \
   --role roles/contactcenterinsights.editor
+gcloud projects add-iam-policy-binding $PROJECT_ID 
+  --member serviceAccount:$SA_EMAIL \
+   --role roles/datalabeling.editor
   
 ## ENABLE APIS
 bold "Enable APIs..."
@@ -107,6 +110,7 @@ gcloud services enable \
   cloudbuild.googleapis.com \
   storage.googleapis.com \
   run.googleapis.com \
+  datalabeling.googleapis.com \
   businesscommunications.googleapis.com
 
 ## ADD FIREBASE

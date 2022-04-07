@@ -1,6 +1,6 @@
 var fs = require('fs');
 require('./lib/names.js');
-var max = 10000;
+var max = 10;
 var timer = 100000;
 var usedQuestionsArray = [];
 var questionArray = [
@@ -199,7 +199,7 @@ for(var i = 0; i<max; i++) {
     var json = JSON.stringify(obj);
     usedQuestionsArray = [];
     // Write the file
-    fs.writeFile(`question-${i}.json`, json, 'utf8', function(){
+    fs.writeFile(`_temp/question-${i}.json`, json, 'utf8', function(){
         //console.log(`Created file.`);
     });
 }
