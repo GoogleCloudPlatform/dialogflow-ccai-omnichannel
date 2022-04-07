@@ -288,7 +288,7 @@ csvArr.forEach(function() {
 let csv = `${csvContent}`;
 
 // Write the file
-fs.writeFile(`_temp/q-labels.csv`, csv, 'utf8', function(){
-    console.log(`Created file.`);
-});
+//fs.writeFile(`_temp/q-labels.csv`, csv, 'utf8', function(){
+//    console.log(`Created file.`);
+//});
 
