@@ -579,5 +579,9 @@ Modify the `max` conversation count variable in **generate-answers.js**.
 
 5. Copy all [conversations](https://cloud.google.com/agent-assist/docs/conversation-data-format#conversation_transcript_data) to a bucket `cd _temp && gsutil cp *.json gs://agentassist-data`
 
-6. In the [Agent Assist Console](https://agentassist.cloud.google.com/projects/) navigate to **Create new**, and point to your GCS bucket, to import the dataset.
+6. In the [Agent Assist Console](https://agentassist.cloud.google.com/projects/) navigate to **Create new**, and point to your GCS bucket `gs://agentassist-data/*`, to import the dataset.
 It will make use of the Data Labeling API (which needs to be enabled).
+
+_Note, due to a bug in the Agent Assist UI, I am unable to submit the form. I had to manually edit the DOM to enable the *Create* button. This should be fixed in the future._
+
+7. Next, go to **Models*, and create a *Smart Reply* model, by selecting your new data set. Training the model will take some time.
