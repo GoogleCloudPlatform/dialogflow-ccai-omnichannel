@@ -120,7 +120,6 @@ firebase projects:addfirebase $PROJECT_ID --debug
 ## CREATE A BUCKET
 gsutil mb gs://$BUCKET_NAME
 gsutil cp ccai-360-key.json gs://$BUCKET_NAME
-gsutil acl ch -u dapio-prod@appspot.gserviceaccount.com:READ gs://$BUCKET_NAME/ccai-360-key.json
 
 ## CREATE A CLOUD FUNCTIONS FOR WEBHOOKS
 bold "Creating Cloud Functions..."

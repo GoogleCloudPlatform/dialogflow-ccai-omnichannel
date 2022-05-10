@@ -76,7 +76,16 @@ Click the blue button, to clone in Cloud Shell:
 
 [![Open in Cloud Shell](http://gstatic.com/cloudssh/images/open-btn.svg)](https://console.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2FGoogleCloudPlatform%2Fdialogflow-ccai-omnichannel&cloudshell_tutorial=README.md)
 
-3. Run the following install script to start the installation:
+
+3. Copy, modify and rename the env.txt file to .env:
+
+```
+nano env.txt
+cp env.txt .env
+```
+
+
+4. Run the following install script to start the installation:
 
   ```
   . setup.sh
@@ -84,7 +93,7 @@ Click the blue button, to clone in Cloud Shell:
 
   *Choose 2: None, when prompted for bindings.*
 
-4. (Optional) In case you want to run this project locally on your machine, the `setup.sh` script will create a service-account with access rights, and download the key to your machine: `ccai-360-key.json`.
+5. (Optional) In case you want to run this project locally on your machine, the `setup.sh` script will create a service-account with access rights, and download the key to your machine: `ccai-360-key.json`.
 
    This file can be used to authenticate to Google Cloud Platform services from any environment. To use the file, set the `GOOGLE_APPLICATION_CREDENTIALS` *environment variable* to the path to the key file, for example:
 
@@ -94,7 +103,7 @@ Click the blue button, to clone in Cloud Shell:
 
    You can run this command each time you run your local environment, or add it to your bash profile scripts which loads when starting the bash command line. On Mac OSX this is the `.bash_profile` file, a hidden file that can be found in your Mac OSX home directory.
 
-5. Initialize the Cloud SDK:
+6. Initialize the Cloud SDK:
 
 Install Cloud SDK on your local machine in case you want to use the project locally. https://cloud.google.com/sdk/docs/install
 
@@ -359,13 +368,6 @@ sudo n latest
 sudo npm install -g npm@latestsudo 
 ```
 
-2. Copy, modify and rename the env.txt file to .env:
-
-```
-nano env.txt
-cp env.txt .env
-```
-
 Here's a brief explanation of what each setting does:
 
 * `ENV` - development or production, it contains logging and dev settings
@@ -385,12 +387,12 @@ Here's a brief explanation of what each setting does:
 * `BOT_PHONE_NUMBER_DEV` - in case you bought an additional phone number for testing purposes, get the phonenumber from your console.twilio.com
 * `TEST_USER_DEV` - in case you want to test the Twilio phone gateway with a test user, without making use of the deployed website. Set this to the firebase Auth user ID that holds a phonenumber.
 
-3. Please review the following configurations that are unique for your environment:
+2. Please review the following configurations that are unique for your environment:
 
 * `backend/.env`
 * `backend/config.ts`
 
-4. You can start the back-end server with the below command. It will start your app in development mode at http://localhost:8080
+3. You can start the back-end server with the below command. It will start your app in development mode at http://localhost:8080
 
 ```
 cd backend && npm run watch
